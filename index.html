@@ -28,7 +28,7 @@ SOFTWARE.
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-i18n="docTitle">マカ錬金 未来視（オフライン）</title>
+<title data-i18n="docTitle">マカ錬金未来視（オフライン版 Ver.1.042対応）</title>
 <style>
   :root {
     --radius: 10px; --radius-s: 7px;
@@ -53,7 +53,7 @@ SOFTWARE.
        display: flex; align-items: baseline; flex-wrap: wrap; column-gap: .42em; row-gap: 2px; }
   .h1-sub { font-size: 12.5px; font-weight: 400; letter-spacing: .04em; color: var(--muted); }
   .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-            padding-bottom: 10px; border-bottom: 1px solid var(--line); border-color: #303b49; }
+            padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--line); border-color: #303b49; }
   .sub { color: var(--muted); font-size: 12.5px; line-height: 1.6; margin: 10px 0 14px; }
   .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
   .panel-title { font-size: 14px; font-weight: 700; letter-spacing: .02em; }
@@ -149,8 +149,7 @@ SOFTWARE.
 </style>
 </head>
 <body>
-<div class="topbar"><h1 data-i18n="h1"><span>マカ錬金</span><span>未来視</span><span class="h1-sub">（オフライン版）</span></h1><span style="display:flex;gap:8px"><button type="button" id="helpbtn" data-i18n="helpTitle">使い方</button><button type="button" id="langbtn">🌐 EN</button></span></div>
-<div class="sub" data-i18n="intro">次に出る護石を予測するツールです。オフライン専用（Ver.1.042対応）。</div>
+<div class="topbar"><h1 data-i18n="h1"><span>マカ錬金</span><span>未来視</span><span class="h1-sub">（オフライン版 Ver.1.042対応）</span></h1><span style="display:flex;gap:8px"><button type="button" id="helpbtn" data-i18n="helpTitle">使い方</button><button type="button" id="langbtn">🌐 EN</button></span></div>
 
 <div class="panel predict-panel">
   <div class="row">
@@ -179,12 +178,12 @@ SOFTWARE.
     </span>
   </div>
   <div id="fskillrows"></div>
-  <div id="fslotrow"></div>
   <div class="row">
     <button type="button" class="mini" id="fadd" data-i18n="addSkillCond">＋ スキル条件を追加</button>
     <button type="button" class="mini" id="fclearall" data-i18n="clearAllCond">条件をすべてクリア</button>
     <span class="note" data-i18n="lvNote">Lvとスロットは「以上」で判定します。</span>
   </div>
+  <div id="fslotrow"></div>
   <div class="row">
     <button type="button" id="seek" data-i18n="seekBtn">条件に一致する「次に出現する護石」を検索</button>
     <label><span data-i18n="seekLimit">探索上限</span>
@@ -234,7 +233,7 @@ SOFTWARE.
 <div class="recovery-section">
 <div class="panel recovery-input-panel">
   <div class="row"><b class="panel-title" data-i18n="locateTitle">カウンター位置の特定</b></div>
-  <div class="note" data-i18n="locateNote">連続で錬金した護石を、古い順に3件すべて入力してください。スロットも、ある分は入力してください（無い分は「－」でOK）。seed復元ではスロットが無いと特定できません。</div>
+  <div class="note" data-i18n="locateNote">マカ錬金で引いた護石を、古い順に3つ入力してください。スキル・スロットは、ある分だけ入力すればOKです。</div>
   <div id="obsrows"></div>
   <div class="row">
     <button type="button" class="mini" id="clrobs" data-i18n="clearAll">全てクリア</button>
@@ -250,7 +249,7 @@ SOFTWARE.
 <div class="panel" id="sfpanel">
   <div class="row"><b class="panel-title" data-i18n="sfTitle">基準seedの復元</b> <span class="note" id="sfengine"></span></div>
   <div class="note sf-callout" data-i18n="sfSharedNote"><b>入力欄は上の「カウンター位置の特定」と共用です。</b>先に<a href="#obsrows">上の入力欄</a>へ入力してから、「復元開始」を押してください。</div>
-  <div class="note" data-i18n="sfNote">観測護石（3件）から、基準seedとカウンタを総当たりで復元します。スロットも、ある分は必ず入力してください（無い分は「－」でOK）。計算は端末内のみで行います。</div>
+  <div class="note" data-i18n="sfNote">基準seedの復元は、最初に一度だけ行えばOKです。総当たりで計算するため、端末の性能によっては時間がかかることがあります。</div>
   <div class="row">
     <span data-i18n="sfRange">カウンタ範囲（観測1個目の位置）</span>
     <label><span data-i18n="sfFrom">下限</span> <input type="number" id="sfwlo" value="0" min="0" max="10000000" step="100" style="width:110px"></label>
@@ -333,9 +332,8 @@ const BAND_EN = { 0: "Rarity 5", 24: "Rarity 6", 52: "Rarity 7", 76: "Rarity 8" 
 const BAND_ZH = { 0: "稀有度5", 24: "稀有度6", 52: "稀有度7", 76: "稀有度8" };
 function bandName(b) { return lang === "en" ? (BAND_EN[b] || String(b)) : lang === "zh" ? (BAND_ZH[b] || String(b)) : (BAND_LABEL[b] ? BAND_LABEL[b][0] : String(b)); }
 const I18N = {
-  docTitle: ["マカ錬金 未来視（オフライン）", "Melding Pot Future Vision (Offline)", "马卡炼金未来视（离线版）"],
-  h1: ["<span>マカ錬金</span><span>未来視</span><span class=\"h1-sub\">（オフライン版）</span>", "<span>Melding Pot</span><span>Future Vision</span><span class=\"h1-sub\">(Offline)</span>", "<span>马卡炼金</span><span>未来视</span><span class=\"h1-sub\">（离线版）</span>"],
-  intro: ["次に出る護石を予測するツールです。オフライン専用（Ver.1.042対応）。", "Predicts the charms you will meld next. Fully offline (game Ver.1.042).", "预测接下来会炼出的护石。完全离线（对应游戏版本 Ver.1.042）。"],
+  docTitle: ["マカ錬金未来視（オフライン版 Ver.1.042対応）", "Melding Pot Future Vision (Offline, Ver.1.042)", "马卡炼金未来视（离线版 Ver.1.042）"],
+  h1: ["<span>マカ錬金</span><span>未来視</span><span class=\"h1-sub\">（オフライン版 Ver.1.042対応）</span>", "<span>Melding Pot</span><span>Future Vision</span><span class=\"h1-sub\">(Offline, Ver.1.042)</span>", "<span>马卡炼金</span><span>未来视</span><span class=\"h1-sub\">（离线版 Ver.1.042）</span>"],
   baseSeed: ["基準seed", "Base seed", "基础种子"],
   seedUnknownLink: ["seedが分からない場合は「基準seedの復元」へ", "Don't know your seed? Go to \"Recover Base Seed\"", "不知道种子？前往「恢复基础种子」"],
   seedGogmaNote: ["基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。", "The base seed is the same value as Gogma Seed Finder's, and can also be recovered with this tool alone.", "基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具恢复。"],
@@ -357,7 +355,7 @@ const I18N = {
   stop: ["中止", "Stop", "停止"],
   seekNote: ["一覧より先も探せます。結果は10件ずつ表示します。", "Searches beyond the list above, 10 results per page.", "可搜索列表之后的结果，每页显示10个。"],
   locateTitle: ["カウンター位置の特定", "Find Your Current Counter", "确定当前计数器位置"],
-  locateNote: ["連続で錬金した護石を、古い順に3件すべて入力してください。スロットも、ある分は入力してください（無い分は「－」でOK）。seed復元ではスロットが無いと特定できません。", "Enter all 3 consecutively melded charms, oldest first. Enter the slots each charm has, too (leave \"－\" only for slots the charm doesn't have) — seed recovery cannot identify a row without slots.", "请按从旧到新的顺序，完整输入连续炼金得到的 3 个护石。槽位也请填写实际有的部分（没有的保持「－」即可）。恢复基础种子时，没有槽位的行将无法确定。"],
+  locateNote: ["マカ錬金で引いた護石を、古い順に3つ入力してください。スキル・スロットは、ある分だけ入力すればOKです。", "Enter 3 charms from the Melding Pot, oldest first. For skills and slots, just enter the ones the charm has.", "请输入马卡炼金炼出的护石，按从旧到新的顺序填 3 个。技能和槽位只需填写实际有的部分。"],
   clearAll: ["全てクリア", "Clear all", "全部清除"],
   searchRange: ["探索範囲", "Search range", "搜索范围"],
   thUnit: ["個目", "(meld #)", "个"],
@@ -478,7 +476,7 @@ const I18N = {
   sfNeedSlots: ["{n}件目のスロットが未入力です。seed復元では、護石にあるスロットも入力してください（無いスロットは「－」のままでOK）。", "Charm #{n} has no slots entered. For seed recovery, enter the slots the charm has (leave a slot as \"－\" only when the charm has none).", "第 {n} 个护石没有输入槽位。恢复基础种子时，请填写护石实际有的槽位（没有的槽位可保持「－」）。"],
   sfNotFound: ["<b>候補が見つかりませんでした。</b><br>よくある原因と対策:<br>・<b>カウンタ範囲が足りない</b> → 上限を広げてもう一度探索してください（観測した護石の位置が上限より先にあると見つかりません。広げるほど時間はかかります）<br>・<b>入力ミス</b> → スキル・Lv・スロットと、古い順の並びを再確認してください<br>・<b>連続で錬金していない</b> → 間に別の錬金が挟まった護石が混ざると一致しません。連続3件を取り直すのが確実です", "<b>No candidates found.</b><br>Common causes and fixes:<br>・<b>Range too small</b> → raise the upper bound and search again (nothing is found if the observed charms sit beyond the limit; wider ranges take longer)<br>・<b>Input errors</b> → re-check the skills, levels, slots, and the oldest-first order<br>・<b>Not consecutive</b> → charms with other melds in between never match. Re-recording 3 truly consecutive melds is the surest fix", "<b>没有找到候选。</b><br>常见原因与对策：<br>・<b>计数器范围不足</b> → 调大上限后再次搜索（观测护石的位置超过上限时无法找到；范围越大耗时越长）<br>・<b>输入错误</b> → 重新确认技能、等级、槽位以及从旧到新的顺序<br>・<b>不是连续炼金</b> → 中间夹杂其他炼金时无法匹配。重新记录真正连续的 3 个最可靠"],
   sfFailed: ["エラーが発生したため、復元を開始できませんでした。もう一度お試しください。", "An error occurred, so recovery could not start. Please try again.", "发生错误，无法开始恢复。请重试。"],
-  sfNote: ["観測護石（3件）から、基準seedとカウンタを総当たりで復元します。スロットも、ある分は必ず入力してください（無い分は「－」でOK）。計算は端末内のみで行います。", "Brute-forces your base seed and counter from the 3 observed charms. Be sure to enter the slots each charm has (leave \"－\" only for slots it doesn't have). Computed entirely on this device.", "根据 3 个观测护石穷举恢复基础种子和计数器。槽位也请务必填写实际有的部分（没有的保持「－」即可）。全部计算都在本设备内完成。"],
+  sfNote: ["基準seedの復元は、最初に一度だけ行えばOKです。総当たりで計算するため、端末の性能によっては時間がかかることがあります。", "You only need to recover your base seed once. The brute-force search may take a while, depending on your device.", "基础种子只需在最初恢复一次即可。由于采用穷举计算，根据设备性能可能需要较长时间。"],
   sfRange: ["カウンタ範囲（観測1個目の位置）", "Counter range (position of the 1st observed charm)", "计数器范围（第1个观测护石的位置）"],
   sfSharedNote: ["<b>入力欄は上の「カウンター位置の特定」と共用です。</b>先に<a href=\"#obsrows\">上の入力欄</a>へ入力してから、「復元開始」を押してください。", "<b>Shared with “Find Your Current Counter” above.</b> Enter your melds in <a href=\"#obsrows\">the rows above</a> first, then press “Start recovery”.", "<b>与上方「确定当前计数器位置」共用输入行。</b>请先在<a href=\"#obsrows\">上方输入行</a>中填写，再点击「开始恢复」。"],
   sfStart: ["復元開始", "Start recovery", "开始恢复"],
