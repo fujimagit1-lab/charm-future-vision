@@ -36,7 +36,7 @@ SOFTWARE.
     /* ダーク: YouTube基調（背景 #0f0f0f / 面 #212121 / チップ #272727 / 主ボタンは白） */
     --bg: #0f0f0f; --panel: #212121; --panel-in: #181818;
     --line: #303030; --line-soft: #272727;
-    --text: #f1f1f1; --label: #e5e5e5; --muted: #aaaaaa; --faint: #717171;
+    --text: #f1f1f1; --label: #e5e5e5; --muted: #aaaaaa; --faint: #8b8b8b;
     --accent: #f1f1f1; --accent-hover: #d9d9d9; --accent-ink: #0f0f0f;
     --input: #121212; --btn2: #272727; --btn2-hover: #3d3d3d;
     --link: #3ea6ff;
@@ -46,7 +46,7 @@ SOFTWARE.
   }
   * { box-sizing: border-box; }
   body { font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Segoe UI", sans-serif;
-         background: var(--bg); color: var(--text); margin: 0; padding: 18px 16px 24px; line-height: 1.55; }
+         background: var(--bg); color: var(--text); margin: 0 auto; max-width: 980px; padding: 18px 16px 24px; line-height: 1.55; }
   h1 { font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", "Segoe UI", sans-serif;
        font-size: 22px; font-weight: 700; letter-spacing: .06em; margin: 0;
        display: flex; align-items: baseline; flex-wrap: wrap; column-gap: .42em; row-gap: 2px; }
@@ -93,6 +93,10 @@ SOFTWARE.
   .favdata { display: flex; gap: 12px; align-items: stretch; }
   .favdata > .panel { flex: 1 1 0; min-width: 0; margin: 0 0 12px; }
   @media (max-width: 760px) { .favdata { flex-direction: column; } .favdata > .panel { flex: none; } }
+  @media (max-width: 760px) {
+    input[type=number], input[type=text], select { font-size: 16px; }
+    .mini, .lvb, .skbtn { min-height: 40px; }
+  }
   .favempty { color: var(--muted); text-align: center; padding: 18px; }
   #favdlglist, #favdlgothers { overflow-y: auto; max-height: 56vh; margin-top: 8px; }
   .obsrow.favnext { background: var(--fav-hit-bg); border-radius: var(--radius-s); }
@@ -125,7 +129,7 @@ SOFTWARE.
 </head>
 <body>
 <div class="topbar"><h1 data-i18n="h1"><span>マカ錬金</span><span>未来視</span><span class="h1-sub">（オフライン版）</span></h1><span style="display:flex;gap:8px"><button type="button" id="helpbtn" data-i18n="helpTitle">使い方</button><button type="button" id="langbtn">🌐 EN</button></span></div>
-<div class="sub" data-i18n="intro">次に出る護石を予測するツールです。基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。オフライン専用で、実機200件で全件一致を確認済み。</div>
+<div class="sub" data-i18n="intro">次に出る護石を予測するツールです。基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。オフライン専用で、実機200件で全件一致を確認済み。ゲームのアップデートで仕様が変わった場合、結果が一致しない可能性があります。</div>
 
 <div class="panel">
   <div class="row">
@@ -140,6 +144,7 @@ SOFTWARE.
     <button id="go" data-i18n="predict">予測する</button>
     <button type="button" id="backbtn" class="mini" style="display:none">↩ 元のカウンタに戻る</button>
   </div>
+  <div class="note"><a href="#sfpanel" data-i18n="seedUnknownLink">seedが分からない場合は「基準seedの復元」へ</a></div>
 </div>
 
 <div class="panel">
@@ -169,19 +174,19 @@ SOFTWARE.
       </select>
     </label>
     <button type="button" class="mini" id="seekstop" style="display:none" data-i18n="stop">中止</button>
-    <span class="note" id="seekstat"></span>
+    <span class="note" id="seekstat" aria-live="polite"></span>
   </div>
   <div class="note" data-i18n="seekNote">一覧より先も探せます。結果は10件ずつ表示します。</div>
   <div id="seekres"></div>
 </div>
 
 <div class="row">
-  <div class="cnt" id="stat"></div>
+  <div class="cnt" id="stat" aria-live="polite"></div>
   <button type="button" class="mini" id="tbltoggle" style="display:none">結果を閉じる</button>
 </div>
 <div class="panel" id="tblpanel" style="overflow-x:auto; max-height: 70vh; overflow-y:auto;">
   <table>
-    <thead><tr><th>☆</th><th>#</th><th data-i18n="thCounter">カウンタ</th><th data-i18n="thBand">帯</th><th data-i18n="thSkill1">スキル1</th><th data-i18n="thSkill2">スキル2</th><th data-i18n="thSkill3">スキル3</th><th data-i18n="thSlots">スロット</th></tr></thead>
+    <thead><tr><th scope="col">☆</th><th scope="col">#</th><th scope="col" data-i18n="thCounter">カウンタ</th><th scope="col" data-i18n="thBand">帯</th><th scope="col" data-i18n="thSkill1">スキル1</th><th scope="col" data-i18n="thSkill2">スキル2</th><th scope="col" data-i18n="thSkill3">スキル3</th><th scope="col" data-i18n="thSlots">スロット</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
 </div>
@@ -199,7 +204,7 @@ SOFTWARE.
   <div class="row">
     <button type="button" id="favexport" class="mini" data-i18n="favExport">データ書き出し</button>
     <label class="note"><span data-i18n="importLabel">データ読み込み</span> <input type="file" id="favimport" accept=".json,application/json"></label>
-    <span class="note" id="datastat"></span>
+    <span class="note" id="datastat" aria-live="polite"></span>
   </div>
   <div class="note" data-i18n="dataNote">seed・カウンタ・お気に入りをファイルに書き出して、他の端末で読み込めます。</div>
 </div>
@@ -217,10 +222,10 @@ SOFTWARE.
     <button id="locate" data-i18n="locateBtn">カウンターを特定</button>
     <button type="button" class="mini" id="locstop" style="display:none" data-i18n="stop">中止</button> <span class="note" data-i18n="rangeCap">（上限 3,000,000）</span>
   </div>
-  <div class="note" id="locres"></div>
+  <div class="note" id="locres" aria-live="polite"></div>
 </div>
 
-<div class="panel">
+<div class="panel" id="sfpanel">
   <div class="row"><b class="panel-title" data-i18n="sfTitle">基準seedの復元</b> <span class="note" id="sfengine"></span></div>
   <div class="note" data-i18n="sfSharedNote"><b>入力欄は上の「カウンター位置の特定」と共用です。</b>先に<a href="#obsrows">上の入力欄</a>へ入力してから、「復元開始」を押してください。</div>
   <div class="note" data-i18n="sfNote">観測護石（3件）から、基準seedとカウンタを総当たりで復元します。スロットも、ある分は必ず入力してください（無い分は「－」でOK）。求める基準seedは Gogma Seed Finder と同じ値です。計算は端末内のみで行います。</div>
@@ -237,7 +242,7 @@ SOFTWARE.
   </div>
   <div id="sfprog" style="display:none">
     <div class="sfbar"><div id="sfbarfill"></div></div>
-    <div class="note" id="sfstats"></div>
+    <div class="note" id="sfstats" aria-live="polite"></div>
     <div class="note" id="sffilter"></div>
   </div>
   <div id="sfresults"></div>
@@ -307,8 +312,9 @@ function bandName(b) { return lang === "en" ? (BAND_EN[b] || String(b)) : lang =
 const I18N = {
   docTitle: ["マカ錬金 未来視（オフライン）", "Melding Pot Future Vision (Offline)", "马卡炼金未来视（离线版）"],
   h1: ["<span>マカ錬金</span><span>未来視</span><span class=\"h1-sub\">（オフライン版）</span>", "<span>Melding Pot</span><span>Future Vision</span><span class=\"h1-sub\">(Offline)</span>", "<span>马卡炼金</span><span>未来视</span><span class=\"h1-sub\">（离线版）</span>"],
-  intro: ["次に出る護石を予測するツールです。基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。オフライン専用で、実機200件で全件一致を確認済み。", "Predicts the charms you will meld next. The base seed is the same value as Gogma Seed Finder's, and can also be recovered with this tool alone. Fully offline — verified against 200 real melds.", "预测接下来会炼出的护石。基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具恢复。完全离线，已在实机200个样本上验证全部一致。"],
+  intro: ["次に出る護石を予測するツールです。基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。オフライン専用で、実機200件で全件一致を確認済み。ゲームのアップデートで仕様が変わった場合、結果が一致しない可能性があります。", "Predicts the charms you will meld next. The base seed is the same value as Gogma Seed Finder's, and can also be recovered with this tool alone. Fully offline — verified against 200 real melds. If a game update changes the mechanics, results may no longer match.", "预测接下来会炼出的护石。基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具恢复。完全离线，已在实机200个样本上验证全部一致。如果游戏更新改变了机制，结果可能不再一致。"],
   baseSeed: ["基準seed", "Base seed", "基础种子"],
+  seedUnknownLink: ["seedが分からない場合は「基準seedの復元」へ", "Don't know your seed? Go to \"Recover Base Seed\"", "不知道种子？前往「恢复基础种子」"],
   curCounter: ["現在のカウンタ", "Current counter", "当前计数器"],
   showCount: ["表示件数", "Show", "显示数量"],
   predict: ["予測する", "Predict", "预测"],
@@ -347,6 +353,7 @@ const I18N = {
   importLabel: ["データ読み込み", "Import data", "导入数据"],
   dataExported: ["データを書き出しました（seed・カウンタ・お気に入り）", "Data exported (seed, counter, favorites)", "已导出数据（种子、计数器、收藏）"],
   dataImported: ["データを読み込みました（seed・カウンタ・お気に入り）", "Data imported (seed, counter, favorites)", "已导入数据（种子、计数器、收藏）"],
+  dataOverwriteWarn: ["読み込むと、現在の基準seed・カウンタ・お気に入りがファイルの内容で上書きされます。続けますか？", "Importing will overwrite your current base seed, counter and favorites with the file's contents. Continue?", "导入后，当前的基础种子、计数器和收藏将被文件内容覆盖。要继续吗？"],
   dataTitle: ["データの移行", "Data transfer", "数据迁移"],
   dataNote: ["seed・カウンタ・お気に入りをファイルに書き出して、他の端末で読み込めます。", "Export your seed, counter and favorites to a file, and import it on another device.", "将种子、计数器和收藏导出到文件，可在其他设备上导入。"],
   dataInvalid: ["対応していないファイル形式です", "Unsupported file format", "不支持的文件格式"],
@@ -483,6 +490,16 @@ function stepState(s) {
   const nw = (s[3] ^ (s[3] >>> 21) ^ t ^ (t >>> 4)) >>> 0;
   return [s[1], s[2], s[3], nw];
 }
+// ウォームアップ専用: stepState を n 回適用したのと同じ状態を、配列生成なしで一気に求める
+function advanceState(s, n) {
+  let a = s[0], b = s[1], c = s[2], d = s[3];
+  for (let i = 0; i < n; i++) {
+    const t = (a ^ (a << 15)) >>> 0;
+    const nw = (d ^ (d >>> 21) ^ t ^ (t >>> 4)) >>> 0;
+    a = b; b = c; c = d; d = nw;
+  }
+  return [a, b, c, d];
+}
 function gradeBand(seed) {
   const v = seed % 100;
   return v < 60 ? 0 : v < 87 ? 24 : v < 98 ? 52 : 76;
@@ -503,8 +520,7 @@ function predictFromOutputs(o) {
 }
 /* カウンタ start から連続予測するストリーム (1件ごとに7ステップ) */
 function makeStream(baseSeed, startCounter) {
-  let s = initState(baseSeed);
-  for (let i = 0, n = 7 * startCounter; i < n; i++) s = stepState(s);
+  let s = advanceState(initState(baseSeed), 7 * startCounter);
   return {
     next() {
       const outs = [];
@@ -653,13 +669,6 @@ function saveInputs() {
 function termMatches(term, skills) {
   return skills.some(sk => sk && sk[0] === term.id && sk[1] >= term.lv);
 }
-function rowMatches(r) {
-  const bands = new Set([...document.querySelectorAll(".fband:checked")].map(e => +e.value));
-  if (!bands.has(r.band)) return false;
-  for (const term of filterTerms()) if (!termMatches(term, r.skills)) return false;
-  if (slotMin) for (let i = 0; i < 3; i++) if (r.slots[i] < slotMin[i]) return false;
-  return true;
-}
 let tblHidden = false;
 function renderTblToggle() {
   const b = $("tbltoggle");
@@ -672,15 +681,16 @@ function render() {
   const only = filterSkills.length > 0 || slotMin !== null ||
     document.querySelectorAll(".fband:not(:checked)").length > 0;
   const tb = $("tbody");
+  const crit = collectCriteria();
   let html = "", shown = 0, hits = 0;
   rows.forEach((r, i) => {
-    const hit = rowMatches(r);
+    const hit = matchPred(r, crit);
     if (hit) hits++;
     if (only && !hit) return;
     if (favoritesOnly && !isFavorite(r)) return;
     shown++;
     const bc = BAND_LABEL[r.band][1]; const bl = bandName(r.band);
-    html += `<tr class="${hit ? "hit" : ""}"><td><button type="button" class="favbtn ${isFavorite(r) ? "active" : ""}" data-fav="${i}" title="${t("favToggleTitle")}" aria-label="${t("favToggleTitle")}">${isFavorite(r) ? "★" : "☆"}</button></td><td>${i + 1}</td><td>${r.counter}</td>` +
+    html += `<tr class="${hit ? "hit" : ""}"><td><button type="button" class="favbtn ${isFavorite(r) ? "active" : ""}" data-fav="${i}" title="${t("favToggleTitle")}" aria-label="${t("favToggleTitle")}" aria-pressed="${isFavorite(r)}">${isFavorite(r) ? "★" : "☆"}</button></td><td>${i + 1}</td><td>${r.counter}</td>` +
       `<td class="${bc}">${bl}</td>` +
       r.skills.map(sk => `<td class="sk">${skillLabel(sk)}</td>`).join("") +
       `<td class="slot">${r.slots.join("-")}</td></tr>`;
@@ -745,18 +755,27 @@ $("seekres").addEventListener("click", ev => {
   b.classList.toggle("active", active);
   b.title = active ? t("favAdded") : t("favAdd");
   b.setAttribute("aria-label", b.title);
+  b.setAttribute("aria-pressed", active ? "true" : "false");
 });
 
 $("favopen").addEventListener("click", () => { renderFavList(); $("favdlg").showModal(); });
 $("favdlgclose").addEventListener("click", () => $("favdlg").close());
+for (const dlgId of ["skdlg", "sldlg", "favdlg", "helpdlg"]) {
+  const dlg = $(dlgId);
+  let downOutside = false;
+  const outside = ev => {
+    const r = dlg.getBoundingClientRect();
+    return ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom;
+  };
+  dlg.addEventListener("mousedown", ev => { downOutside = ev.target === dlg && outside(ev); });
+  dlg.addEventListener("click", ev => { if (ev.target === dlg && downOutside && outside(ev)) dlg.close(); });
+}
 $("favdlg").addEventListener("click", ev => {
   const d = ev.target.closest("[data-favkey]");
   if (d) { delete favorites[decodeURIComponent(d.dataset.favkey)]; saveFavorites(); render(); }
 });
-$("seed").addEventListener("change", renderFavList);
-$("counter").addEventListener("change", renderFavList);
-$("seed").addEventListener("input", renderFavList);
-$("counter").addEventListener("input", renderFavList);
+$("seed").addEventListener("change", updateFavoriteStatus);
+$("counter").addEventListener("change", updateFavoriteStatus);
 $("seed").addEventListener("input", updateFavoriteStatus);
 $("counter").addEventListener("input", updateFavoriteStatus);
 $("favfilter").addEventListener("click", () => {
@@ -775,7 +794,7 @@ $("favexport").addEventListener("click", () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url; a.download = "charm_future_vision_data.json"; a.click();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
   dataSay(t("dataExported"));
 });
 $("favimport").addEventListener("change", ev => {
@@ -793,6 +812,7 @@ $("favimport").addEventListener("change", ev => {
         saveFavorites(); render();
         dataSay(tf("favImported", { n: Object.keys(favorites).length }));
       } else if (parsed && parsed.app === "charm_future_vision" && parsed.data) {
+        if (!confirm(t("dataOverwriteWarn"))) { ev.target.value = ""; return; }
         applyDataBundle(parsed.data);
         dataSay(t("dataImported"));
       } else {
@@ -899,6 +919,7 @@ function seekRowHtml(f) {
     `<span class="slot">${f.slots.join("-")}</span>` +
     `<button type="button" class="mini seekjump" data-c="${f.counter}">${t("predictFromHere")}</button>` +
     `<button type="button" class="favbtn seekfav ${favorites[favKey] ? "active" : ""}" ` +
+    `aria-pressed="${favorites[favKey] ? "true" : "false"}" ` +
     `aria-label="${favorites[favKey] ? t("favAdded") : t("favAdd")}" ` +
     `title="${favorites[favKey] ? t("favAdded") : t("favAdd")}" ` +
     `data-c="${f.counter}" data-band="${f.band}" data-skills="${JSON.stringify(f.skills)}" data-slots="${f.slots.join(",")}">${favorites[favKey] ? "★" : "☆"}</button></div>`;
@@ -938,6 +959,8 @@ function runSeekScan() {
     while (st.scanned < end && st.found.length < target) {
       const outs = [];
       for (let j = 0; j < 7; j++) { st.s = stepState(st.s); outs.push(st.s[3]); }
+      // 帯が条件外なら予測計算ごと省略する（matchPred の最初の判定と同じ結果になる）
+      if (!st.crit.bands.has(gradeBand(outs[1]))) { st.scanned++; continue; }
       const p = predictFromOutputs(outs);
       if (matchPred(p, st.crit)) {
         st.found.push({ ahead: st.scanned + 1, counter: st.start + st.scanned, band: p.band, skills: p.skills, slots: p.slots });
@@ -970,8 +993,7 @@ function seekNext() {
   if (!confirmHugeCounter(start)) return;
   saveInputs();
   const maxScan = parseInt($("seekmax").value, 10);
-  let s = initState(seed);
-  for (let i = 0, n = 7 * start; i < n; i++) s = stepState(s);
+  const s = advanceState(initState(seed), 7 * start);
   seekState = { seed, start, crit, maxScan, s, scanned: 0, found: [], exhausted: false, page: 0 };
   $("seekres").innerHTML = "";
   runSeekScan();
@@ -1247,7 +1269,7 @@ function renderObsRows() {
       ? `<button type="button" class="skbtn set" data-i="${i}" data-k="${k}">${skName(s[0])} Lv${s[1]}</button>`
       : `<button type="button" class="skbtn empty" data-i="${i}" data-k="${k}">${tf("selectSkill", { n: k + 1 })}</button>`).join("") +
     `<span class="note">${t("slotsWord")}</span>` +
-    r.sl.map((v, k) => `<select class="slsel" data-i="${i}" data-k="${k}">` +
+    r.sl.map((v, k) => `<select class="slsel" data-i="${i}" data-k="${k}" aria-label="${t("slotsWord")}${k + 1}">` +
       // スロットの選択肢に 0 は置かない（無いスロットは「－」のまま＝0 として扱う。2-1 の護石を 2-1-0 と入れるか迷わせないため）
       ["", 1, 2, 3].map(o => `<option value="${o}"${String(o) === v ? " selected" : ""}>${o === "" ? "－" : o}</option>`).join("") + `</select>`).join("") + "</div>").join("");
 }
@@ -1321,7 +1343,10 @@ function locate() {
     if (locateAbort) { finish(true); return; }
     const t0 = performance.now();
     while (performance.now() - t0 < 30) {
-      if (warmed < warmTotal) { s = stepState(s); warmed++; continue; }
+      if (warmed < warmTotal) {
+        const batch = Math.min(warmTotal - warmed, 20000);
+        s = advanceState(s, batch); warmed += batch; continue;
+      }
       if (c > hi || found.length >= 50) { finish(false); return; }
       let ts = s, ok = true;
       for (let k = 0; k < obs.length; k++) {
@@ -1575,6 +1600,7 @@ function sfFail() {
 }
 $("sfstop").addEventListener("click", () => { if (sfRunning) sfFinish(true); });
 $("go").addEventListener("click", () => { generate(); $("stat").scrollIntoView({ behavior: "smooth", block: "start" }); });
+for (const id of ["seed", "counter"]) $(id).addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); $("go").click(); } });
 $("tbltoggle").addEventListener("click", () => { tblHidden = !tblHidden; renderTblToggle(); });
 document.querySelectorAll(".fband").forEach(e => e.addEventListener("change", () => {
   // 選択中のスロット条件が、チェック中のレア度では出なくなったら解除する
