@@ -33,13 +33,13 @@ SOFTWARE.
   :root {
     --radius: 10px; --radius-s: 7px;
     color-scheme: dark;
-    /* ダーク: YouTube基調（背景 #0f0f0f / 面 #212121 / チップ #272727 / 主ボタンは白） */
-    --bg: #0f0f0f; --panel: #212121; --panel-in: #181818;
-    --line: #303030; --line-soft: #272727;
-    --text: #f1f1f1; --label: #e5e5e5; --muted: #aaaaaa; --faint: #8b8b8b;
-    --accent: #f1f1f1; --accent-hover: #d9d9d9; --accent-ink: #0f0f0f;
-    --input: #121212; --btn2: #272727; --btn2-hover: #3d3d3d;
-    --link: #3ea6ff;
+    /* ダーク: 青みのあるダーク基調（背景 #101319 / 面 #191f29 / アクセントは淡い水色） */
+    --bg: #101319; --panel: #191f29; --panel-in: #121821;
+    --line: #2b3543; --line-soft: #252e3a;
+    --text: #edf2f8; --label: #dce5ef; --muted: #9eacbc; --faint: #77879a;
+    --accent: #d9f0ff; --accent-hover: #c3e7ff; --accent-ink: #10202b;
+    --input: #111821; --btn2: #252f3b; --btn2-hover: #334152;
+    --link: #83caff;
     --hit-bg: rgba(62,166,255,.14); --fav-hit-bg: rgba(255,209,102,.12);
     --sfhit-bg: #16232e; --sfhit-line: #3ea6ff; --warn-bg: #331f1a; --warn-line: #8a5540;
     --g4: #ffb84d; --g3: #c792ea; --g2: #82aaff; --g1: #909090; --fav: #ffd166;
@@ -53,7 +53,7 @@ SOFTWARE.
        display: flex; align-items: baseline; flex-wrap: wrap; column-gap: .42em; row-gap: 2px; }
   .h1-sub { font-size: 12.5px; font-weight: 400; letter-spacing: .04em; color: var(--muted); }
   .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-            padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+            padding-bottom: 10px; border-bottom: 1px solid var(--line); border-color: #303b49; }
   .sub { color: var(--muted); font-size: 12.5px; line-height: 1.6; margin: 10px 0 14px; }
   .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
   .panel-title { font-size: 14px; font-weight: 700; letter-spacing: .02em; }
@@ -104,6 +104,8 @@ SOFTWARE.
   .nextbadge { background: var(--fav); color: #22242c; font-weight: 700; font-size: 11px; padding: 1px 7px; border-radius: 999px; }
   .cnt { color: var(--muted); font-size: 12px; margin: 6px 0; }
   .dim { color: var(--faint); }
+  #stat { color: #d7e4f0; }
+  :focus-visible { outline: 2px solid var(--link) !important; outline-offset: 2px; }
   .note { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
   .note b { color: var(--label); }
   .note a { color: var(--link); }
@@ -129,13 +131,19 @@ SOFTWARE.
   #sfbarfill { background: var(--link); height: 100%; width: 0%; }
   .sfhit { background: var(--sfhit-bg); border: 1px solid var(--sfhit-line); border-radius: var(--radius); padding: 10px 12px; margin: 8px 0; font-size: 14px; }
   .sfwarn { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: var(--radius); padding: 10px 12px; margin: 8px 0; font-size: 13px; line-height: 1.6; }
+  .predict-panel { background: radial-gradient(ellipse at 92% 0%, rgba(80,157,207,.16), transparent 42%), #1a2430; border-color: #405366; box-shadow: 0 12px 32px rgba(0,0,0,.18); }
+  .recovery-section { margin: 32px 0 24px; padding: 24px; border: 1px solid #35465a; border-radius: 18px; background: linear-gradient(145deg, rgba(66,104,137,.10), transparent 55%), #141b24; }
+  .recovery-input-panel { background: rgba(10,15,22,.36); }
+  #sfpanel { background: #1b2632; border-color: #3b536a; }
+  .sf-callout { padding: 11px 13px; border-radius: 10px; background: rgba(91,165,215,.09); border: 1px solid rgba(91,165,215,.18); margin: 12px 0; }
+  @media (max-width: 760px) { .recovery-section { padding: 16px 12px; margin-top: 25px; } }
 </style>
 </head>
 <body>
 <div class="topbar"><h1 data-i18n="h1"><span>マカ錬金</span><span>未来視</span><span class="h1-sub">（オフライン版）</span></h1><span style="display:flex;gap:8px"><button type="button" id="helpbtn" data-i18n="helpTitle">使い方</button><button type="button" id="langbtn">🌐 EN</button></span></div>
 <div class="sub" data-i18n="intro">次に出る護石を予測するツールです。オフライン専用（Ver.1.042対応）。</div>
 
-<div class="panel">
+<div class="panel predict-panel">
   <div class="row">
     <label><span data-i18n="baseSeed">基準seed</span> <input type="number" id="seed" placeholder="例: 67000428"></label>
     <label><span data-i18n="curCounter">現在のカウンタ</span> <input type="number" id="counter" value="5370"></label>
@@ -214,7 +222,8 @@ SOFTWARE.
 </div>
 </div>
 
-<div class="panel">
+<div class="recovery-section">
+<div class="panel recovery-input-panel">
   <div class="row"><b class="panel-title" data-i18n="locateTitle">カウンター位置の特定</b></div>
   <div class="note" data-i18n="locateNote">連続で錬金した護石を、古い順に3件すべて入力してください。スロットも、ある分は入力してください（無い分は「－」でOK）。seed復元ではスロットが無いと特定できません。</div>
   <div id="obsrows"></div>
@@ -231,7 +240,7 @@ SOFTWARE.
 
 <div class="panel" id="sfpanel">
   <div class="row"><b class="panel-title" data-i18n="sfTitle">基準seedの復元</b> <span class="note" id="sfengine"></span></div>
-  <div class="note" data-i18n="sfSharedNote"><b>入力欄は上の「カウンター位置の特定」と共用です。</b>先に<a href="#obsrows">上の入力欄</a>へ入力してから、「復元開始」を押してください。</div>
+  <div class="note sf-callout" data-i18n="sfSharedNote"><b>入力欄は上の「カウンター位置の特定」と共用です。</b>先に<a href="#obsrows">上の入力欄</a>へ入力してから、「復元開始」を押してください。</div>
   <div class="note" data-i18n="sfNote">観測護石（3件）から、基準seedとカウンタを総当たりで復元します。スロットも、ある分は必ず入力してください（無い分は「－」でOK）。計算は端末内のみで行います。</div>
   <div class="row">
     <span data-i18n="sfRange">カウンタ範囲（観測1個目の位置）</span>
@@ -250,6 +259,7 @@ SOFTWARE.
     <div class="note" id="sffilter"></div>
   </div>
   <div id="sfresults"></div>
+</div>
 </div>
 
 <dialog id="skdlg">
