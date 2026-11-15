@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-Charm Future Vision (offline) - 護石未来視（オフライン版）
+Melding Pot Future Vision (offline) - マカ錬金 未来視（オフライン版）
 
 Copyright (c) 2026 fujima
 
@@ -28,81 +28,104 @@ SOFTWARE.
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-i18n="docTitle">護石未来視（オフライン）</title>
+<title data-i18n="docTitle">マカ錬金 未来視（オフライン）</title>
 <style>
-  :root { color-scheme: dark; }
-  body { font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-         background: #171a21; color: #e8eaf0; margin: 0; padding: 16px; }
-  h1 { font-size: 20px; margin: 0 0 4px; }
-  .sub { color: #9aa3b2; font-size: 12px; margin-bottom: 14px; }
-  .panel { background: #1f232e; border: 1px solid #313848; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; }
-  label { font-size: 13px; color: #c6ccd8; }
+  :root {
+    --radius: 10px; --radius-s: 7px;
+    color-scheme: dark;
+    /* ダーク: YouTube基調（背景 #0f0f0f / 面 #212121 / チップ #272727 / 主ボタンは白） */
+    --bg: #0f0f0f; --panel: #212121; --panel-in: #181818;
+    --line: #303030; --line-soft: #272727;
+    --text: #f1f1f1; --label: #e5e5e5; --muted: #aaaaaa; --faint: #717171;
+    --accent: #f1f1f1; --accent-hover: #d9d9d9; --accent-ink: #0f0f0f;
+    --input: #121212; --btn2: #272727; --btn2-hover: #3d3d3d;
+    --link: #3ea6ff;
+    --hit-bg: rgba(62,166,255,.14); --fav-hit-bg: rgba(255,209,102,.12);
+    --sfhit-bg: #16232e; --sfhit-line: #3ea6ff; --warn-bg: #331f1a; --warn-line: #8a5540;
+    --g4: #ffb84d; --g3: #c792ea; --g2: #82aaff; --g1: #909090; --fav: #ffd166;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Segoe UI", sans-serif;
+         background: var(--bg); color: var(--text); margin: 0; padding: 18px 16px 24px; line-height: 1.55; }
+  h1 { font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", "Segoe UI", sans-serif;
+       font-size: 22px; font-weight: 700; letter-spacing: .06em; margin: 0;
+       display: flex; align-items: baseline; flex-wrap: wrap; column-gap: .42em; row-gap: 2px; }
+  .h1-sub { font-size: 12.5px; font-weight: 400; letter-spacing: .04em; color: var(--muted); }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+            padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+  .sub { color: var(--muted); font-size: 12.5px; line-height: 1.6; margin: 10px 0 14px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
+  .panel-title { font-size: 14px; font-weight: 700; letter-spacing: .02em; }
+  label { font-size: 13px; color: var(--label); }
   input[type=number], input[type=text], select {
-    background: #12151c; color: #e8eaf0; border: 1px solid #3a4257; border-radius: 5px;
-    padding: 6px 8px; font-size: 14px; margin: 2px 6px 2px 2px; }
+    background: var(--input); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius-s);
+    padding: 7px 9px; font-size: 14px; margin: 2px 6px 2px 2px; }
   input[type=number] { width: 130px; }
-  button { background: #3d5a99; color: #fff; border: 0; border-radius: 6px; padding: 8px 18px;
-           font-size: 14px; cursor: pointer; }
-  button:hover { background: #4a6cb3; }
+  input:focus, select:focus { outline: none; border-color: var(--link); }
+  input[type=checkbox] { accent-color: var(--link); }
+  button { background: var(--accent); color: var(--accent-ink); border: 1px solid var(--accent); border-radius: var(--radius-s);
+           padding: 8px 18px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  button:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  button:disabled { opacity: .45; cursor: default; }
+  .mini, .favtoggle, .lvb, #langbtn, #helpbtn {
+    background: var(--btn2); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius-s);
+    font-weight: 400; }
+  .mini { padding: 5px 11px; font-size: 12.5px; }
+  .mini:hover, .favtoggle:hover, .lvb:hover, #langbtn:hover, #helpbtn:hover { background: var(--btn2-hover); border-color: var(--line); color: var(--text); }
+  #langbtn, #helpbtn { padding: 7px 14px; font-size: 13px; }
+  .lvb { padding: 4px 11px; font-size: 13px; margin-left: 4px; }
+  .favtoggle { padding: 6px 11px; font-size: 12.5px; }
+  .favtoggle.active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
   table { border-collapse: collapse; width: 100%; font-size: 13px; }
-  th, td { border-bottom: 1px solid #2b3142; padding: 5px 8px; text-align: left; white-space: nowrap; }
-  th { color: #9aa3b2; font-weight: 600; position: sticky; top: 0; background: #1f232e; }
+  th, td { border-bottom: 1px solid var(--line-soft); padding: 6px 8px; text-align: left; white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; position: sticky; top: 0; background: var(--panel); }
   td.sk { white-space: normal; }
-  .g4 { color: #ffb84d; font-weight: 700; }
-  .g3 { color: #c792ea; }
-  .g2 { color: #82aaff; }
-  .g1 { color: #8b93a5; }
+  .g4 { color: var(--g4); font-weight: 700; }
+  .g3 { color: var(--g3); }
+  .g2 { color: var(--g2); }
+  .g1 { color: var(--g1); }
   .slot { font-variant-numeric: tabular-nums; letter-spacing: 1px; }
-  .hit { background: rgba(255, 184, 77, 0.18); }
-  .favbtn { background: transparent; color: #7d869a; border: 0; padding: 2px 7px; font-size: 19px; line-height: 1; cursor: pointer; }
-  .favbtn:hover { color: #ffd166; background: transparent; }
-  .favbtn.active { color: #ffd166; }
+  .hit { background: var(--hit-bg); }
+  .favbtn { background: transparent; color: var(--faint); border: 0; padding: 2px 7px; font-size: 19px; line-height: 1; cursor: pointer; font-weight: 400; }
+  .favbtn:hover { color: var(--fav); background: transparent; border: 0; }
+  .favbtn.active { color: var(--fav); }
   .favbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
-  /* お気に入りとデータの移行は、幅が広い画面では横並び・狭い画面では縦並び */
   .favdata { display: flex; gap: 12px; align-items: stretch; }
   .favdata > .panel { flex: 1 1 0; min-width: 0; margin: 0 0 12px; }
   @media (max-width: 760px) { .favdata { flex-direction: column; } .favdata > .panel { flex: none; } }
-  .favtoggle { background: #2d3345; padding: 6px 11px; font-size: 12px; }
-  .favtoggle.active { background: #80652b; }
-  .favempty { color: #9aa3b2; text-align: center; padding: 18px; }
+  .favempty { color: var(--muted); text-align: center; padding: 18px; }
   #favdlglist, #favdlgothers { overflow-y: auto; max-height: 56vh; margin-top: 8px; }
-  .obsrow.favnext { background: rgba(255,209,102,.13); border-radius: 6px; }
-  .nextbadge { background: #ffd166; color: #22242c; font-weight: bold; font-size: 11px; padding: 1px 7px; border-radius: 8px; }
-  .cnt { color: #9aa3b2; font-size: 12px; margin: 6px 0; }
-  .note { font-size: 12px; color: #9aa3b2; line-height: 1.6; }
-  .note b { color: #c6ccd8; }
+  .obsrow.favnext { background: var(--fav-hit-bg); border-radius: var(--radius-s); }
+  .nextbadge { background: var(--fav); color: #22242c; font-weight: 700; font-size: 11px; padding: 1px 7px; border-radius: 999px; }
+  .cnt { color: var(--muted); font-size: 12px; margin: 6px 0; }
+  .note { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+  .note b { color: var(--label); }
+  .note a { color: var(--link); }
   .row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 4px 0; }
   .chk { font-size: 13px; }
-  .obsrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 6px 0; padding: 6px 8px; background: #181c25; border-radius: 6px; }
-  .obsrow .no { color: #9aa3b2; min-width: 22px; flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
-  .skbtn { min-width: 150px; text-align: left; background: #12151c; border: 1px solid #3a4257; color: #e8eaf0; padding: 6px 10px; font-size: 13px; }
-  .skbtn:hover { background: #1b2030; }
-  .skbtn.set { border-color: #5b78bd; color: #fff; }
-  .skbtn.empty { color: #7d869a; }
-  .mini { padding: 4px 10px; font-size: 12px; background: #2d3345; }
-  .mini:hover { background: #3a4259; }
+  .obsrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 6px 0; padding: 7px 9px; background: var(--panel-in); border: 1px solid var(--line-soft); border-radius: var(--radius-s); }
+  .obsrow .no { color: var(--muted); min-width: 22px; flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
+  .skbtn { min-width: 150px; text-align: left; background: var(--input); border: 1px solid var(--line); color: var(--text); padding: 7px 10px; font-size: 13px; font-weight: 400; border-radius: var(--radius-s); }
+  .skbtn:hover { background: var(--btn2); border-color: var(--line); color: var(--text); }
+  .skbtn.set { border-color: var(--accent); }
+  .skbtn.empty { color: var(--faint); }
   .slsel { width: 54px; }
-  dialog#skdlg, dialog#sldlg, dialog#favdlg { background: #1f232e; color: #e8eaf0; border: 1px solid #3a4257; border-radius: 10px; padding: 14px; width: min(560px, 94vw); max-height: 82vh; }
+  dialog#skdlg, dialog#sldlg, dialog#favdlg, dialog#helpdlg { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 16px; width: min(560px, 94vw); max-height: 82vh; }
   dialog#favdlg { width: min(700px, 94vw); }
-  dialog#skdlg::backdrop, dialog#sldlg::backdrop, dialog#favdlg::backdrop { background: rgba(0,0,0,.6); }
+  dialog#skdlg::backdrop, dialog#sldlg::backdrop, dialog#favdlg::backdrop, dialog#helpdlg::backdrop { background: rgba(0,0,0,.55); }
   #sklist, #sllist { overflow-y: auto; max-height: 58vh; margin-top: 8px; }
-  .skitem { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 4px; border-bottom: 1px solid #2b3142; flex-wrap: wrap; }
+  .skitem { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 4px; border-bottom: 1px solid var(--line-soft); flex-wrap: wrap; }
   .skitem .nm { font-size: 14px; }
-  .lvb { background: #2d3a5e; padding: 4px 11px; margin-left: 4px; font-size: 13px; }
-  .lvb:hover { background: #4a6cb3; }
-  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  #langbtn, #helpbtn { font-size: 15px; font-weight: 700; padding: 10px 22px; background: #2d3a5e; border: 2px solid #6ea8fe; color: #dbe9ff; border-radius: 8px; cursor: pointer; }
-  #langbtn:hover, #helpbtn:hover { background: #4a6cb3; color: #fff; }
-  #helpdlg p { margin: 8px 0; line-height: 1.65; }
-  .sfbar { background: #2b3142; border-radius: 6px; height: 14px; overflow: hidden; margin: 8px 0 4px; }
-  #sfbarfill { background: #4a6cb3; height: 100%; width: 0%; }
-  .sfhit { background: #22304d; border: 1px solid #3d5a99; border-radius: 8px; padding: 8px 12px; margin: 8px 0; font-size: 14px; }
-  .sfwarn { background: #4d2b22; border: 1px solid #99503d; border-radius: 8px; padding: 8px 12px; margin: 8px 0; font-size: 13px; line-height: 1.6; }
+  #helpdlg p { margin: 8px 0; line-height: 1.7; }
+  .sfbar { background: var(--line-soft); border-radius: 999px; height: 10px; overflow: hidden; margin: 10px 0 6px; }
+  #sfbarfill { background: var(--link); height: 100%; width: 0%; }
+  .sfhit { background: var(--sfhit-bg); border: 1px solid var(--sfhit-line); border-radius: var(--radius); padding: 10px 12px; margin: 8px 0; font-size: 14px; }
+  .sfwarn { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: var(--radius); padding: 10px 12px; margin: 8px 0; font-size: 13px; line-height: 1.6; }
 </style>
 </head>
 <body>
-<div class="topbar"><h1 data-i18n="h1">護石未来視（オフライン版）</h1><span style="display:flex;gap:8px"><button type="button" id="helpbtn" data-i18n="helpTitle">使い方</button><button type="button" id="langbtn">🌐 EN</button></span></div>
-<div class="sub" data-i18n="intro">モンハンワイルズ マカ錬金（護石）の未来視アプリ。完全オフラインで動作します（通信なし）。予測モデルは実機200件で全件一致を検証済み。ゲームのアップデートで仕様が変わった場合、結果が一致しない可能性があります。</div>
+<div class="topbar"><h1 data-i18n="h1"><span>マカ錬金</span><span>未来視</span><span class="h1-sub">（オフライン版）</span></h1><span style="display:flex;gap:8px"><button type="button" id="helpbtn" data-i18n="helpTitle">使い方</button><button type="button" id="langbtn">🌐 EN</button></span></div>
+<div class="sub" data-i18n="intro">次に出る護石を予測するツールです。基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。オフライン専用で、実機200件で全件一致を確認済み。</div>
 
 <div class="panel">
   <div class="row">
@@ -120,7 +143,7 @@ SOFTWARE.
 </div>
 
 <div class="panel">
-  <div class="row"><b style="font-size:14px" data-i18n="skillCondCaption">護石を検索</b></div>
+  <div class="row"><b class="panel-title" data-i18n="skillCondCaption">護石を検索</b></div>
   <div class="row">
     <span class="chk">
       <label><input type="checkbox" class="fband" value="76" checked> <span data-i18n="band76">レア8(2%)</span></label>
@@ -134,7 +157,7 @@ SOFTWARE.
   <div class="row">
     <button type="button" class="mini" id="fadd" data-i18n="addSkillCond">＋ スキル条件を追加</button>
     <button type="button" class="mini" id="fclearall" data-i18n="clearAllCond">条件をすべてクリア</button>
-    <span class="note" data-i18n="lvNote">Lvは「そのLv以上」で一致します。スロット条件は各スロットがその値以上。</span>
+    <span class="note" data-i18n="lvNote">Lvとスロットは「以上」で判定します。</span>
   </div>
   <div class="row">
     <button type="button" id="seek" data-i18n="seekBtn">条件に一致する「次に出現する護石」を検索</button>
@@ -148,7 +171,7 @@ SOFTWARE.
     <button type="button" class="mini" id="seekstop" style="display:none" data-i18n="stop">中止</button>
     <span class="note" id="seekstat"></span>
   </div>
-  <div class="note" data-i18n="seekNote">一覧の表示件数とは別に、現在のカウンタから先を読み進めて、条件に一致する護石が次にいつ出るかを検索します（10件ずつのページ表示。「次のページ」を押すと続きを探索します）。なお、予測一覧の絞り込みは「予測する」で生成した範囲内にだけ適用されます。</div>
+  <div class="note" data-i18n="seekNote">一覧より先も探せます。結果は10件ずつ表示します。</div>
   <div id="seekres"></div>
 </div>
 
@@ -165,14 +188,14 @@ SOFTWARE.
 
 <div class="favdata">
 <div class="panel favbar">
-  <b style="font-size:14px" data-i18n="favTitle">お気に入り</b>
+  <b class="panel-title" data-i18n="favTitle">お気に入り</b>
   <button type="button" id="favfilter" class="favtoggle">☆ お気に入りのみ表示</button>
   <span class="note" id="favstat">お気に入り: 0件</span>
   <button type="button" id="favopen" class="mini" data-i18n="favOpen">お気に入り一覧を開く</button>
 </div>
 
 <div class="panel">
-  <div class="row"><b style="font-size:14px" data-i18n="dataTitle">データの移行</b></div>
+  <div class="row"><b class="panel-title" data-i18n="dataTitle">データの移行</b></div>
   <div class="row">
     <button type="button" id="favexport" class="mini" data-i18n="favExport">データ書き出し</button>
     <label class="note"><span data-i18n="importLabel">データ読み込み</span> <input type="file" id="favimport" accept=".json,application/json"></label>
@@ -183,11 +206,10 @@ SOFTWARE.
 </div>
 
 <div class="panel">
-  <div class="row"><b style="font-size:14px" data-i18n="locateTitle">カウンター位置の特定</b></div>
-  <div class="note" data-i18n="locateNote">実際に錬金した護石を<b>古い順</b>（連続して錬金したもの）に入力します。スキル欄を押すと一覧が開くので、スキルとLvを選んでください。スロットは分かれば選択（未選択でも可。選ぶと絞り込みが正確になります）。基準seedは上の欄を使います。</div>
+  <div class="row"><b class="panel-title" data-i18n="locateTitle">カウンター位置の特定</b></div>
+  <div class="note" data-i18n="locateNote">連続で錬金した護石を、古い順に3件すべて入力してください。スロットも、ある分は入力してください（無い分は「－」でOK）。seed復元ではスロットが無いと特定できません。</div>
   <div id="obsrows"></div>
   <div class="row">
-    <button type="button" class="mini" id="addobs" data-i18n="addCharm">＋ 護石を追加</button>
     <button type="button" class="mini" id="clrobs" data-i18n="clearAll">全てクリア</button>
   </div>
   <div class="row">
@@ -199,9 +221,9 @@ SOFTWARE.
 </div>
 
 <div class="panel">
-  <div class="row"><b style="font-size:14px" data-i18n="sfTitle">基準seedの復元</b> <span class="note" id="sfengine"></span></div>
-  <div class="note" data-i18n="sfSharedNote"><b>入力欄は上の「カウンター位置の特定」と共用です（このパネルには入力欄はありません）。</b>まず<a href="#obsrows">上の入力欄</a>に連続で錬金した護石を入力してから、このパネルの「復元開始」を押してください。</div>
-  <div class="note" data-i18n="sfNote">基準seedが分からない場合はこちら。上の「カウンター位置の特定」の観測護石（2件以上。スロットは、無い分は未入力のままで大丈夫です）を使って、基準seedとカウンタを総当たりで復元します。計算はこの端末の中で完結し、通信は一切しません。護石は3件以上の入力を推奨します（2件だと候補が複数残ることがあります）。</div>
+  <div class="row"><b class="panel-title" data-i18n="sfTitle">基準seedの復元</b> <span class="note" id="sfengine"></span></div>
+  <div class="note" data-i18n="sfSharedNote"><b>入力欄は上の「カウンター位置の特定」と共用です。</b>先に<a href="#obsrows">上の入力欄</a>へ入力してから、「復元開始」を押してください。</div>
+  <div class="note" data-i18n="sfNote">観測護石（3件）から、基準seedとカウンタを総当たりで復元します。スロットも、ある分は必ず入力してください（無い分は「－」でOK）。求める基準seedは Gogma Seed Finder と同じ値です。計算は端末内のみで行います。</div>
   <div class="row">
     <span data-i18n="sfRange">カウンタ範囲（観測1個目の位置）</span>
     <label><span data-i18n="sfFrom">下限</span> <input type="number" id="sfwlo" value="0" min="0" max="10000000" step="100" style="width:110px"></label>
@@ -232,28 +254,27 @@ SOFTWARE.
 
 <dialog id="sldlg">
   <div class="row">
-    <b style="font-size:14px" data-i18n="slotCondTitle">スロット条件を選択</b>
+    <b class="panel-title" data-i18n="slotCondTitle">スロット条件を選択</b>
     <button type="button" class="mini" id="slclear" data-i18n="noCondition">条件なしにする</button>
     <button type="button" class="mini" id="slclose" data-i18n="close">閉じる</button>
   </div>
-  <div class="note" data-i18n="slotDlgNote">ゲーム内に実在するスロット構成だけを表示しています。選んだ構成「以上」（各スロットがその値以上）の護石が一致します。レア8の護石の1スロ目は武器スキル専用の特別なスロットで、「武器スロ」にチェックするとレア8だけに絞り込めます（下の構成と組み合わせも可）。</div>
-  <div class="skitem"><label style="cursor:pointer"><input type="checkbox" id="slweapon"> <span data-i18n="weaponSlotLabel">武器スロ（レア8の1スロ目）</span></label></div>
+  <div class="note" data-i18n="slotDlgNote">チェック中のレア度で出る構成のみ表示しています。選んだ構成以上の護石が対象です。</div>
   <div id="sllist"></div>
 </dialog>
 
 <dialog id="favdlg">
   <div class="row">
-    <b style="font-size:14px" data-i18n="favListTitle">お気に入り一覧</b>
+    <b class="panel-title" data-i18n="favListTitle">お気に入り一覧</b>
     <button type="button" class="mini" id="favdlgclose" data-i18n="close">閉じる</button>
   </div>
-  <div class="note" data-i18n="favDlgNote">現在のカウンタ入力を基準にした位置です。「あと +N」は次に出現を検索の表記と同じで、今から N 回目の錬金で出ます。</div>
+  <div class="note" data-i18n="favDlgNote">「あと +N」は、今から N 回目に出るという意味です。</div>
   <div id="favdlglist"></div>
   <div id="favdlgothers"></div>
 </dialog>
 
 <dialog id="helpdlg">
   <div class="row">
-    <b style="font-size:14px" data-i18n="helpTitle">使い方</b>
+    <b class="panel-title" data-i18n="helpTitle">使い方</b>
     <button type="button" class="mini" id="helptoggle">詳しく見る</button>
     <button type="button" class="mini" id="helpclose" data-i18n="close">閉じる</button>
   </div>
@@ -262,10 +283,7 @@ SOFTWARE.
 </dialog>
 
 <div class="panel note" data-i18n="footerNote">
-  <b>基準seedの入手方法:</b> この基準seedは、公開ツール「Gogma Seed Finder」（apeshinzo78.github.io/GogmaSeedFinder）が使う基準seedと<b>同じもの</b>です（ゴグマジオス武器の復元などと共通の値で、あちらで推定したseedをそのまま使えます）。また、このツール単体でも、上の「基準seedの復元」で連続した錬金結果から復元できます。Gogma Seed Finder の作者の方に感謝します。<br>
-  <b>仕組み:</b> 基準seed とカウンタから決定的に生成される乱数列（xorshift128変種）で、グレード帯・Pt行・スキル・スロットがすべて決まります。このページは外部と一切通信しません。入力値はこのブラウザ内（localStorage）にのみ保存されます。<br>
-  <b>権利表記:</b> 本ツールは非公式のファンツールであり、カプコンおよび関連会社とは無関係です。「モンスターハンターワイルズ」は株式会社カプコンの商標です。<br>
-  <b>ライセンス:</b> 本ツールは MIT ライセンスのもとで公開しています。Copyright (c) 2026 fujima
+  <b>基準seedについて:</b> 基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。Gogma Seed Finder の作者の方に感謝します。<br><b>その他:</b> 計算はすべてこのページ内で完結し、通信はしません。入力はブラウザ内にのみ保存されます。<br>非公式ファンツールです。「モンスターハンターワイルズ」はカプコンの商標です。 / MIT License — Copyright (c) 2026 fujima
 </div>
 
 <script>
@@ -287,9 +305,9 @@ const BAND_EN = { 0: "Rarity 5", 24: "Rarity 6", 52: "Rarity 7", 76: "Rarity 8" 
 const BAND_ZH = { 0: "稀有度5", 24: "稀有度6", 52: "稀有度7", 76: "稀有度8" };
 function bandName(b) { return lang === "en" ? (BAND_EN[b] || String(b)) : lang === "zh" ? (BAND_ZH[b] || String(b)) : (BAND_LABEL[b] ? BAND_LABEL[b][0] : String(b)); }
 const I18N = {
-  docTitle: ["護石未来視（オフライン）", "Charm Future Vision (Offline)", "护石未来视（离线版）"],
-  h1: ["護石未来視（オフライン版）", "Charm Future Vision (Offline)", "护石未来视（离线版）"],
-  intro: ["モンハンワイルズ マカ錬金（護石）の未来視アプリ。完全オフラインで動作します（通信なし）。予測モデルは実機200件で全件一致を検証済み。ゲームのアップデートで仕様が変わった場合、結果が一致しない可能性があります。", "A future-vision app for Monster Hunter Wilds Melding Pot (charms). Works fully offline (no network access). The prediction model was verified against 200 real in-game melds with a 100% match. If a game update changes the mechanics, results may no longer match.", "怪物猎人：荒野 马卡炼金（护石）未来视应用。完全离线运行（无通信）。预测模型已在实机200个样本上验证全部一致。如果游戏更新改变了相关机制，结果可能不再一致。"],
+  docTitle: ["マカ錬金 未来視（オフライン）", "Melding Pot Future Vision (Offline)", "马卡炼金未来视（离线版）"],
+  h1: ["<span>マカ錬金</span><span>未来視</span><span class=\"h1-sub\">（オフライン版）</span>", "<span>Melding Pot</span><span>Future Vision</span><span class=\"h1-sub\">(Offline)</span>", "<span>马卡炼金</span><span>未来视</span><span class=\"h1-sub\">（离线版）</span>"],
+  intro: ["次に出る護石を予測するツールです。基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。オフライン専用で、実機200件で全件一致を確認済み。", "Predicts the charms you will meld next. The base seed is the same value as Gogma Seed Finder's, and can also be recovered with this tool alone. Fully offline — verified against 200 real melds.", "预测接下来会炼出的护石。基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具恢复。完全离线，已在实机200个样本上验证全部一致。"],
   baseSeed: ["基準seed", "Base seed", "基础种子"],
   curCounter: ["現在のカウンタ", "Current counter", "当前计数器"],
   showCount: ["表示件数", "Show", "显示数量"],
@@ -300,17 +318,16 @@ const I18N = {
   band24: ["レア6(27%)", "Rarity 6 (27%)", "稀有度6(27%)"],
   band0: ["レア5(60%)", "Rarity 5 (60%)", "稀有度5(60%)"],
   addSkillCond: ["＋ スキル条件を追加", "+ Add skill condition", "＋ 添加技能条件"],
-  lvNote: ["Lvは「そのLv以上」で一致します。スロット条件は各スロットがその値以上。", "A level matches if the charm's level is at least the chosen level. For slot conditions, each slot must be at least the chosen value.", "等级按「不低于该等级」匹配。槽位条件要求每个槽位都不低于所选值。"],
+  lvNote: ["Lvとスロットは「以上」で判定します。", "Levels and slots match at the chosen value or higher.", "等级和槽位按「不低于所选值」匹配。"],
   seekBtn: ["条件に一致する「次に出現する護石」を検索", "Find the next charm that matches", "搜索下一个符合条件的护石"],
   seekLimit: ["探索上限", "Search limit", "搜索上限"],
   seek100k: ["10万件先", "Up to 100K ahead", "向后10万个"],
   seek1m: ["100万件先", "Up to 1M ahead", "向后100万个"],
   seek10m: ["1000万件先", "Up to 10M ahead", "向后1000万个"],
   stop: ["中止", "Stop", "停止"],
-  seekNote: ["一覧の表示件数とは別に、現在のカウンタから先を読み進めて、条件に一致する護石が次にいつ出るかを検索します（10件ずつのページ表示。「次のページ」を押すと続きを探索します）。なお、予測一覧の絞り込みは「予測する」で生成した範囲内にだけ適用されます。", "Separate from the list size above, this scans forward from the current counter to find when charms matching your conditions appear (shown 10 per page; press Next to keep scanning further). Note: the filters on the prediction list only apply within the range generated by Predict.", "与上方列表的显示数量无关，从当前计数器开始向后搜索，查找符合条件的护石下一次何时出现（每页显示10个。点击「下一页」将继续向后搜索）。另外，预测列表的筛选仅适用于已用「预测」生成的范围。"],
+  seekNote: ["一覧より先も探せます。結果は10件ずつ表示します。", "Searches beyond the list above, 10 results per page.", "可搜索列表之后的结果，每页显示10个。"],
   locateTitle: ["カウンター位置の特定", "Find Your Current Counter", "确定当前计数器位置"],
-  locateNote: ["実際に錬金した護石を<b>古い順</b>（連続して錬金したもの）に入力します。スキル欄を押すと一覧が開くので、スキルとLvを選んでください。スロットは分かれば選択（未選択でも可。選ぶと絞り込みが正確になります）。基準seedは上の欄を使います。", "Enter charms you actually melded, <b>oldest first</b> (melded consecutively). Tap a skill field to open the list and choose a skill and level. Slots are optional if you know them (entering them makes the search more precise). Uses the base seed from the field above.", "输入你实际炼金的护石，<b>按从旧到新的顺序</b>（连续炼金的）。点击技能栏会打开列表，请选择技能和等级。槽位知道的话可以选择（不选也可以，选了筛选更准确）。基础种子使用上方输入框的值。"],
-  addCharm: ["＋ 護石を追加", "+ Add charm", "＋ 添加护石"],
+  locateNote: ["連続で錬金した護石を、古い順に3件すべて入力してください。スロットも、ある分は入力してください（無い分は「－」でOK）。seed復元ではスロットが無いと特定できません。", "Enter all 3 consecutively melded charms, oldest first. Enter the slots each charm has, too (leave \"－\" only for slots the charm doesn't have) — seed recovery cannot identify a row without slots.", "请按从旧到新的顺序，完整输入连续炼金得到的 3 个护石。槽位也请填写实际有的部分（没有的保持「－」即可）。恢复基础种子时，没有槽位的行将无法确定。"],
   clearAll: ["全てクリア", "Clear all", "全部清除"],
   searchRange: ["探索範囲", "Search range", "搜索范围"],
   thUnit: ["個目", "(meld #)", "个"],
@@ -323,7 +340,7 @@ const I18N = {
   helpLess: ["簡潔に表示", "Show summary", "简洁显示"],
   slotCondTitle: ["スロット条件を選択", "Choose slot conditions", "选择槽位条件"],
   noCondition: ["条件なしにする", "No condition", "不设条件"],
-  slotDlgNote: ["ゲーム内に実在するスロット構成だけを表示しています。選んだ構成「以上」（各スロットがその値以上）の護石が一致します。レア8の護石の1スロ目は武器スキル専用の特別なスロットで、「武器スロ」にチェックするとレア8だけに絞り込めます（下の構成と組み合わせも可）。", "Only slot layouts that actually exist in the game are listed. A charm matches if each of its slots is at least the chosen layout. The 1st slot of a Rarity 8 charm is a special weapon-skill slot: check \"Weapon slot\" to narrow results to Rarity 8 only (can be combined with a layout below).", "这里只列出游戏中实际存在的槽位构成。护石的每个槽位都不低于所选构成即视为匹配。稀有度8护石的第1个槽位是武器技能专用的特殊槽位：勾选「武器槽」可只筛选稀有度8（可与下方构成组合）。"],
+  slotDlgNote: ["チェック中のレア度で出る構成のみ表示しています。選んだ構成以上の護石が対象です。", "Only layouts that appear in the checked rarities are shown. A charm matches if its slots are at least the chosen layout.", "这里只列出已勾选稀有度中会出现的构成。护石槽位不低于所选构成即匹配。"],
   favTitle: ["お気に入り", "Favorites", "收藏"],
   favOpen: ["お気に入り一覧を開く", "Open favorites list", "打开收藏列表"],
   favExport: ["データ書き出し", "Export data", "导出数据"],
@@ -334,14 +351,14 @@ const I18N = {
   dataNote: ["seed・カウンタ・お気に入りをファイルに書き出して、他の端末で読み込めます。", "Export your seed, counter and favorites to a file, and import it on another device.", "将种子、计数器和收藏导出到文件，可在其他设备上导入。"],
   dataInvalid: ["対応していないファイル形式です", "Unsupported file format", "不支持的文件格式"],
   favListTitle: ["お気に入り一覧", "Favorites", "收藏列表"],
-  favDlgNote: ["現在のカウンタ入力を基準にした位置です。「あと +N」は次に出現を検索の表記と同じで、今から N 回目の錬金で出ます。", "Positions are based on the counter entered above. \"In +N\" uses the same notation as the next-charm search: the charm appears on your Nth meld from now.", "位置以上方输入的计数器为基准。「还有 +N」与搜索下一个护石的表示方式相同，意为从现在起第 N 次炼金时出现。"],
+  favDlgNote: ["「あと +N」は、今から N 回目に出るという意味です。", "“In +N” means the charm appears on your Nth meld from now.", "“还有 +N”表示从现在起第 N 次炼金时出现。"],
   thCounter: ["カウンタ", "Counter", "计数器"],
   thBand: ["帯", "Grade", "类别"],
   thSkill1: ["スキル1", "Skill 1", "技能1"],
   thSkill2: ["スキル2", "Skill 2", "技能2"],
   thSkill3: ["スキル3", "Skill 3", "技能3"],
   thSlots: ["スロット", "Slots", "槽位"],
-  footerNote: ["<b>基準seedの入手方法:</b> この基準seedは、公開ツール「Gogma Seed Finder」（apeshinzo78.github.io/GogmaSeedFinder）が使う基準seedと<b>同じもの</b>です（ゴグマジオス武器の復元などと共通の値で、あちらで推定したseedをそのまま使えます）。また、このツール単体でも、上の「基準seedの復元」で連続した錬金結果から復元できます。Gogma Seed Finder の作者の方に感謝します。<br><b>仕組み:</b> 基準seed とカウンタから決定的に生成される乱数列（xorshift128変種）で、グレード帯・Pt行・スキル・スロットがすべて決まります。このページは外部と一切通信しません。入力値はこのブラウザ内（localStorage）にのみ保存されます。<br><b>権利表記:</b> 本ツールは非公式のファンツールであり、カプコンおよび関連会社とは無関係です。「モンスターハンターワイルズ」は株式会社カプコンの商標です。<br><b>ライセンス:</b> 本ツールは MIT ライセンスのもとで公開しています。Copyright (c) 2026 fujima", "<b>How to get your base seed:</b> This base seed is the <b>same base seed</b> used by the public tool Gogma Seed Finder (apeshinzo78.github.io/GogmaSeedFinder) — it is a shared value also used for Gogmazios weapon restoration and the like, so a seed estimated there works here as-is. You can also recover it with this tool alone, using \"Recover base seed\" above from a run of consecutive meld results. Many thanks to the author of Gogma Seed Finder.<br><b>How it works:</b> A deterministic random sequence (an xorshift128 variant) derived from the base seed and counter decides everything: grade, Pt row, skills, and slots. This page never sends anything over the network. Your inputs are stored only in this browser (localStorage).<br><b>Rights:</b> This is an unofficial fan-made tool and is not affiliated with CAPCOM CO., LTD. or its affiliates. MONSTER HUNTER WILDS is a trademark of CAPCOM CO., LTD.<br><b>License:</b> This tool is released under the MIT License. Copyright (c) 2026 fujima", "<b>如何获取基础种子：</b>本工具的基础种子与公开工具「Gogma Seed Finder」（apeshinzo78.github.io/GogmaSeedFinder）使用的基础种子是<b>同一个</b>（与戈格玛武器复原等共用的值，在那边推算出的种子可直接在此使用）。此外，仅用本工具也可以通过上方的「恢复基础种子」，根据连续的炼金结果恢复种子。感谢 Gogma Seed Finder 的作者。<br><b>原理：</b>由基础种子和计数器确定性生成的随机数序列（xorshift128 变体）决定一切：类别、Pt 行、技能和槽位。本页面不与外界进行任何通信。输入内容仅保存在本浏览器内（localStorage）。<br><b>权利声明：</b>本工具是非官方的粉丝工具，与卡普空公司及其关联公司无关。《怪物猎人：荒野》是卡普空公司的商标。<br><b>许可：</b>本工具以 MIT 许可证发布。Copyright (c) 2026 fujima"],
+  footerNote: ["<b>基準seedについて:</b> 基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。Gogma Seed Finder の作者の方に感謝します。<br><b>その他:</b> 計算はすべてこのページ内で完結し、通信はしません。入力はブラウザ内にのみ保存されます。<br>非公式ファンツールです。「モンスターハンターワイルズ」はカプコンの商標です。 / MIT License — Copyright (c) 2026 fujima", "<b>Base seed:</b> The base seed is the same value as Gogma Seed Finder's, and can also be recovered with this tool alone. Thanks to the author of Gogma Seed Finder.<br><b>Notes:</b> Everything is computed on this page; nothing is sent over the network. Inputs are stored only in your browser.<br>Unofficial fan tool. MONSTER HUNTER WILDS is a trademark of CAPCOM CO., LTD. / MIT License — Copyright (c) 2026 fujima", "<b>关于基础种子：</b>基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具恢复。感谢 Gogma Seed Finder 的作者。<br><b>其他：</b>全部计算都在本页面内完成，不进行任何通信。输入仅保存在浏览器中。<br>非官方粉丝工具。《怪物猎人：荒野》是卡普空公司的商标。 / MIT License — Copyright (c) 2026 fujima"],
   favCount: ["お気に入り: {n}件", "Favorites: {n}", "收藏：{n} 个"],
   favNext: ["（次に引けるのは カウンタ {c}、あと +{d}）", " (next one at counter {c}, in +{d})", "（下一个可抽到的是 计数器 {c}，还有 +{d}）"],
   favOnlyOn: ["★ お気に入り表示中（解除）", "★ Showing favorites (click to undo)", "★ 正在显示收藏（点击取消）"],
@@ -393,8 +410,6 @@ const I18N = {
   noSkillCond: ["スキル条件なし（全ての護石が対象）", "No skill conditions (all charms are candidates)", "无技能条件（所有护石均为对象）"],
   slotCondPrefix: ["スロット条件: ", "Slot condition: ", "槽位条件："],
   slotCondSelect: ["＋ スロット条件を追加", "+ Add slot condition", "＋ 添加槽位条件"],
-  weaponSlotLabel: ["武器スロ（レア8の1スロ目）", "Weapon slot (1st slot of a Rarity 8 charm)", "武器槽（稀有度8的第1个槽位）"],
-  weaponShort: ["武スロ", "Weapon slot", "武器槽"],
   slotPatternMin: ["{p} 以上", "{p} or higher", "{p} 以上"],
   slotMatches: ["該当: {hits}", "Matches: {hits}", "符合：{hits}"],
   slotRarities: ["出現レア度: {r}", "Appears in: {r}", "出现稀有度：{r}"],
@@ -403,7 +418,7 @@ const I18N = {
   selectSkill: ["スキル{n}を選ぶ", "Select skill {n}", "选择技能{n}"],
   slotsWord: ["スロット", "Slots", "槽位"],
   needSeed: ["基準seed を入力してください。", "Please enter a base seed.", "请输入基础种子。"],
-  needObs: ["スキルを選んだ護石を1件以上入力してください。", "Enter at least one charm with a skill selected.", "请至少输入 1 个已选择技能的护石。"],
+  needObs: ["護石を3件すべて入力してください（各行でスキルを選んでください）。", "Enter all 3 charms (select skills in each row).", "请完整输入全部 3 个护石（每行都要选择技能）。"],
   scanning: ["探索中…", "Scanning…", "搜索中…"],
   locateProgress: ["探索中… {pct}%", "Searching… {pct}%", "搜索中… {pct}%"],
   locateStopped: ["探索を中止しました", "Search stopped", "搜索已停止"],
@@ -411,11 +426,11 @@ const I18N = {
   rangeInvalid: ["探索範囲が不正です（下限が上限を超えています）。", "Invalid range (min exceeds max).", "搜索范围无效（下限大于上限）。"],
   locateNotFound: ["一致する位置が見つかりませんでした（{lo}〜{hi}個目を探索）。基準seed・入力内容（スキル名/Lv/スロット）・探索範囲を確認してください。", "No matching position found (searched melds {lo}–{hi}). Check the base seed, the skills/levels/slots you entered, and the search range.", "未找到匹配的位置（已搜索第 {lo}～{hi} 个）。请确认基础种子、输入内容（技能名/等级/槽位）和搜索范围。"],
   locateFound: ["<b>特定できました。</b>", "<b>Found it.</b>", "<b>已确定。</b>"],
-  candFew: ["<b>{n}件の候補があります。</b>入力件数を増やすと絞り込めます。", "<b>{n} candidate(s).</b> Add more observations to narrow it down.", "<b>有 {n} 个候选。</b>增加输入数量可以进一步缩小范围。"],
-  candMany: ["<b>{n}件以上の候補があります。</b>入力件数を増やすと絞り込めます。", "<b>{n}+ candidates.</b> Add more observations to narrow it down.", "<b>有 {n} 个以上候选。</b>增加输入数量可以进一步缩小范围。"],
+  candFew: ["<b>{n}件の候補があります。</b>スロットも入力すると絞り込めます。", "<b>{n} candidate(s).</b> Adding the slots as well will narrow it down.", "<b>有 {n} 个候选。</b>再输入槽位可以进一步缩小范围。"],
+  candMany: ["<b>{n}件以上の候補があります。</b>スロットも入力すると絞り込めます。", "<b>{n}+ candidates.</b> Adding the slots as well will narrow it down.", "<b>有 {n} 个以上候选。</b>再输入槽位可以进一步缩小范围。"],
   locateLine: ["入力1件目 = カウンタ <b>{c}</b>　→ 現在のカウンタ（次に錬金する分）= <b>{m}</b> ", "1st observed charm = counter <b>{c}</b> → current counter (your next meld) = <b>{m}</b> ", "第 1 个输入 = 计数器 <b>{c}</b>　→ 当前计数器（下一次炼金的）= <b>{m}</b> "],
   sfAuto: ["自動（論理コア数 {n}）", "Auto ({n} logical cores)", "自动（逻辑核心 {n}）"],
-  sfDoneNote: ["探索完了。候補が複数ある場合は、観測護石を追加してもう一度探索すると絞り込めます。", "Search complete. If several candidates remain, add more observed charms and search again to narrow it down.", "搜索完成。如果有多个候选，可添加更多观测护石后再次搜索来缩小范围。"],
+  sfDoneNote: ["探索完了。候補が複数ある場合は、スロットも入力してもう一度探索すると絞り込めます。", "Search complete. If several candidates remain, add the slots as well and search again to narrow it down.", "搜索完成。如果有多个候选，可再输入槽位后再次搜索来缩小范围。"],
   sfEarly: ["最初の候補が見つかったら終了", "Stop at the first candidate", "找到第一个候选后停止"],
   sfEarlyNote: ["最初の候補が見つかったため探索を終了しました（全範囲は調べていないので、別の候補が残っている可能性はあります）。", "Stopped at the first candidate (the full range was not scanned, so other candidates may remain).", "已在找到第一个候选后停止（未搜索全部范围，可能还存在其他候选）。"],
   sfEngineSimd: ["探索エンジン: SIMD高速版", "Engine: SIMD (fast)", "搜索引擎：SIMD 高速版"],
@@ -428,12 +443,13 @@ const I18N = {
   sfFrom: ["下限", "Min", "下限"],
   sfHit: ["基準seed: <b>{seed}</b> ／ 観測1個目のカウンタ: <b>{c}</b>", "Base seed: <b>{seed}</b> · 1st observed charm at counter <b>{c}</b>", "基础种子：<b>{seed}</b> ／ 第1个观测护石的计数器：<b>{c}</b>"],
   sfImpossible: ["入力された護石の組み合わせが実在しません（{n}個目のスキル／スロットの組み合わせがゲーム内に存在しない組み合わせです）。スキル・Lv・スロット・入力順のミスがないか確認してください。", "That charm combination doesn't exist (the skill/slot combination of charm #{n} never occurs in the game). Check the skills, levels, slots, and order.", "输入的护石组合不存在（第 {n} 个的技能/槽位组合在游戏中不存在）。请确认技能、等级、槽位和顺序是否有误。"],
-  sfNeedObs: ["観測護石を2件以上入力してください（上の「カウンター位置の特定」の入力欄に、スキルを選んだ護石を古い順に入力します）。", "Enter at least 2 observed charms (in the input rows under \"Find Your Current Counter\" above, oldest first, with skills selected).", "请输入至少 2 个观测护石（在上方「确定当前计数器位置」的输入行中，按从旧到新的顺序选择技能）。"],
-  sfNotFound: ["範囲内に候補は見つかりませんでした。下限をいまの上限にして続きを探索するか、観測入力（スキル・Lv・スロット・順番）にミスがないか確認してください。", "No candidate found in range. Set Min to the current Max to continue searching, or check your observations (skills, levels, slots, order).", "范围内未找到候选。可将下限设为当前上限继续搜索，或检查观测输入（技能、等级、槽位、顺序）是否有误。"],
+  sfNeedObs: ["観測護石を3件すべて入力してください（上の「カウンター位置の特定」の入力欄に、スキルを選んだ護石を古い順に入力します）。", "Enter all 3 observed charms (in the input rows under \"Find Your Current Counter\" above, oldest first, with skills selected).", "请完整输入全部 3 个观测护石（在上方「确定当前计数器位置」的输入行中，按从旧到新的顺序选择技能）。"],
+  sfNeedSlots: ["{n}件目のスロットが未入力です。seed復元では、護石にあるスロットも入力してください（無いスロットは「－」のままでOK）。", "Charm #{n} has no slots entered. For seed recovery, enter the slots the charm has (leave a slot as \"－\" only when the charm has none).", "第 {n} 个护石没有输入槽位。恢复基础种子时，请填写护石实际有的槽位（没有的槽位可保持「－」）。"],
+  sfNotFound: ["<b>候補が見つかりませんでした。</b><br>よくある原因と対策:<br>・<b>カウンタ範囲が足りない</b> → 上限を広げてもう一度探索してください（観測した護石の位置が上限より先にあると見つかりません。広げるほど時間はかかります）<br>・<b>入力ミス</b> → スキル・Lv・スロットと、古い順の並びを再確認してください<br>・<b>連続で錬金していない</b> → 間に別の錬金が挟まった護石が混ざると一致しません。連続3件を取り直すのが確実です", "<b>No candidates found.</b><br>Common causes and fixes:<br>・<b>Range too small</b> → raise the upper bound and search again (nothing is found if the observed charms sit beyond the limit; wider ranges take longer)<br>・<b>Input errors</b> → re-check the skills, levels, slots, and the oldest-first order<br>・<b>Not consecutive</b> → charms with other melds in between never match. Re-recording 3 truly consecutive melds is the surest fix", "<b>没有找到候选。</b><br>常见原因与对策：<br>・<b>计数器范围不足</b> → 调大上限后再次搜索（观测护石的位置超过上限时无法找到；范围越大耗时越长）<br>・<b>输入错误</b> → 重新确认技能、等级、槽位以及从旧到新的顺序<br>・<b>不是连续炼金</b> → 中间夹杂其他炼金时无法匹配。重新记录真正连续的 3 个最可靠"],
   sfFailed: ["エラーが発生したため、復元を開始できませんでした。もう一度お試しください。", "An error occurred, so recovery could not start. Please try again.", "发生错误，无法开始恢复。请重试。"],
-  sfNote: ["基準seedが分からない場合はこちら。上の「カウンター位置の特定」の観測護石（2件以上。スロットは、無い分は未入力のままで大丈夫です）を使って、基準seedとカウンタを総当たりで復元します。計算はこの端末の中で完結し、通信は一切しません。護石は3件以上の入力を推奨します（2件だと候補が複数残ることがあります）。", "If you don't know your base seed, use this. It brute-forces your base seed and counter from the observed charms entered above in \"Find Your Current Counter\" (2 or more; leave any slot the charm doesn't have unselected). Everything is computed on this device — nothing is sent anywhere. 3 or more charms are recommended (with 2, several candidates may remain).", "不知道基础种子时使用本功能。利用上方「确定当前计数器位置」中输入的观测护石（至少 2 个；护石没有的槽位可以不填），通过穷举恢复基础种子和计数器。全部计算都在本设备内完成，不进行任何通信。建议输入 3 个以上护石（只输入 2 个时可能剩下多个候选）。"],
+  sfNote: ["観測護石（3件）から、基準seedとカウンタを総当たりで復元します。スロットも、ある分は必ず入力してください（無い分は「－」でOK）。求める基準seedは Gogma Seed Finder と同じ値です。計算は端末内のみで行います。", "Brute-forces your base seed and counter from the 3 observed charms. Be sure to enter the slots each charm has (leave \"－\" only for slots it doesn't have). The base seed found here is the same value as Gogma Seed Finder's. Computed entirely on this device.", "根据 3 个观测护石穷举恢复基础种子和计数器。槽位也请务必填写实际有的部分（没有的保持「－」即可）。求出的基础种子与 Gogma Seed Finder 是同一个值。全部计算都在本设备内完成。"],
   sfRange: ["カウンタ範囲（観測1個目の位置）", "Counter range (position of the 1st observed charm)", "计数器范围（第1个观测护石的位置）"],
-  sfSharedNote: ["<b>入力欄は上の「カウンター位置の特定」と共用です（このパネルには入力欄はありません）。</b>まず<a href=\"#obsrows\">上の入力欄</a>に連続で錬金した護石を入力してから、このパネルの「復元開始」を押してください。", "<b>The input rows are shared with \"Find Your Current Counter\" above — this panel has no input rows of its own.</b> First enter your consecutive meld results in <a href=\"#obsrows\">the rows above</a>, then press \"Start recovery\" in this panel.", "<b>输入行与上方「确定当前计数器位置」共用（本面板没有单独的输入行）。</b>请先在<a href=\"#obsrows\">上方输入行</a>中输入连续炼金得到的护石，再点击本面板的「开始恢复」。"],
+  sfSharedNote: ["<b>入力欄は上の「カウンター位置の特定」と共用です。</b>先に<a href=\"#obsrows\">上の入力欄</a>へ入力してから、「復元開始」を押してください。", "<b>Shared with “Find Your Current Counter” above.</b> Enter your melds in <a href=\"#obsrows\">the rows above</a> first, then press “Start recovery”.", "<b>与上方「确定当前计数器位置」共用输入行。</b>请先在<a href=\"#obsrows\">上方输入行</a>中填写，再点击「开始恢复」。"],
   sfStart: ["復元開始", "Start recovery", "开始恢复"],
   sfStats: ["進捗 {pct}%（{done} / {total} ペア）<br>速度 {rate} Mペア/秒 ／ 経過 {min}分{sec}秒 ／ 残り {eta}", "Progress {pct}% ({done} / {total} pairs)<br>Speed {rate} M pairs/s · Elapsed {min}m{sec}s · Remaining {eta}", "进度 {pct}%（{done} / {total} 对）<br>速度 {rate} M对/秒 ／ 已用 {min}分{sec}秒 ／ 剩余 {eta}"],
   sfStopped: ["探索を中止しました。", "Search stopped.", "已停止搜索。"],
@@ -642,7 +658,6 @@ function rowMatches(r) {
   if (!bands.has(r.band)) return false;
   for (const term of filterTerms()) if (!termMatches(term, r.skills)) return false;
   if (slotMin) for (let i = 0; i < 3; i++) if (r.slots[i] < slotMin[i]) return false;
-  if (slotWeapon && r.band !== 76) return false;
   return true;
 }
 let tblHidden = false;
@@ -654,7 +669,7 @@ function renderTblToggle() {
 }
 function render() {
   // 検索条件（スキル・スロット・帯）とお気に入り表示を既存一覧に適用
-  const only = filterSkills.length > 0 || slotMin !== null || slotWeapon ||
+  const only = filterSkills.length > 0 || slotMin !== null ||
     document.querySelectorAll(".fband:not(:checked)").length > 0;
   const tb = $("tbody");
   let html = "", shown = 0, hits = 0;
@@ -817,8 +832,7 @@ function collectCriteria() {
   return {
     bands: new Set([...document.querySelectorAll(".fband:checked")].map(e => +e.value)),
     terms: filterTerms(),
-    slotMin: slotMin,
-    slotWeapon: slotWeapon
+    slotMin: slotMin
   };
 }
 function matchPred(p, crit) {
@@ -827,17 +841,41 @@ function matchPred(p, crit) {
   if (crit.slotMin) for (let i = 0; i < 3; i++) {
     if (!isNaN(crit.slotMin[i]) && p.slots[i] < crit.slotMin[i]) return false;
   }
-  if (crit.slotWeapon && p.band !== 76) return false;
   return true;
 }
 let counterHistory = [];
 function updateBackBtn() {
   const b = $("backbtn");
-  if (!b) return;
-  if (counterHistory.length) {
-    b.style.display = "";
-    b.textContent = tf("backToCounter", { c: counterHistory[counterHistory.length - 1] });
-  } else b.style.display = "none";
+  if (b) {
+    if (counterHistory.length) {
+      b.style.display = "";
+      b.textContent = tf("backToCounter", { c: counterHistory[counterHistory.length - 1] });
+    } else b.style.display = "none";
+  }
+  syncInlineBackBtns();
+}
+function syncInlineBackBtns() {
+  document.querySelectorAll(".backjump").forEach(el => {
+    if (!counterHistory.length) el.remove();
+    else el.textContent = tf("backToCounter", { c: counterHistory[counterHistory.length - 1] });
+  });
+}
+function doBack() {
+  if (!counterHistory.length) return;
+  $("counter").value = counterHistory.pop();
+  updateBackBtn();
+  generate();
+}
+function addInlineBack(btn) {
+  if (!counterHistory.length) return;
+  let nb = btn.nextElementSibling;
+  if (!nb || !nb.classList.contains("backjump")) {
+    nb = document.createElement("button");
+    nb.type = "button";
+    nb.className = "mini backjump";
+    btn.after(nb);
+  }
+  nb.textContent = tf("backToCounter", { c: counterHistory[counterHistory.length - 1] });
 }
 function jumpToCounter(c) {
   const cur = $("counter").value;
@@ -846,12 +884,7 @@ function jumpToCounter(c) {
   updateBackBtn();
   generate();
 }
-$("backbtn").addEventListener("click", () => {
-  if (!counterHistory.length) return;
-  $("counter").value = counterHistory.pop();
-  updateBackBtn();
-  generate();
-});
+$("backbtn").addEventListener("click", doBack);
 $("counter").addEventListener("input", () => {
   if (counterHistory.length) { counterHistory = []; updateBackBtn(); }
 });
@@ -930,7 +963,7 @@ function seekNext() {
   const start = parseInt($("counter").value, 10);
   if (isNaN(seed) || isNaN(start)) { $("seekstat").textContent = t("needSeedCounter"); return; }
   const crit = collectCriteria();
-  if (!crit.terms.length && !crit.slotMin && !crit.slotWeapon && crit.bands.size === 4) {
+  if (!crit.terms.length && !crit.slotMin && crit.bands.size === 4) {
     $("seekstat").textContent = t("seekNeedCond");
     return;
   }
@@ -946,6 +979,7 @@ function seekNext() {
 $("seek").addEventListener("click", seekNext);
 $("seekstop").addEventListener("click", () => { seekAbort = true; });
 $("seekres").addEventListener("click", ev => {
+  if (ev.target.closest(".backjump")) { doBack(); return; }
   if (ev.target.closest("#seekprev")) {
     if (seekState && seekState.page > 0) { seekState.page--; renderSeekPage(); }
     return;
@@ -961,6 +995,7 @@ $("seekres").addEventListener("click", ev => {
   const b = ev.target.closest(".seekjump");
   if (!b) return;
   jumpToCounter(b.dataset.c);
+  addInlineBack(b);
 });
 
 /* ===== スキル選択ダイアログ ===== */
@@ -1028,7 +1063,6 @@ $("fclearall").addEventListener("click", () => {
   seekAbort = true;
   filterSkills = [];
   slotMin = null;
-  slotWeapon = false;
   document.querySelectorAll(".fband").forEach(e => { e.checked = true; });
   seekState = null;
   $("seekres").innerHTML = "";
@@ -1045,14 +1079,12 @@ const SLOT_PATTERNS = [[3,0,0],[2,1,0],[2,0,0],[1,1,1],[1,1,0],[1,0,0]];
 // 各スロット構成が出現する帯（モデルデータから確定。0-0-0 の護石は存在しない）
 const PATTERN_BANDS = { "1,0,0": [24, 52, 76], "1,1,0": [0, 24, 52, 76], "1,1,1": [76], "2,0,0": [0, 24, 52], "2,1,0": [0, 24], "3,0,0": [0, 52] };
 let slotMin = null;
-let slotWeapon = false;
 // スロット条件もスキル条件と同じ obsrow 形式（チップ＋削除）で、条件リストの末尾に並べる
 function renderSlotBtn() {
-  const set = !!(slotMin || slotWeapon);
+  const set = !!slotMin;
   let label = t("slotCondSelect");
   if (set) {
     const parts = [];
-    if (slotWeapon) parts.push(t("weaponShort"));
     if (slotMin) parts.push(slotMin.join("-"));
     label = t("slotCondPrefix") + parts.join(" + ");
   }
@@ -1065,15 +1097,19 @@ function renderSlotBtn() {
 }
 $("fslotrow").addEventListener("click", ev => {
   if (ev.target.closest("[data-slotbtn]")) { renderSlotList(); $("sldlg").showModal(); return; }
-  if (ev.target.closest("[data-slotclr]")) { slotMin = null; slotWeapon = false; renderSlotBtn(); render(); }
+  if (ev.target.closest("[data-slotclr]")) { slotMin = null; renderSlotBtn(); render(); }
 });
+function checkedBands() {
+  return new Set([...document.querySelectorAll(".fband:checked")].map(e => +e.value));
+}
 function renderSlotList() {
-  $("slweapon").checked = slotWeapon;
-  const pool = slotWeapon ? SLOT_PATTERNS.filter(p => PATTERN_BANDS[p.join(",")].includes(76)) : SLOT_PATTERNS;
+  const sel = checkedBands();
+  // チェック中のレア度で出る構成だけを出す
+  const pool = SLOT_PATTERNS.filter(p => PATTERN_BANDS[p.join(",")].some(b => sel.has(b)));
   $("sllist").innerHTML = pool.map(p => {
     const hits = pool.filter(q => q[0] >= p[0] && q[1] >= p[1] && q[2] >= p[2]);
     let bands = [...new Set(hits.flatMap(q => PATTERN_BANDS[q.join(",")]))].sort((a, b) => a - b);
-    if (slotWeapon) bands = bands.filter(b => b === 76);
+    bands = bands.filter(b => sel.has(b));
     const rtxt = bands.length === 1
       ? tf("slotRarityOnly", { r: bandName(bands[0]) })
       : tf("slotRarities", { r: bands.map(b => bandName(b)).join(lang === "en" ? ", " : "・") });
@@ -1082,13 +1118,8 @@ function renderSlotList() {
       `<button type="button" class="lvb" data-pat="${p.join(",")}">${t("select")}</button></div>`;
   }).join("");
 }
-$("slweapon").addEventListener("change", () => {
-  slotWeapon = $("slweapon").checked;
-  if (slotWeapon && slotMin && !PATTERN_BANDS[slotMin.join(",")].includes(76)) slotMin = null;
-  renderSlotList(); renderSlotBtn(); render();
-});
 $("slclose").addEventListener("click", () => $("sldlg").close());
-$("slclear").addEventListener("click", () => { slotMin = null; slotWeapon = false; $("slweapon").checked = false; $("sldlg").close(); renderSlotBtn(); render(); });
+$("slclear").addEventListener("click", () => { slotMin = null; $("sldlg").close(); renderSlotBtn(); render(); });
 $("sllist").addEventListener("click", ev => {
   const b = ev.target.closest("[data-pat]");
   if (!b) return;
@@ -1097,91 +1128,76 @@ $("sllist").addEventListener("click", ev => {
 });
 const HELP_HTML = {
 simple: {
-jp: `<p><b>1. 基準seedとカウンタを特定する</b><br>
-予測には、この2つが必要です。材料は「実際に錬金した護石の記録」（スキル・Lv・スロットを古い順にメモ）。<br>
-・seedは分かる／カウンタは不明 → 「カウンター位置の特定」<br>
-・両方不明 → 「基準seedの復元」（観測は3件以上を推奨。カウンタ範囲の上限は、今までの錬金回数の見当で指定）<br>
-・公開ツール「Gogma Seed Finder」でも基準seedは割り出せます（このアプリと同じ値です）</p>
+jp: `<p><b>1. 基準seedとカウンタを用意する</b><br>
+基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。材料は、実際に錬金した護石の記録です（古い順）。<br>
+・seedが分かる → 「カウンター位置の特定」<br>
+・両方分からない → 「基準seedの復元」</p>
 <p><b>2. 予測する</b><br>
-seedとカウンタを入れて「予測する」。次に錬金する1個目が、そのカウンタ値の結果です。</p>
+seedとカウンタを入れて「予測する」。次に錬金する1個目が、そのカウンタの結果です。</p>
 <p><b>3. 探す・登録する</b><br>
-スキル条件・スロット条件・レア度で絞り込み、先の結果は「次に出現を検索」で探索できます。気になる護石は ☆ で登録すると、あと何回目に出るか分かります。</p>
+条件で絞り込み、先は「次に出現を検索」で探せます。気になる護石は ☆ で登録。</p>
 <p><b>4. データの移行</b><br>
-seed・カウンタ・お気に入りはファイルに書き出して、別の端末で読み込めます。</p>
-<p>※ 通信は一切しません。ファイルを開くたびに、seed・カウンタ・お気に入りと言語以外は初期状態に戻ります。</p>`,
-en: `<p><b>1. Find your base seed and counter</b><br>
-You need both to predict. The material is a record of charms you actually melded (skill, level and slots, in the order you got them, oldest first).<br>
-- Know the seed but not the counter -&gt; "Find Your Current Counter"<br>
-- Know neither -&gt; "Recover Base Seed" (3 or more observations recommended; set the upper bound of the counter range to roughly how many melds you have done so far)<br>
-- The public tool "Gogma Seed Finder" can also find your base seed (it is the same value this app uses).</p>
+seed・カウンタ・お気に入りは、ファイルで書き出し／読み込みできます。</p>
+<p>※ 通信はしません。作業状態は、再度開くとリセットされます。</p>`,
+en: `<p><b>1. Prepare your base seed and counter</b><br>
+The base seed is the same value as Gogma Seed Finder's, and can also be recovered with this tool alone. You will need a record of charms you actually melded (oldest first).<br>
+- Know the seed -&gt; "Find Your Current Counter"<br>
+- Know neither -&gt; "Recover Base Seed"</p>
 <p><b>2. Predict</b><br>
-Enter the seed and counter and press "Predict". The next charm you meld is the result for that counter value.</p>
+Enter the seed and counter and press "Predict". Your next meld is the result for that counter.</p>
 <p><b>3. Search and save</b><br>
-Filter by skill conditions, slot conditions and rarity, and use the next-match search to look further ahead. Mark a charm with a star to see how many melds away it is.</p>
+Filter by conditions, and use the next-match search to look further ahead. Save charms with ☆.</p>
 <p><b>4. Data transfer</b><br>
-You can export the seed, counter and favorites to a file and import it on another device.</p>
-<p>* This app never uses the network. Each time you open the file, everything except the seed, counter, favorites and language resets to its initial state.</p>`,
-zh: `<p><b>1. 确定基础种子和计数器</b><br>
-预测需要这两项。材料是"实际炼金得到的护石记录"（技能、等级、槽位，按获得顺序从旧到新记录）。<br>
-・知道种子、不知道计数器 → "确定当前计数器位置"<br>
-・两者都不知道 → "恢复基础种子"（建议输入3件以上观察结果；计数器范围的上限按至今的炼金次数大致指定）<br>
-・公开工具"Gogma Seed Finder"也可以求出基础种子（与本应用使用的是同一个值）</p>
+Export / import your seed, counter and favorites as a file.</p>
+<p>* No network is used. Working state resets when you reopen the file.</p>`,
+zh: `<p><b>1. 准备基础种子和计数器</b><br>
+基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具恢复。材料是实际炼金得到的护石记录（从旧到新）。<br>
+・知道种子 → "确定当前计数器位置"<br>
+・两者都不知道 → "恢复基础种子"</p>
 <p><b>2. 预测</b><br>
-输入种子和计数器后点击"预测"。下一次炼金的第1件，就是该计数器值的结果。</p>
+输入种子和计数器后点击"预测"。下一次炼金的第1个，就是该计数器的结果。</p>
 <p><b>3. 搜索与收藏</b><br>
-可用技能条件、槽位条件和稀有度筛选；更靠后的结果可用"搜索下一个符合条件的护石"查找。用☆收藏护石后，可以看到还差多少次炼金会出现。</p>
+按条件筛选，更靠后的结果用"搜索下一个"查找。在意的护石用 ☆ 收藏。</p>
 <p><b>4. 数据迁移</b><br>
-种子、计数器和收藏可以导出为文件，在其他设备上导入。</p>
-<p>※ 本应用完全不联网。每次打开文件时，除种子、计数器、收藏和语言外，其余都会恢复初始状态。</p>` },
+种子、计数器和收藏可导出／导入为文件。</p>
+<p>※ 不联网。重新打开时，作业状态会重置。</p>` },
 detail: {
-jp: `<p><b>1. まず、基準seedとカウンタを特定する（ここが入口です）</b><br>
-予測には「基準seed」と「現在のカウンタ」の2つが必要です。両方そろっている人は、そのまま上の入力欄に入れて次へ進んでください。分からない場合は、状況に合わせてどちらかを使います。どちらの方法も、材料は「実際に錬金した護石の記録」です。ゲームでマカ錬金を連続で数回行い、出た護石のスキル・Lv・スロットを古い順にメモしておいてください。</p>
-<p>・<b>カウンタだけ分からない（seedは分かる）→「カウンター位置の特定」</b><br>
-観測した護石を入力すると、現在のカウンタ位置を逆算で特定できます。結果の「この位置で予測」を押せば、そのまま予測に進めます。スロットは、無い分は未入力のままで大丈夫です。</p>
-<p>・<b>seedもカウンタも分からない→「基準seedの復元」</b><br>
-同じ観測入力を使って、基準seedとカウンタを総当たりで探します。カウンタ範囲の上限は「今まで錬金した回数の見当」で指定してください。護石は3件以上の入力を推奨します（2件だと候補が複数残ることがあります）。端末の性能次第で時間がかかります。</p>
-<p>・<b>基準seedだけ先に知りたい場合</b><br>
-公開ツール「Gogma Seed Finder」でも基準seedを割り出せます。このアプリが使う基準seedは、そのツールと同じものです。</p>
-<p><b>2. 予測する</b><br>
-基準seedと現在のカウンタを入力して「予測する」を押すと、これから出る護石が順番に一覧表示されます（「次に錬金する1個目」が、そのカウンタ値の結果です）。</p>
-<p><b>3. 欲しい護石を探す</b><br>
-「護石を検索」でスキル条件・スロット条件・レア度を指定すると、一覧が絞り込まれます。一覧の範囲より先は「条件に一致する『次に出現する護石』を検索」で、現在のカウンタから先を探索できます。気になる護石は ☆ でお気に入り登録でき、一覧で「あと何回目の錬金で出るか」が分かります。</p>
+jp: `<p><b>1. seedとカウンタの特定</b><br>
+ゲームで連続で錬金し、スキル・Lv・スロットを古い順にメモしてください。基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。<br>
+・カウンタ特定：結果の「ここから予測」でそのまま予測へ。スロットは、ある分を入れるほど候補が絞れます（seed復元では入力が必要）。<br>
+・seed復元：範囲の上限は、今までの錬金回数の見当で指定。端末によっては時間がかかります。</p>
+<p><b>2. 予測</b><br>
+一覧はカウンタ順に並びます。表示件数より先は検索で探してください。</p>
+<p><b>3. 検索とお気に入り</b><br>
+スキル・スロット・レア度で絞り込めます。☆ を付けると、あと何回目に出るか分かります。</p>
 <p><b>4. データの移行</b><br>
-seed・カウンタ・お気に入りは「データ書き出し」でファイルに保存でき、別の端末で「データ読み込み」すれば続きから使えます。</p>
+書き出したファイルは、別の端末で読み込めます。</p>
 <p><b>メモ</b><br>
-このアプリは通信を一切しません。入力した値は、この端末の中にだけ保存されます。ファイルを開くたびに、seed・カウンタ・お気に入りと言語以外は初期状態に戻ります。</p>`,
-en: `<p><b>1. First, find your base seed and counter (this is the starting point)</b><br>
-Prediction needs two things: your "base seed" and your "current counter". If you already know both, enter them in the inputs above and move on. If not, use one of the two tools below depending on your situation. Both use the same material: a record of charms you actually melded. Meld several times in a row in the game and note down each charm's skills, levels and slots, oldest first.</p>
-<p>- <b>You know the seed but not the counter -&gt; "Find Your Current Counter"</b><br>
-Enter the observed charms and the tool works out your current counter position. Press "Predict from here" in the result to jump straight to the prediction. For slots, you can leave the ones a charm does not have blank.</p>
-<p>- <b>You know neither -&gt; "Recover Base Seed"</b><br>
-Using the same observations, this searches every combination of base seed and counter. Set the upper bound of the counter range to roughly how many melds you have done so far. Entering 3 or more charms is recommended (with 2, several candidates may remain). It can take a while depending on your device.</p>
-<p>- <b>If you only want the base seed first</b><br>
-The public tool "Gogma Seed Finder" can also work out your base seed. The base seed this app uses is the same value as that tool's.</p>
+入力はこの端末にのみ保存されます。</p>`,
+en: `<p><b>1. Finding seed and counter</b><br>
+Meld several times in a row in-game and note skills, levels and slots, oldest first. The base seed is the same value as Gogma Seed Finder's, and can also be recovered with this tool alone.<br>
+- Counter: press "Predict from here" in the result to continue. Entering the slots narrows the candidates (seed recovery requires them).<br>
+- Seed recovery: set the range upper bound to roughly how many melds you have done. It may take a while on slower devices.</p>
 <p><b>2. Predict</b><br>
-Enter the base seed and current counter and press "Predict" to list the charms you will get, in order (the next charm you meld is the result for that counter value).</p>
-<p><b>3. Find the charm you want</b><br>
-In "Search charms", set skill conditions, slot conditions and rarity to filter the list. For results beyond the list, use the next-match search to scan ahead from the current counter. Mark charms you care about with a star; the favorites list shows how many melds away each one is.</p>
+Results are listed in counter order. Use search to look beyond the list size.</p>
+<p><b>3. Search and favorites</b><br>
+Filter by skill, slots and rarity. Starred charms show how many melds away they are.</p>
 <p><b>4. Data transfer</b><br>
-You can save the seed, counter and favorites with "Export data" and load them on another device with "Import data" to pick up where you left off.</p>
+An exported file can be imported on another device.</p>
 <p><b>Notes</b><br>
-This app never uses the network; everything you enter is stored only on this device. Each time you open the file, everything except the seed, counter, favorites and language resets to its initial state.</p>`,
-zh: `<p><b>1. 首先，确定基础种子和计数器（这是入口）</b><br>
-预测需要"基础种子"和"当前计数器"这两项。两者都知道的人，直接填入上方输入框进入下一步即可。不知道时，根据情况使用下面两种方法之一。两种方法使用的材料相同，都是"实际炼金得到的护石记录"：请在游戏中连续进行数次马卡炼金，把得到的护石的技能、等级、槽位按从旧到新的顺序记录下来。</p>
-<p>・<b>只不知道计数器（知道种子）→"确定当前计数器位置"</b><br>
-输入观察到的护石，即可反推出当前计数器位置。点击结果中的"从此位置预测"可以直接进入预测。槽位方面，护石没有的槽位留空即可。</p>
-<p>・<b>种子和计数器都不知道→"恢复基础种子"</b><br>
-使用同样的观察输入，穷举搜索基础种子和计数器。计数器范围的上限请按"至今为止的炼金次数"大致指定。建议输入3件以上护石（只输入2个时可能剩下多个候选）。根据设备性能，可能需要较长时间。</p>
-<p>・<b>只想先知道基础种子时</b><br>
-公开工具"Gogma Seed Finder"也可以求出基础种子。本应用使用的基础种子与该工具的是同一个值。</p>
+Inputs are stored only on this device.</p>`,
+zh: `<p><b>1. 确定种子和计数器</b><br>
+请在游戏中连续炼金，并按从旧到新的顺序记录技能、等级和槽位。基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具恢复。<br>
+・确定计数器：点击结果中的"从这里开始预测"即可继续。填写槽位可缩小候选范围（恢复种子时必填）。<br>
+・恢复种子：范围上限按至今的炼金次数大致指定。设备较慢时可能需要较长时间。</p>
 <p><b>2. 预测</b><br>
-输入基础种子和当前计数器并点击"预测"，之后会出现的护石将按顺序列表显示（下一次炼金的第1件，就是该计数器值的结果）。</p>
-<p><b>3. 寻找想要的护石</b><br>
-在"搜索护石"中指定技能条件、槽位条件和稀有度即可筛选列表。列表范围之后的结果，可用"搜索下一个符合条件的护石"从当前计数器开始向后搜索。用☆收藏在意的护石后，可在收藏列表中看到还差多少次炼金会出现。</p>
+列表按计数器顺序排列。超出显示数量的结果请用搜索查找。</p>
+<p><b>3. 搜索与收藏</b><br>
+可按技能、槽位和稀有度筛选。用 ☆ 收藏后可看到还差多少次出现。</p>
 <p><b>4. 数据迁移</b><br>
-种子、计数器和收藏可用"导出数据"保存为文件，在其他设备上用"导入数据"读取后继续使用。</p>
+导出的文件可在其他设备上导入。</p>
 <p><b>备注</b><br>
-本应用完全不联网，输入的内容只保存在本设备中。每次打开文件时，除种子、计数器、收藏和语言外，其余都会恢复初始状态。</p>` }
+输入内容只保存在本设备中。</p>` }
 };
 let helpDetail = false;
 function syncHelpView() {
@@ -1233,8 +1249,7 @@ function renderObsRows() {
     `<span class="note">${t("slotsWord")}</span>` +
     r.sl.map((v, k) => `<select class="slsel" data-i="${i}" data-k="${k}">` +
       // スロットの選択肢に 0 は置かない（無いスロットは「－」のまま＝0 として扱う。2-1 の護石を 2-1-0 と入れるか迷わせないため）
-      ["", 1, 2, 3].map(o => `<option value="${o}"${String(o) === v ? " selected" : ""}>${o === "" ? "－" : o}</option>`).join("") + `</select>`).join("") +
-    `<button type="button" class="mini delobs" data-i="${i}">${t("delete")}</button></div>`).join("");
+      ["", 1, 2, 3].map(o => `<option value="${o}"${String(o) === v ? " selected" : ""}>${o === "" ? "－" : o}</option>`).join("") + `</select>`).join("") + "</div>").join("");
 }
 function obsFromRows() {
   const out = [];
@@ -1254,14 +1269,11 @@ $("obsrows").addEventListener("click", ev => {
     openPicker(v => { obsRows[i].sk[k] = v; renderObsRows(); });
     return;
   }
-  const d = ev.target.closest(".delobs");
-  if (d) { obsRows.splice(+d.dataset.i, 1); if (!obsRows.length) obsRows.push(newObsRow()); renderObsRows(); }
 });
 $("obsrows").addEventListener("change", ev => {
   const s = ev.target.closest(".slsel");
   if (s) obsRows[+s.dataset.i].sl[+s.dataset.k] = s.value;
 });
-$("addobs").addEventListener("click", () => { obsRows.push(newObsRow()); renderObsRows(); });
 $("clrobs").addEventListener("click", () => { obsRows = [newObsRow(), newObsRow(), newObsRow()]; renderObsRows(); $("locres").textContent = ""; });
 obsRows = [newObsRow(), newObsRow(), newObsRow()];
 renderObsRows();
@@ -1284,7 +1296,7 @@ function locate() {
   const seed = parseInt($("seed").value, 10);
   if (isNaN(seed)) { res.textContent = t("needSeed"); return; }
   const obs = obsFromRows();
-  if (!obs.length) { res.textContent = t("needObs"); return; }
+  if (obs.length < 3) { res.textContent = t("needObs"); return; }
   const numOr = (id, d) => { const n = parseInt($(id).value, 10); return isNaN(n) ? d : n; };
   const lo = Math.min(3000000, Math.max(0, numOr("lmin", 0)));
   const hi = Math.min(3000000, Math.max(0, numOr("lmax", 1000000)));
@@ -1331,9 +1343,11 @@ function locate() {
 $("locate").addEventListener("click", locate);
 $("locstop").addEventListener("click", () => { locateAbort = true; });
 $("locres").addEventListener("click", ev => {
+  if (ev.target.closest(".backjump")) { doBack(); return; }
   const b = ev.target.closest(".usectr");
   if (!b) return;
   jumpToCounter(b.dataset.c);
+  addInlineBack(b);
 });
 /* ===== 基準seed復元（charm_seed_finder のエンジンを統合） ===== */
 const SF_WASM_B64 = "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FmogBGpBqAFqKQMAIQwLIAFBgAJqIARqIhMgAUGAFmogBGoiCikDACAMhSABQYAEaiAEaiIUKQMAhTcDAAJAIAtBAWoiC0EKSw0AIApBsAFqKQMAIQ0LIBNBCGogCkEIaikDACANhSAUQQhqKQMAhTcDACAEQRBqIQQgC0EBaiILQSBHDQALQQAhC0GAfiEEA0BCACENQgAhDAJAIAtBG0siCg0AIAFBgARqIARqQaACaikDACEMCyABIARqIhNBgAJqIAFBgAJqIARqIhRBgAJqKQMAIAyFNwMAAkAgCg0AIAFBgARqIARqQagCaikDACENCyATQYgCaiAUQYgCaikDACANhTcDACALQQJqIQsgBEEQaiIEDQALQYB+IQQDQCABQYAQaiAEakGAAmogAUGAFGogBGpBgAJqKAIANgIAIARBBGoiBA0AC0GAfiEEA0AgAUGADmogBGpBgAJqIAFBgBZqIARqQYACaigCADYCACAEQQRqIgQNAAtBgH4hBANAIAFBgBpqIARqQYACaiABQYAGaiAEakGAAmooAgA2AgAgBEEEaiIEDQALQYB+IQQDQCABQYAYaiAEakGAAmogASAEakGAAmooAgA2AgAgBEEEaiIEDQALIA5BAWoiDkHkAEcNAAtBgH4hBANAIARBsMHCgABqIAFBgBJqIARqIgtBgAJqLQAAOgAAIARBscHCgABqIAtBgQJqLQAAOgAAIARBssHCgABqIAtBggJqLQAAOgAAIARBs8HCgABqIAtBgwJqLQAAOgAAIARBBGoiBA0AC0GAfiEEA0AgBEGww8KAAGogAUGAFGogBGoiC0GAAmotAAA6AAAgBEGxw8KAAGogC0GBAmotAAA6AAAgBEGyw8KAAGogC0GCAmotAAA6AAAgBEGzw8KAAGogC0GDAmotAAA6AAAgBEEEaiIEDQALQYB+IQQDQCAEQbDFwoAAaiABQYAWaiAEaiILQYACai0AADoAACAEQbHFwoAAaiALQYECai0AADoAACAEQbLFwoAAaiALQYICai0AADoAACAEQbPFwoAAaiALQYMCai0AADoAACAEQQRqIgQNAAtBgH4hBANAIARBsMfCgABqIAFBgBhqIARqIgtBgAJqLQAAOgAAIARBscfCgABqIAtBgQJqLQAAOgAAIARBssfCgABqIAtBggJqLQAAOgAAIARB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BgAAAAYAAAABAAAAAQAAAAAAAAABAAAACAAAAAYAAAABAAAAAQAAAAAAAAABAAAACAAAAAgAAAABAAAAAQAAAAAAAAABAAAACQAAAAAAAAABAAAAAQAAAAAAAAABAAAACgAAAAAAAAABAAAAAQAAAAAAAAABAAAABwAAAAAAAAACAAAAAAAAAAAAAAABAAAABgAAAAYAAAACAAAAAAAAAAAAAAABAAAACAAAAAYAAAACAAAAAAAAAAAAAAABAAAACAAAAAgAAAACAAAAAAAAAAAAAAABAAAACQAAAAAAAAACAAAAAAAAAAAAAAABAAAACgAAAAAAAAACAAAAAAAAAAAAAAABAAAABwAAAAAAAAACAAAAAQAAAAAAAAABAAAABgAAAAYAAAACAAAAAQAAAAAAAAABAAAACAAAAAYAAAACAAAAAQAAAAAAAAABAAAACAAAAAgAAAACAAAAAQAAAAAAAAABAAAACQAAAAAAAAACAAAAAQAAAAAAAAABAAAACgAAAAAAAAACAAAAAQAAAAAAAAABAAAABwAAAAAAAAADAAAAAAAAAAAAAAABAAAABgAAAAYAAAADAAAAAAAAAAAAAAABAAAACAAAAAYAAAADAAAAAAAAAAAAAAABAAAACAAAAAgAAAADAAAAAAAAAAAAAAABAAAACQAAAAAAAAADAAAAAAAAAAAAAAABAAAACgAAAAAAAAADAAAAAAAAAAAAAAABAAAAAQAAAAcAAAABAAAAAAAAAAAAAAABAAAAAQAAAAoAAAABAAAAAAAAAAAAAAACAAAABgAAAAYAAAABAAAAAAAAAAAAAAACAAAACAAAAAYAAAABAAAAAAAAAAAAAAACAAAACAAAAAgAAAABAAAAAAAAAAAAAAACAAAACQAAAAAAAAABAAAAAAAAAAAAAAACAAAACgAAAAAAAAABAAAAAAAAAAAAAAABAAAAAQAAAAcAAAABAAAAAQAAAAAAAAABAAAAAQAAAAoAAAABAAAAAQAAAAAAAAACAAAABgAAAAYAAAABAAAAAQAAAAAAAAACAAAACAAAAAYAAAABAAAAAQAAAAAAAAACAAAACAAAAAgAAAABAAAAAQAAAAAAAAACAAAACQAAAAAAAAABAAAAAQAAAAAAAAACAAAACgAAAAAAAAABAAAAAQAAAAAAAAABAAAAAQAAAAcAAAACAAAAAAAAAAAAAAABAAAAAQAAAAoAAAACAAAAAAAAAAAAAAACAAAABgAAAAYAAAACAAAAAAAAAAAAAAACAAAACAAAAAYAAAACAAAAAAAAAAAAAAACAAAACAAAAAgAAAACAAAAAAAAAAAAAAACAAAACQAAAAAAAAACAAAAAAAAAAAAAAACAAAACgAAAAAAAAACAAAAAAAAAAAAAAABAAAAAQAAAAcAAAACAAAAAQAAAAAAAAABAAAAAQAAAAoAAAACAAAAAQAAAAAAAAACAAAABgAAAAYAAAACAAAAAQAAAAAAAAACAAAACAAAAAYAAAACAAAAAQAAAAAAAAACAAAACAAAAAgAAAACAAAAAQAAAAAAAAACAAAACQAAAAAAAAACAAAAAQAAAAAAAAACAAAACgAAAAAAAAACAAAAAQAAAAAAAAAEAAAAAQAAAAEAAAABAAAAAAAAAAAAAAACAAAAAQAAAAcAAAABAAAAAAAAAAAAAAACAAAAAQAAAAgAAAADAAAAAAAAAAAAAAACAAAAAQAAAAoAAAABAAAAAAAAAAAAAAADAAAABwAAAAAAAAABAAAAAAAAAAAAAAADAAAABgAAAAUAAAABAAAAAAAAAAAAAAADAAAACAAAAAUAAAABAAAAAAAAAAAAAAADAAAACgAAAAAAAAABAAAAAAAAAAAAAAAEAAAAAQAAAAEAAAABAAAAAQAAAAAAAAACAAAAAQAAAAcAAAABAAAAAQAAAAAAAAACAAAAAQAAAAgAAAABAAAAAQAAAAAAAAACAAAAAQAAAAoAAAABAAAAAQAAAAAAAAADAAAABwAAAAAAAAABAAAAAQAAAAAAAAADAAAABgAAAAUAAAABAAAAAQAAAAAAAAADAAAACAAAAAUAAAABAAAAAQAAAAAAAAADAAAACgAAAAAAAAABAAAAAQAAAAAAAAAEAAAAAQAAAAEAAAACAAAAAAAAAAAAAAACAAAAAQAAAAcAAAACAAAAAAAAAAAAAAACAAAAAQAAAAgAAAACAAAAAAAAAAAAAAACAAAAAQAAAAoAAAACAAAAAAAAAAAAAAADAAAABwAAAAAAAAACAAAAAAAAAAAAAAADAAAABgAAAAUAAAACAAAAAAAAAAAAAAADAAAACAAAAAUAAAACAAAAAAAAAAAAAAADAAAACgAAAAAAAAACAAAAAAAAAAAAAAAEAAAAAQAAAAEAAAABAAAAAAAAAAAAAAACAAAAAQAAAAcAAAABAAAAAAAAAAAAAAACAAAAAQAAAAgAAAABAAAAAAAAAAAAAAACAAAAAQAAAAoAAAABAAAAAAAAAAAAAAADAAAABwAAAAAAAAABAAAAAAAAAAAAAAADAAAABgAAAAUAAAABAAAAAAAAAAAAAAADAAAACAAAAAUAAAABAAAAAAAAAAAAAAADAAAACgAAAAAAAAABAAAAAAAAAAAAAAAEAAAAAQAAAAEAAAABAAAAAAAAAAAAAAACAAAAAQAAAAcAAAABAAAAAAAAAAAAAAACAAAAAQAAAAgAAAABAAAAAAAAAAAAAAACAAAAAQAAAAoAAAABAAAAAAAAAAAAAAADAAAABwAAAAAAAAABAAAAAAAAAAAAAAADAAAABgAAAAUAAAABAAAAAAAAAAAAAAADAAAACAAAAAUAAAABAAAAAAAAAAAAAAADAAAACgAAAAAAAAABAAAAAAAAAAAAAAAEAAAAAQAAAAEAAAABAAAAAAAAAAAAAAACAAAAAQAAAAcAAAABAAAAAAAAAAAAAAACAAAAAQAAAAgAAAABAAAAAAAAAAAAAAACAAAAAQAAAAoAAAABAAAAAAAAAAAAAAADAAAABwAAAAAAAAABAAAAAAAAAAAAAAADAAAABgAAAAUAAAABAAAAAAAAAAAAAAADAAAACAAAAAUAAAABAAAAAAAAAAAAAAADAAAACgAAAAAAAAABAAAAAAAAAAAAAAAEAAAAAQAAAAEAAAABAAAAAQAAAAAAAAACAAAAAQAAAAcAAAABAAAAAQAAAAAAAAACAAAAAQAAAAgAAAABAAAAAQAAAAAAAAACAAAAAQAAAAoAAAABAAAAAQAAAAAAAAADAAAABwAAAAAAAAABAAAAAQAAAAAAAAADAAAABgAAAAUAAAABAAAAAQAAAAAAAAADAAAACAAAAAUAAAABAAAAAQAAAAAAAAADAAAACgAAAAAAAAABAAAAAQAAAAAAAAAEAAAAAQAAAAEAAAABAAAAAQAAAAAAAAACAAAAAQAAAAcAAAABAAAAAQAAAAAAAAACAAAAAQAAAAgAAAABAAAAAQAAAAAAAAACAAAAAQAAAAoAAAABAAAAAQAAAAAAAAADAAAABwAAAAAAAAABAAAAAQAAAAAAAAADAAAABgAAAAUAAAABAAAA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cBEQAKASEACwExAAMBQQALAUEAAAqFIKLmRlYnVnX2xvY//////+////AAAAACkAAAAEAO0AAp8AAAAAAAAAAP/////+////AAAAACkAAAACADCfdgAAAHgAAAAEAO0CAZ94AAAAgQAAAAQA7QAEnwAAAAAAAAAA//////7///8AAAAAKQAAAAQA7QACnwAAAAAAAAAA//////7///8AAAAAKQAAAAIAMJ+EAAAAhgAAAAQA7QIBn4YAAACPAAAABADtAASfAAAAAAAAAAD//////v///wAAAABuAAAABADtAAGfvwAAAG8BAAAEAO0AAZ8AAAAAAAAAAP/////+////AAAAAG4AAAAEAO0AAZ+/AAAAbwEAAAQA7QABnwAAAAAAAAAA//////7///8AAAAA5QAAAAQA7QACnwAAAAAAAAAA//////7///+5AAAAuwAAAAQA7QIAn7sAAAC/AAAABADtAAOfAAAAAAAAAAD//////v///8EAAADlAAAAAgAwnzIBAAA0AQAABADtAgGfNAEAAD0BAAAEAO0ABJ8AAAAAAAAAAP////8DAAAAAAAAAIUAAAAEAO0ACJ8AAAAAAAAAAP////8DAAAAAAAAAIUAAAAEAO0AB58AAAAAAAAAAP////8DAAAAAAAAAIUAAAAEAO0ABp8AAAAAAAAAAP////8DAAAAAAAAAIUAAAAEAO0ABZ8AAAAAAAAAAP////8DAAAAAAAAAIUAAAAEAO0ABJ8AAAAAAAAAAP////8DAAAAAAAAAIUAAAAEAO0AA58AAAAAAAAAAP////8DAAAAAAAAAIUAAAAEAO0AAp8AAAAAAAAAAP////8DAAAAAAAAAIUAAAAEAO0AAZ8AAAAAAAAAAP////+JAAAAAAAAAGgAAAAEAO0AAp8AAAAAAAAAAP////+JAAAAAAAAAGgAAAAEAO0AAZ8AAAAAAAAAAP////+JAAAAAAAAAGgAAAAEAO0ABJ8AAAAAAAAAAP////+JAAAAAAAAAGgAAAAEAO0AA58AAAAAAAAAAP/////zAAAAAAAAABcCAAAEAO0AAJ8AAAAAAAAAAP/////zAAAADQIAAA8CAAAEAO0CAJ8PAgAAFwIAAAQA7QADnwAAAAAAAAAA//////MAAAA2AAAAOAAAAAQA7QIAnzgAAAAHAgAABADtAAWfAAAAAAAAAAD/////8wAAAIAAAADuAAAAAwARAZ8AAAAAAAAAAP/////zAAAAgAAAAO4AAAADABEAn+4AAABcAQAAAwARAZ9cAQAAygEAAAMAEQKfygEAAAcCAAADABEDnwAAAAAAAAAA//////MAAACZAAAAnAAAAAQA7QIAnwcBAAAKAQAABADtAgCfdQEAAHgBAAAEAO0CAJ8AAAAAAAAAAP/////zAAAAhwAAAIkAAAAEAO0CAJ+JAAAA9QAAAAQA7QAHn/UAAAD3AAAABADtAgCf9wAAAGMBAAAEAO0AB59jAQAAZQEAAAQA7QIAn2UBAAAHAgAABADtAAefAAAAAAAAAAD/////8wAAAI4AAACQAAAABADtAgGfkAAAAPwAAAAEAO0ACJ/8AAAA/gAAAAQA7QIBn/4AAABqAQAABADtAAifagEAAGwBAAAEAO0CAZ9sAQAABwIAAAQA7QAInwAAAAAAAAAA/////wwDAAAdAAAAcAAAAAMAEQCfpBgAAKYYAAAEAO0CAJ+mGAAAqxgAAAQA7QAJnwAAAAAAAAAA/////wwDAAAAAAAAvBgAAAQA7QAAnwAAAAAAAAAA/////wwDAAByAAAAiw4AAAMAEQCfAAAAAAAAAAD/////DAMAANcAAADZAAAABADtAgCf2QAAAOQBAAAEAO0ACp8AAAAAAAAAAP////8MAwAA5AAAAOwAAAADABEfn+wAAAD0AAAAAwARHp/0AAAA/AAAAAMAER2f/AAAAAQBAAADABEcnwQBAAAMAQAAAwARG58MAQAAFAEAAAMAERqfFAEAABwBAAADABEZnxwBAAAkAQAAAwARGJ8kAQAALAEAAAMAERefLAEAADQBAAADABEWnzQBAAA8AQAAAwARFZ88AQAARAEAAAMAERSfRAEAAEwBAAADABETn0wBAABUAQAAAwAREp9UAQAAXAEAAAMAERGfXAEAAGQBAAADABEQn2QBAABsAQAAAwARD59sAQAAdAEAAAMAEQ6fdAEAAHwBAAADABENn3wBAACEAQAAAwARDJ+EAQAAjAEAAAMAEQufjAEAAJQBAAADABEKn5QBAACcAQAAAwARCZ+cAQAApAEAAAMAEQifpAEAAKwBAAADABEHn6wBAAC0AQAAAwARBp+0AQAAvAEAAAMAEQWfvAEAAMQBAAADABEEn8QBAADMAQAAAwARA5/MAQAA1AEAAAMAEQKf1AEAAOQBAAADABEBnwAAAAAAAAAA/////wwDAAAzAgAANQIAAAQA7QIAnzUCAABFAgAABADtAAyfAAAAAAAAAAD/////DAMAAPgBAAD6AQAABADtAgCf+gEAAAYCAAAEAO0ABJ8oAgAAKgIAAAQA7QIAnyoCAAA7AgAABADtAASfAAAAAAAAAAD/////DAMAAA8CAAASAgAABADtAgGfAAAAAAAAAAD/////DAMAALQCAADKBQAABADtAASfAAAAAAAAAAD/////DAMAAL4CAADGAgAAAwARH5/GAgAAzgIAAAMAER6fzgIAANYCAAADABEdn9YCAADeAgAAAwARHJ/eAgAA5gIAAAMAERuf5gIAAO4CAAADABEan+4CAAD2AgAAAwARGZ/2AgAA/gIAAAMAERif/gIAAAYDAAADABEXnwYDAAAOAwAAAwARFp8OAwAAFgMAAAMAERWfFgMAAB4DAAADABEUnx4DAAAmAwAAAwARE58mAwAALgMAAAMAERKfLgMAADYDAAADABERnzYDAAA+AwAAAwAREJ8+AwAARgMAAAMAEQ+fRgMAAE4DAAADABEOn04DAABWAwAAAwARDZ9WAwAAXgMAAAMAEQyfXgMAAGYDAAADABELn2YDAABuAwAAAwARCp9uAwAAdgMAAAMAEQmfdgMAAH4DAAADABEIn34DAACGAwAAAwARB5+GAwAAjgMAAAMAEQafjgMAAJYDAAADABEFn5YDAACeAwAAAwARBJ+eAwAApgMAAAMAEQOfpgMAAK4DAAADABECn64DAAC2BAAAAwARAZ+2BAAAygUAAAMAESCfAAAAAAAAAAD/////DAMAAL4DAADGAwAAAwARH5/GAwAAzgMAAAMAER6fzgMAANYDAAADABEdn9YDAADeAwAAAwARHJ/eAwAA5gMAAAMAERuf5gMAAO4DAAADABEan+4DAAD2AwAAAwARGZ/2AwAA/gMAAAMAERif/gMAAAYEAAADABEXnwYEAAAOBAAAAwARFp8OBAAAFgQAAAMAERWfFgQAAB4EAAADABEUnx4EAAAmBAAAAwARE58mBAAALgQAAAMAERKfLgQAADYEAAADABERnzYEAAA+BAAAAwAREJ8+BAAARgQAAAMAEQ+fRgQAAE4EAAADABEOn04EAABWBAAAAwARDZ9WBAAAXgQAAAMAEQyfXgQAAGYEAAADABELn2YEAABuBAAAAwARCp9uBAAAdgQAAAMAEQmfdgQAAH4EAAADABEIn34EAACGBAAAAwARB5+GBAAAjgQAAAMAEQafjgQAAJYEAAADABEFn5YEAACeBAAAAwARBJ+eBAAApgQAAAMAEQOfpgQAAK4EAAADABECn64EAAC2BAAAAwARAZ+2BAAAtgUAAAMAEQCftgUAAMoFAAADABEgnwAAAAAAAAAA/////wwDAAC+BAAAxgQAAAMAER+fxgQAAM4EAAADABEen84EAADWBAAAAwARHZ/WBAAA3gQAAAMAERyf3gQAAOYEAAADABEbn+YEAADuBAAAAwARGp/uBAAA9gQAAAMAERmf9gQAAP4EAAADABEYn/4EAAAGBQAAAwARF58GBQAADgUAAAMAERafDgUAABYFAAADABEVnxYFAAAeBQAAAwARFJ8eBQAAJgUAAAMAEROfJgUAAC4FAAADABESny4FAAA2BQAAAwAREZ82BQAAPgUAAAMAERCfPgUAAEYFAAADABEPn0YFAABOBQAAAwARDp9OBQAAVgUAAAMAEQ2fVgUAAF4FAAADABEMn14FAABmBQAAAwARC59mBQAAbgUAAAMAEQqfbgUAAHYFAAADABEJn3YFAAB+BQAAAwARCJ9+BQAAhgUAAAMAEQefhgUAAI4FAAADABEGn44FAACWBQAAAwARBZ+WBQAAngUAAAMAEQSfngUAAKYFAAADABEDn6YFAACuBQAAAwARAp+uBQAAtgUAAAMAEQGftgUAAMoFAAADABEAnwAAAAAAAAAA/////wwDAAA1BgAANwYAAAQA7QIAnzcGAABJBgAABADtAASfAAAAAAAAAAD/////DAMAALYGAAC4BgAABADtAgCfuAYAAMIGAAAEAO0ABJ8AAAAAAAAAAP////8MAwAAwgYAANUNAAAjABDlprKtBp+TBBCyk9mWA5+TBBDZyazLAZ+TBBDspNZln5MEAAAAAAAAAAD/////DAMAAPYLAAD4CwAABADtAgCf+AsAAP4LAAAEAO0ADp8AAAAAAAAAAP////8MAwAAagcAAGwHAAAEAO0CAZ9sBwAAkQcAAAQA7QARnwAAAAAAAAAA/////wwDAABdBwAAXwcAAAQA7QIAn18HAACRBwAABADtAA+fAAAAAAAAAAD/////DAMAAHQHAAB7BwAABgDtAA2fkwh7BwAAggcAAA4A7QANn5MIkxDtAAyfkwiCBwAAiQcAABQA7QANn5MIkwjtAA+fkwjtAAyfkwiJBwAACQgAABgA7QANn5MI7QARn5MI7QAPn5MI7QAMn5MICQgAAPALAAAOAJMI7QARn5MI7QAPn5MIAAAAAAAAAAD/////DAMAAPgHAAD6BwAABADtAgCf+gcAAP8HAAAEAO0ACp8AAAAAAAAAAP////8MAwAA3AcAAOkHAAAEAO0CAZ8AAAAAAAAAAP////8MAwAAoQgAALYIAAADABEAn7YIAADJCAAAAwARAZ/JCAAA3AgAAAMAEQKf3AgAAPcIAAADABEDnwAAAAAAAAAA/////wwDAADwCQAA8gkAAAQA7QIAn/IJAAD3CQAABADtAAufAAAAAAAAAAD/////DAMAACcLAAAwCwAABADtAAufAAAAAAAAAAD/////DAMAALcNAADVDQAAAgAwnxkOAAAaDgAABADtAgGfHA4AAJ8YAAAEAO0AD58AAAAAAAAAAP////8MAwAAtw0AANUNAAADABEAnygOAAAqDgAABADtAgCfKg4AAEgOAAAEAO0ADZ8AAAAAAAAAAP////8MAwAAMQ4AAIsOAAACADCfAAAAAAAAAAD/////DAMAADEOAACLDgAANAAwn5MBMJ+TATCfkwEwn5MBMJ+TATCfkwEwn5MBMJ+TATCfkwEwn5MBMJ+TATCfkwEwn5MEAAAAAAAAAAD/////DAMAAEEOAABDDgAABADtAgCfQw4AAJ8YAAAEAO0AFp8AAAAAAAAAAP////8MAwAAMQ4AAIsOAAADABEAn2cYAABpGAAABADtAgCfaRgAAG4YAAAEAO0AIp8AAAAAAAAAAP////8MAwAAmQ4AAKMOAAAUAJME7QAmn5ME7QAln5ME7QAkn5MEow4AAG4YAAAYAO0AJ5+TBO0AJp+TBO0AJZ+TBO0AJJ+TBAAAAAAAAAAA/////wwDAACZDgAAtQ4AAAMAEQCfHA8AAB4PAAAEAO0CAJ8eDwAASQ8AAAQA7QAKnwAAAAAAAAAA/////wwDAAAyDwAA+g8AAAQA7QAonwAAAAAAAAAA/////wwDAABADwAA+g8AAAQA7QATnwAAAAAAAAAA/////wwDAADSDwAA+g8AAAQA7QALnwAAAAAAAAAA/////wwDAABoEQAAahEAAAQA7QIAn2oRAAB3EQAABADtAA6fAAAAAAAAAAD/////DAMAAAwQAAAmEAAAAwARAJ+NEAAAjxAAAAQA7QIAn48QAACUEAAABADtAAqfAAAAAAAAAAD/////DAMAAKMQAABvEQAABADtABOfAAAAAAAAAAD/////DAMAALEQAABvEQAABADtABSfAAAAAAAAAAD/////DAMAAEMRAABvEQAABADtAAufAAAAAAAAAAD/////DAMAAIgRAACKEQAABADtAgCfihEAADMSAAAEAO0ADJ8kFAAAAxgAAAQA7QAMnwAAAAAAAAAA/////wwDAABGEgAAGRQAAAMAEQCfAAAAAAAAAAD/////DAMAAJsSAACcEgAABADtAgGfnhIAAL4SAAAEAO0AHZ8TEwAAFBMAAAQA7QIBnxYTAAA2EwAABADtAB6fixMAAIwTAAAEAO0CAZ+OEwAArhMAAAQA7QAgnwMUAAAEFAAABADtAgGfBhQAABkUAAAEAO0AL58AAAAAAAAAAP////8MAwAA+hcAAPsXAAAEAO0CAp8AAAAAAAAAAP////8MAwAAuBcAALoXAAAEAO0CAJ+6FwAAvxcAAAQA7QAwnwAAAAAAAAAA/////wwDAAA1FAAAuhQAAAMAEQSfuhQAANsUAAADABEFn9sUAAD8FAAAAwARBp/8FAAAHRUAAAMAEQefAAAAAAAAAAD/////DAMAANUUAADXFAAACACTDO0CAZ+TBNcUAADbFAAACACTDO0AIJ+TBPYUAAD4FAAACACTDO0CAZ+TBPgUAAC/FwAACACTDO0AL5+TBAAAAAAAAAAA/////wwDAABYFAAAWhQAAAQA7QIBn1oUAAC6FAAABADtABOfxBQAAMYUAAAEAO0CAZ/GFAAA2xQAAAQA7QATn+UUAADnFAAABADtAgGf5xQAAB0VAAAEAO0ACp8AAAAAAAAAAP////8MAwAAtBQAALYUAAAEAO0CAZ+2FAAAuhQAAAQA7QAen9UUAADXFAAABADtAgGf1xQAANsUAAAEAO0AIJ/2FAAA+BQAAAQA7QIBn/gUAAAdFQAABADtAC+fAAAAAAAAAAD/////DAMAABYVAAAYFQAABADtAgCfGBUAADYVAAAEAO0AC58AAAAAAAAAAP////8MAwAAChUAAL8XAAAEAO0AMZ8AAAAAAAAAAP////8MAwAAdRUAAHcVAAAEAO0CAJ93FQAAuRUAAAQA7QAEnwAAAAAAAAAA/////wwDAACrFwAArRcAAAQA7QIAn60XAAC/FwAABADtAAOfAAAAAAAAAAD/////DAMAAM8WAAAKFwAABADtAAufAAAAAAAAAAD/////DAMAALAWAACyFgAABADtAgGfshYAAN8WAAAEAO0AE58AAAAAAAAAAP////8MAwAAqRYAAN8WAAADABEAnwAAAAAAAAAA/////wwDAAD2FgAASBcAAAQA7QAcn1QXAABhFwAABADtAByfAAAAAAAAAAD/////DAMAAAIXAAAKFwAAAwARAJ8AAAAAAAAAAP////8MAwAAAhcAAEgXAAADABEAn1QXAABVFwAAAwARAJ8AAAAAAAAAAP////8MAwAAAhcAAEgXAAADABEAn1QXAABfFwAAAwARAJ9fFwAAYRcAAAQA7QALn3QXAAB7FwAABADtAAufAAAAAAAAAAD/////DAMAABUXAAAXFwAABADtAgGfFxcAADcXAAAEAO0ABJ9UFwAAYRcAAAQA7QAEnwAAAAAAAAAA/////wwDAAAMFwAANxcAAAMAEQCfVBcAAGEXAAADABEAnwAAAAAAAAAA/////wwDAABtFwAAbxcAAAQA7QIAn28XAAB7FwAABADtAASfAAAAAAAAAAD/////yhsAAB8AAAB8AAAAAgAwn+sIAAD3CAAABADtAASfAAAAAAAAAAD/////yhsAAB8AAAB8AAAAAwARAJ+3AAAAEgEAAAMAEQGfJAEAAJIBAAADABEBnwAAAAAAAAAA/////8obAAAfAAAAfAAAAAMAEQCfeAgAAH8IAAADABEBn4AIAADNCAAAAwARAZ8AAAAAAAAAAP/////KGwAAHwAAAHwAAAADABEAn/AIAADyCAAABADtAgCf8ggAAPcIAAAEAO0ADJ8AAAAAAAAAAP/////KGwAAaAgAAHAIAAAIAJMQ7QAen5MIcAgAAHgIAAAOAJMI7QAfn5MI7QAen5MIeAgAAH8IAAASAO0AIJ+TCO0AH5+TCO0AHp+TCAAAAAAAAAAA/////8obAACYAAAAmgAAAAQA7QIAn5oAAABtAwAABADtAA6fAAAAAAAAAAD/////yhsAAI0AAAD3CAAABADtAA+fAAAAAAAAAAD/////yhsAALsAAADfAAAAAwARAZ/fAAAAEgEAAAMAEQOfAAAAAAAAAAD/////yhsAANwAAADdAAAABADtAgGf3wAAABIBAAAEAO0AEJ8AAAAAAAAAAP/////KGwAA6QAAAOsAAAAEAO0CAZ/rAAAAEgEAAAQA7QAOnwAAAAAAAAAA/////8obAAAFAQAABgEAAAQA7QIBnwgBAAASAQAABADtABGfAAAAAAAAAAD/////yhsAACgBAABjAQAAAwARAp9jAQAAkgEAAAMAEQSfAAAAAAAAAAD/////yhsAAFwBAABdAQAABADtAgGfXwEAAJIBAAAEAO0AEJ8AAAAAAAAAAP/////KGwAAbQEAAG8BAAAEAO0CAZ9vAQAAkgEAAAQA7QASnwAAAAAAAAAA/////8obAACJAQAAigEAAAQA7QIBn4wBAACSAQAABADtABGfAAAAAAAAAAD/////yhsAAKABAADKAQAAAwARAJ/KAQAA6wEAAAMAEQGf6wEAACACAAADABECnyACAABBAgAAAwARA59BAgAAYgIAAAMAEQSfYgIAAI0CAAADABEFn40CAAC5AgAAAwARBp+5AgAA5QIAAAMAEQef5QIAABEDAAADABEInxEDAAA9AwAAAwARCZ89AwAAbQMAAAMAEQqfAAAAAAAAAAD/////yhsAAG8DAACTAwAAAwARAJ9vBAAAlQQAAAQA7QAYnwAAAAAAAAAA/////8obAABvAwAAkwMAAAMAEQCfewQAAH0EAAAEAO0CAJ8AAAAAAAAAAP/////KGwAAwAMAAMIDAAAEAO0CAZ/CAwAAggQAAAQA7QAbnwAAAAAAAAAA/////8obAADIAwAAygMAAAYA7QIAIwGfygMAAFUEAAAGAO0AHCMBn1UEAABYBAAABADtAgGfAAAAAAAAAAD/////yhsAAJUDAADmAwAAAgAwnzIEAABMBAAABADtAB6fAAAAAAAAAAD/////yhsAAJUDAADmAwAAAwARAJ9HBAAASQQAAAQA7QIBn0kEAABMBAAABADtAA6fAAAAAAAAAAD/////yhsAALcEAAC5BAAABADtAgCfuQQAABgFAAAEAO0AEp8AAAAAAAAAAP/////KGwAAygQAAP4EAAAEAO0ADZ8AAAAAAAAAAP/////KGwAAygQAAP4EAAAEAO0ADZ8AAAAAAAAAAP/////KGwAAnAQAANwEAAACADCf+QQAAPsEAAAEAO0CAZ/7BAAA/gQAAAQA7QAOnwAAAAAAAAAA/////8obAAApBQAAKwUAAAQA7QIAnysFAABjBQAABADtAA2fAAAAAAAAAAD/////yhsAAC4FAAAwBQAABADtAgCfMAUAAGMFAAAEAO0AEp8AAAAAAAAAAP/////KGwAAIQUAADcFAAACADCfWAUAAFoFAAAEAO0CAZ9aBQAAXQUAAAQA7QAOnwAAAAAAAAAA/////8obAABlBQAAoQUAAAMAEQCfAAYAAAIGAAAEAO0CAZ8CBgAACwYAAAQA7QAdnwAAAAAAAAAA/////8obAABIBgAAcAYAAAIAMJ9wBgAAjQYAAAQA7QARn5oGAADKBgAAAgAwnwMHAAAFBwAABADtAgKfBQcAAAkHAAAEAO0AEJ8WBwAARAcAAAQA7QAen3MHAACyBwAABADtABGfsgcAAMoHAAAEAO0AHp8AAAAAAAAAAP/////KGwAASAYAAHAGAAADABEAn3AGAACNBgAAAwARAZ+aBgAAxAYAAAMAEQCfxAYAAMoGAAADABEBn+IGAAAJBwAAAwARAp8JBwAAQgcAAAMAEQOfUAcAAFIHAAAEAO0CAJ9SBwAAcwcAAAQA7QAdnwAAAAAAAAAA/////8obAABPBgAAUQYAAAQA7QIBn1EGAACNBgAABADtABCftQYAAMoGAAACADCf8QYAAPMGAAAEAO0CAZ/zBgAAJQcAAAQA7QAhnwAAAAAAAAAA/////8obAABXBgAAWQYAAAQA7QICn1kGAACNBgAABADtABGfvQYAAMAGAAAEAO0CAZ9fBwAAyQcAAAIAMJ/oBwAA+AcAAAIAMJ8AAAAAAAAAAP/////KGwAAXQYAAI0GAAADABEDn44GAAAICAAAAwARA58AAAAAAAAAAP/////KGwAAaQYAAI0GAAAGAO0AGCMBn5oGAAD5BwAABgDtABgjAZ8ACAAAAggAAAQA7QIAnwIIAAAICAAABADtAA2fAAAAAAAAAAD/////yhsAAHwGAACEBgAACACTEO0AHp+TCIQGAACNBgAADgCTCO0AH5+TCO0AHp+TCKYGAACuBgAACACTEO0AHp+TCK4GAAAlBwAADgCTCO0AH5+TCO0AHp+TCCUHAABPCAAACACTCO0AH5+TCAAAAAAAAAAA/////8obAAAACAAAAggAAAQA7QIAnwIIAABPCAAABADtAA2fAAAAAAAAAAD/////yhsAAAUIAAAGCAAABADtAgCfAAAAAAAAAAD/////yhsAAPkHAAATCAAAAgAwnwAAAAAAAAAA/////8obAACACAAAzQgAAAMAEQKfAAAAAAAAAAD/////yhsAAIAIAADNCAAAAwARAp8AAAAAAAAAAP/////KGwAAhAgAALcIAAADABECn7cIAADNCAAAAwARA58AAAAAAAAAAP/////KGwAAtAgAALUIAAAEAO0CAZ+3CAAAzQgAAAQA7QARnwAAAAAAAAAA/////8obAADFCAAAzQgAAAQA7QAQnwAAAAAAAAAA/////8obAADmCAAA6QgAAAQA7QIAnwAAAAAAAAAA/////yglAAAAAAAAnAAAAAQA7QAAnwAAAAAAAAAA/////yglAACeAAAAxwAAAAMAEQCfowEAAL0BAAAEAO0ADJ8AAAAAAAAAAP////8oJQAAngAAAMcAAAADABEAn9EAAADTAAAABADtAgGf0wAAAKoBAAAEAO0ADZ+qAQAA5AEAAAQA7QAEnwAAAAAAAAAA/////yglAAD2AAAA+AAAAAQA7QIBn/gAAACxAQAABADtAACfAAAAAAAAAAD/////KCUAAP4AAAAAAQAABgDtAgAjAZ8AAQAAigEAAAYA7QAPIwGfigEAAI0BAAAEAO0CAZ8AAAAAAAAAAP////8oJQAAyQAAABwBAAACADCfZwEAAIEBAAAEAO0AEZ8AAAAAAAAAAP////8oJQAAyQAAABwBAAADABEAn3wBAAB+AQAABADtAgGffgEAAIEBAAAEAO0ABJ8AAAAAAAAAAP////8oJQAA3wEAAOEBAAAEAO0CAJ/hAQAAPwIAAAQA7QAGnwAAAAAAAAAA/////yglAADyAQAAJQIAAAQA7QADnwAAAAAAAAAA/////yglAADyAQAAJQIAAAQA7QADnwAAAAAAAAAA/////yglAADEAQAABAIAAAIAMJ8gAgAAIgIAAAQA7QIBnyICAAAlAgAABADtAASfAAAAAAAAAAD/////KCUAAFACAABSAgAABADtAgCfUgIAAIYCAAAEAO0AA58AAAAAAAAAAP////8oJQAAVQIAAFcCAAAEAO0CAJ9XAgAApwIAAAQA7QAGnwAAAAAAAAAA/////yglAABIAgAAXgIAAAIAMJ9/AgAAgQIAAAQA7QIBn4ECAACEAgAABADtAASfAAAAAAAAAAD/////KCUAAIYCAACnAgAAAwARAJ8AAAAAAAAAAP////8oJQAAqQIAAOcCAAADABEAn0YDAABIAwAABADtAgGfSAMAAFEDAAAEAO0AEJ8AAAAAAAAAAP////8oJQAAjgMAALYDAAACADCftgMAAMsDAAAEAO0AE5/YAwAABQQAAAIAMJ8FBAAADwQAAAQA7QATnw8EAAAfBAAAAgAwnzwEAABsBAAABADtABGfngQAANoEAAAEAO0AE5/aBAAA8gQAAAQA7QARnwAAAAAAAAAA/////yglAACOAwAAtgMAAAMAEQCftgMAAMsDAAADABEBn9gDAAAFBAAAAwARAJ8FBAAADwQAAAMAEQGfDwQAABsEAAADABEAnxsEAAAvBAAAAwARAZ8vBAAAagQAAAMAEQKfeAQAAHoEAAAEAO0CAJ96BAAAngQAAAQA7QAQnwAAAAAAAAAA/////yglAACdAwAAnwMAAAQA7QICn58DAADLAwAABADtABOf+AMAAPoDAAAEAO0CAp/6AwAABQQAAAQA7QATnxAEAAAfBAAAAgAwnwAAAAAAAAAA/////yglAACWAwAAmAMAAAQA7QIBn5gDAADLAwAABADtABKfigQAAPEEAAACADCfEAUAAB0FAAACADCfAAAAAAAAAAD/////KCUAAKMDAADLAwAAAwARAp/MAwAALQUAAAMAEQKfAAAAAAAAAAD/////KCUAAK8DAADLAwAABgDtAA0jAZ/YAwAAHgUAAAYA7QANIwGfJQUAACcFAAAEAO0CAJ8nBQAALQUAAAQA7QADnwAAAAAAAAAA/////yglAADCAwAAywMAAAgAkwjtABGfkwjgAwAASwQAAAgAkwjtABGfkwgAAAAAAAAAAP////8oJQAAJQUAACcFAAAEAO0CAJ8nBQAAcQUAAAQA7QADnwAAAAAAAAAA/////yglAAAqBQAAKwUAAAQA7QIAnwAAAAAAAAAA/////yglAAAeBQAAOAUAAAIAMJ8AAAAAAAAAAP/////PKgAAFwAAAMICAAADABEAn8ICAABQBQAAAwARAZ8AAAAAAAAAAP/////PKgAAKwAAAGsAAAAE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dW50AHVuc2lnbmVkIGludABjbnQAYnNfaW5pdABtZW1zZXQAZXh0cmFjdABidWlsZF9jb21wYXQAQ29tcGF0AHNpemVfdAB1aW50NjRfdAB1aW50MzJfdABwdHMAc2JpdHMAc3MAcG9zAHNlZ19jb250YWlucwB2YWxzAHJlcwBjb25zdF9wbGFuZXMAd2luZG93X21hdGNoZXMAbWVsZF9tYXRjaGVzAG1heF9iYXRjaGVzAHNmX3NldF9vYnMAT2JzAHNuYXBfY3VyAHNmX2N1cnNvcgBzY2F0dGVyAHNmX2ZvdW5kX2NvdW50ZXIAcHJlZmlsdGVyAGhpZ2hlcgB1bnNpZ25lZCBjaGFyAGR1cABic19zdGVwAHNmX3N0ZXAAcmVwAGNwAHdsbwBzZl9iZWdpbgBzdF9pbgBjaG9zZW4AbQBzbABwbAB0b3RhbABsYW5lX21hc2sAb2sAbWsAagB3aGkAd2lkdGgAc2Nhbl9iYXRjaAB1bnNpZ25lZCBsb25nIGxvbmcAdW5zaWduZWQgbG9uZwByaW5nAHBlbmRpbmcAc2VnAHNlZ19vZgBiYW5kX29mAG1lbW1vdmUAdmFsdWUAUmVzaWR1ZQBiYXNlAGRvbmUAbGFuZQBnZQAvaG9tZS9oYXRjaC93b3Jrc3BhY2Uvd29ya19zZWVkZmluZABiYW5kAGlkAHNmX2ZvdW5kX3NlZWQAYnNfYWRkAHN0ZXBfc2MAZmMAc2VlZGZpbmRfd2FzbS5jAGNvbmRfc3ViAHNiAEtnbG9iAG5iAG5hAGNvbXBfAGZyZWVfAF9fQVJSQVlfU0laRV9UWVBFX18AWABOVwBCQU5EX1NUQVJUAFBUAEZPVU5EX0NUUwBGT1VORF9TRUVEUwBPQlMAU0NfQ1VSAFNDX0xPAFNDX1dMTwBGT1VORF9OAFNFRzlfTgBTRUc4X04AU0VHN19OAFNFRzZfTgBTRUc1X04AU0VHNF9OAFNFRzNfTgBTRUcyX04AU0VHMV9OAFNFRzEwX04ARU4AQ04AUjExTgBSMTBOAENLAFNDX0hJAFNDX1dISQBFAEQAQwBTRUdfTEVOX0IAUjEwQgBSOQBTRUc5AFI4AFNFRzgAY2xhbmcgdmVyc2lvbiAyMi4xLjgAcjcAaGF2ZTcAYnNfbW9kNwBTRUc3AFNFRzYAU0VHNQBTRUc0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AXQGA/d+LgOJAfID9348A4kB5AUQCDAFFwbjBRUGWAYhBRoGPAUOWAP1fjwGA4sBSgUQBlgFFwbVBRUGSiEFKwatBSkGIAUSdAUZIAUfIAUaBh8FDgY8BSsGkQUpBiAFEnQFGSAFHyAFBQZxBR7WBQUgdAYD935mBRADiwF0BQcgBRA8BRcGuQUVBlgGIQUaBiAFDjwD9X48BQUDjgFYA/J+8gOOAYIFJwasBSkGdAUnugPyfjwGA44BSgUpBlgFJ0oD8n48BgOOAUoFKQZYBSdKA/J+PAYDjgFKBSkGWAUnSgUFBnQFHpAFBSBYBgPyfmYGA44BdAUpyAUnBpAFBQZ0BgPyfjwDjgFKBroDdmYGA/x+AiYBA4QBSgP8fghKBTsGA4QBZgU4BgiCBjwgIAYD/H48BQUGA4QBSgUtdAYD/H48BQUGA4QBSlgGA/x+ZgYDhAF0BTtKBTgGdAP8flgFBQYDhAFKugUTrQVLBi4FRFgFSVgFUiAFUFgFEzwD+34uBTADhQEgBSlYBS5YA/t+PAUAA4UBIAUKBlkFCQY8A/p+LgUFBgOJAVgGA/d+LgOJAfID9348A4kB5AUQCDAFFwbjBRUGWAYhBRoGPAUOWAP1fjwGA4sBSgUQBlgFFwbVBRUGSiEFKwatBSkGIAUSdAUZIAUfIAUaBh8FDgY8BSsGkQUpBiAFEnQFGSAFHyAFBQZxBR7WBQUgdAYD935mBRADiwF0BQcgBRA8BRcGuQUVBlgGIQUaBiAFDjwD9X48BQUDjgFYA/J+8gOOAYIFJwasBSkGdAUnugPyfjwGA44BSgUpBlgFJ0oD8n48BgOOAUoFKQZYBSdKA/J+PAYDjgFKBSkGWAUnSgUFBnQFHpAFBSBYBgPyfmYGA44BdAUpyAUnBpAFBQZ0BgPyfjwDjgFKBrUFATUCAQABAQDYAQRuYW1lAA4Nc2VlZGZpbmQud2FzbQGgAQ0ACnNmX3NldF9vYnMBCHNmX2JlZ2luAgxidWlsZF9jb21wYXQDB3NmX3N0ZXAECXByZWZpbHRlcgUJc2ZfY3Vyc29yBg5zZl9mb3VuZF9jb3VudAcNc2ZfZm91bmRfc2VlZAgQc2ZfZm91bmRfY291bnRlcgkKc2ZfY29tcGF0MAoKc2ZfY29tcGF0MQsHYnNfbW9kMwwIY29uZF9zdWIHEgEAD19fc3RhY2tfcG9pbnRlcgkKAQAHLnJvZGF0YQA1CXByb2R1Y2VycwIIbGFuZ3VhZ2UBA0MxMQAMcHJvY2Vzc2VkLWJ5AQVjbGFuZwYyMi4xLjgAhgEPdGFyZ2V0X2ZlYXR1cmVzBysPYnVsay1tZW1vcnktb3B0KxZjYWxsLWluZGlyZWN0LW92ZXJsb25nKw5leHRlbmRlZC1jb25zdCsKbXVsdGl2YWx1ZSsPbXV0YWJsZS1nbG9iYWxzKxNub250cmFwcGluZy1mcHRvaW50KwhzaWduLWV4dA==";
@@ -1447,9 +1461,12 @@ $("sfstart").addEventListener("click", async () => {
   $("sfstart").disabled = true;
   try {
   const usedAll = sfCollectObs();
-  if (usedAll.length < 2) { sfShowWarn(t("sfNeedObs")); return; }
+  if (usedAll.length < 3) { sfShowWarn(t("sfNeedObs")); return; }
   // スロットの未入力（－）は 0 として扱う（無いスロットは入力しなくてよい）。全て未入力の行は 0-0-0 になり、後段の実在チェックで弾かれる
   const used = usedAll.slice(0, 8);
+  // スロットが全て未入力の行は 0-0-0 扱いになり、実在しないため絶対に特定できない。専用メッセージで止める
+  const noSlot = used.find(u => u.sl.every(v => v === ""));
+  if (noSlot) { sfShowWarn(tf("sfNeedSlots", { n: noSlot.row })); return; }
   sfK = used.length;
   const obs = used.map(u => {
     // 実在の護石はスロットが全て降順なので、観測も降順に揃えてから渡す（locate側の比較と統一。入力順のミスを許容）
@@ -1559,7 +1576,13 @@ function sfFail() {
 $("sfstop").addEventListener("click", () => { if (sfRunning) sfFinish(true); });
 $("go").addEventListener("click", () => { generate(); $("stat").scrollIntoView({ behavior: "smooth", block: "start" }); });
 $("tbltoggle").addEventListener("click", () => { tblHidden = !tblHidden; renderTblToggle(); });
-document.querySelectorAll(".fband").forEach(e => e.addEventListener("change", render));
+document.querySelectorAll(".fband").forEach(e => e.addEventListener("change", () => {
+  // 選択中のスロット条件が、チェック中のレア度では出なくなったら解除する
+  const sel = checkedBands();
+  if (slotMin && !PATTERN_BANDS[slotMin.join(",")].some(b => sel.has(b))) slotMin = null;
+  renderSlotBtn();
+  render();
+}));
 (function restore() {
   const seed = lsGet("charm_seed");
   const cnt = lsGet("charm_counter");
