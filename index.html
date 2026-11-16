@@ -99,7 +99,7 @@ SOFTWARE.
     .mini, .lvb, .skbtn { min-height: 40px; }
   }
   .favempty { color: var(--muted); text-align: center; padding: 18px; }
-  #favdlglist, #favdlgothers { overflow-y: auto; max-height: 56vh; margin-top: 8px; }
+  #favdlglist, #favdlgothers { overflow-y: auto; max-height: 56vh; max-height: 56dvh; margin-top: 8px; }
   .obsrow.favnext { background: var(--fav-hit-bg); border-radius: var(--radius-s); }
   .nextbadge { background: var(--fav); color: #22242c; font-weight: 700; font-size: 11px; padding: 1px 7px; border-radius: 999px; }
   .cnt { color: var(--muted); font-size: 12px; margin: 6px 0; }
@@ -136,10 +136,11 @@ SOFTWARE.
   .skbtn.set { border-color: var(--accent); }
   .skbtn.empty { color: var(--faint); }
   .slsel { width: 54px; }
-  dialog#skdlg, dialog#sldlg, dialog#favdlg, dialog#helpdlg { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 16px; width: min(560px, 94vw); max-height: 82vh; }
+  dialog#skdlg, dialog#sldlg, dialog#favdlg, dialog#helpdlg { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 16px; width: min(560px, 94vw); max-height: 82vh; max-height: 82dvh; }
   dialog#favdlg { width: min(700px, 94vw); }
   dialog#skdlg::backdrop, dialog#sldlg::backdrop, dialog#favdlg::backdrop, dialog#helpdlg::backdrop { background: rgba(0,0,0,.55); }
-  #sklist, #sllist { overflow-y: auto; max-height: 58vh; margin-top: 8px; }
+  body:has(dialog[open]) { overflow: hidden; }
+  #sklist, #sllist { overflow-y: auto; max-height: 58vh; max-height: 58dvh; margin-top: 8px; }
   .skitem { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 4px; border-bottom: 1px solid var(--line-soft); flex-wrap: wrap; }
   .skitem .nm { font-size: 14px; }
   #helpdlg p { margin: 8px 0; line-height: 1.7; }
@@ -475,6 +476,7 @@ SOFTWARE.
       width: calc(100vw - 20px);
       max-width: none;
       max-height: min(86vh, 760px);
+      max-height: min(86dvh, 760px);
       padding: 15px;
       border-radius: 18px;
       border-color: rgba(137, 169, 197, .3);
@@ -486,6 +488,7 @@ SOFTWARE.
     #sksearch { min-width: 100% !important; height: 44px; margin: 0; }
     #sklist, #sllist, #favdlglist, #favdlgothers {
       max-height: 62vh;
+      max-height: 62dvh;
       -webkit-overflow-scrolling: touch;
     }
     .skitem { padding: 10px 3px; }
@@ -503,7 +506,7 @@ SOFTWARE.
     body { padding-left: 10px; padding-right: 10px; }
     .panel { padding: 13px; }
     .predict-panel { padding: 15px 12px 13px; }
-    .topbar { gap: 6px; }
+    .topbar { gap: 6px; flex-wrap: wrap; }
     #helpbtn, #langbtn { padding: 6px 8px; font-size: 10.5px; }
     #obsrows .obsgrp:last-child { gap: 5px; }
   }
@@ -513,6 +516,14 @@ SOFTWARE.
     #fadd, #fslotadd, #fclearall { flex: 1 1 100%; }
     /* 検索結果の「ここから予測」はスマホ幅では小さめのチップにする */
     #seekres .seekjump { min-height: 32px; padding: 4px 10px; font-size: 11.5px; border-radius: 8px; }
+  }
+
+  /* 検索結果の行は、列がそろう幅（1150px）未満ではスキルを1行ずつに割り付ける */
+  @media (max-width: 1149px) {
+    #seekres .seekrow { gap: 4px 10px; }
+    #seekres .seekrow .sk { order: 3; flex: 1 1 100%; }
+    #seekres .seekrow .slot { order: 4; }
+    #seekres .seekrow .seekjump { margin-left: auto; }
   }
 
 </style>
@@ -574,7 +585,7 @@ SOFTWARE.
   <div class="cnt" id="stat" aria-live="polite"></div>
   <button type="button" class="mini" id="tbltoggle" style="display:none">結果を閉じる</button>
 </div>
-<div class="panel" id="tblpanel" style="display:none; overflow-x:auto; max-height: 70vh; overflow-y:auto;">
+<div class="panel" id="tblpanel" style="display:none; overflow-x:auto; max-height: 70vh; max-height: 70dvh; overflow-y:auto;">
   <table>
     <thead><tr><th scope="col">☆</th><th scope="col">#</th><th scope="col" data-i18n="thCounter">カウンタ</th><th scope="col" data-i18n="thBand">レア度</th><th scope="col" data-i18n="thSkill1">スキル1</th><th scope="col" data-i18n="thSkill2">スキル2</th><th scope="col" data-i18n="thSkill3">スキル3</th><th scope="col" data-i18n="thSlots">スロット</th></tr></thead>
     <tbody id="tbody"></tbody>
@@ -605,7 +616,7 @@ SOFTWARE.
 <div class="recovery-section">
 <div class="panel recovery-input-panel">
   <div class="row"><b class="panel-title" data-i18n="locateTitle">カウンター位置の特定</b></div>
-  <div class="note" data-i18n="locateNote">マカ錬金で引いた護石を、古い順に3つ入力してください。スキル・スロットは、ある分だけ入力すればOKです。</div>
+  <div class="note" data-i18n="locateNote">マカ錬金で引いた護石を、古い順に3つ入力してください。スキル・スロットは、ある分だけ入力すればOKです。基準seedの復元ではスロットの入力が必要です。</div>
   <div id="obsrows"></div>
   <div class="row">
     <button type="button" class="mini" id="clrobs" data-i18n="clearAll">全てクリア</button>
@@ -727,7 +738,7 @@ const I18N = {
   stop: ["中止", "Stop", "停止"],
   seekNote: ["一覧より先も探せます。結果は10件ずつ表示します。", "Searches beyond the list above, 10 results per page.", "可搜索列表之后的结果，每页显示10个。"],
   locateTitle: ["カウンター位置の特定", "Find Your Current Counter", "确定当前计数器位置"],
-  locateNote: ["マカ錬金で引いた護石を、古い順に3つ入力してください。スキル・スロットは、ある分だけ入力すればOKです。", "Enter 3 charms from the Melding Pot, oldest first. For skills and slots, just enter the ones the charm has.", "请输入马卡炼金炼出的护石，按从旧到新的顺序填 3 个。技能和槽位只需填写实际有的部分。"],
+  locateNote: ["マカ錬金で引いた護石を、古い順に3つ入力してください。スキル・スロットは、ある分だけ入力すればOKです。基準seedの復元ではスロットの入力が必要です。", "Enter 3 charms from the Melding Pot, oldest first. For skills and slots, just enter the ones the charm has. Base seed recovery requires the slots to be entered.", "请输入马卡炼金炼出的护石，按从旧到新的顺序填 3 个。技能和槽位只需填写实际有的部分。恢复基础种子时需要填写槽位。"],
   clearAll: ["全てクリア", "Clear all", "全部清除"],
   searchRange: ["探索範囲", "Search range", "搜索范围"],
   thUnit: ["個目", "(meld #)", "个"],
@@ -848,7 +859,7 @@ const I18N = {
   sfHit: ["基準seed: <b>{seed}</b> ／ 観測1個目のカウンタ: <b>{c}</b>", "Base seed: <b>{seed}</b> · 1st observed charm at counter <b>{c}</b>", "基础种子：<b>{seed}</b> ／ 第1个观测护石的计数器：<b>{c}</b>"],
   sfImpossible: ["入力された護石の組み合わせが実在しません（{n}個目のスキル／スロットの組み合わせがゲーム内に存在しない組み合わせです）。スキル・Lv・スロット・入力順のミスがないか確認してください。", "That charm combination doesn't exist (the skill/slot combination of charm #{n} never occurs in the game). Check the skills, levels, slots, and order.", "输入的护石组合不存在（第 {n} 个的技能/槽位组合在游戏中不存在）。请确认技能、等级、槽位和顺序是否有误。"],
   sfNeedObs: ["観測護石を3件すべて入力してください（上の「カウンター位置の特定」の入力欄に、スキルを選んだ護石を古い順に入力します）。", "Enter all 3 observed charms (in the input rows under \"Find Your Current Counter\" above, oldest first, with skills selected).", "请完整输入全部 3 个观测护石（在上方「确定当前计数器位置」的输入行中，按从旧到新的顺序选择技能）。"],
-  sfNeedSlots: ["{n}件目のスロットが未入力です。seed復元では、護石にあるスロットも入力してください（無いスロットは「－」のままでOK）。", "Charm #{n} has no slots entered. For seed recovery, enter the slots the charm has (leave a slot as \"－\" only when the charm has none).", "第 {n} 个护石没有输入槽位。恢复基础种子时，请填写护石实际有的槽位（没有的槽位可保持「－」）。"],
+  sfNeedSlots: ["{n}件目のスロットが1つも入力されていません。seed復元では、護石にあるスロットも入力してください（無いスロットは「－」のままでOK）。", "Charm #{n} has no slots entered at all. For seed recovery, enter the slots the charm has (leave a slot as \"－\" only when the charm has none).", "第 {n} 个护石没有输入任何槽位。恢复基础种子时，请填写护石实际有的槽位（没有的槽位可保持「－」）。"],
   sfNotFound: ["<b>候補が見つかりませんでした。</b><br>よくある原因と対策:<br>・<b>カウンタ範囲が足りない</b> → 上限を広げてもう一度探索してください（観測した護石の位置が上限より先にあると見つかりません。広げるほど時間はかかります）<br>・<b>入力ミス</b> → スキル・Lv・スロットと、古い順の並びを再確認してください<br>・<b>連続で錬金していない</b> → 間に別の錬金が挟まった護石が混ざると一致しません。連続3件を取り直すのが確実です", "<b>No candidates found.</b><br>Common causes and fixes:<br>・<b>Range too small</b> → raise the upper bound and search again (nothing is found if the observed charms sit beyond the limit; wider ranges take longer)<br>・<b>Input errors</b> → re-check the skills, levels, slots, and the oldest-first order<br>・<b>Not consecutive</b> → charms with other melds in between never match. Re-recording 3 truly consecutive melds is the surest fix", "<b>没有找到候选。</b><br>常见原因与对策：<br>・<b>计数器范围不足</b> → 调大上限后再次搜索（观测护石的位置超过上限时无法找到；范围越大耗时越长）<br>・<b>输入错误</b> → 重新确认技能、等级、槽位以及从旧到新的顺序<br>・<b>不是连续炼金</b> → 中间夹杂其他炼金时无法匹配。重新记录真正连续的 3 个最可靠"],
   sfFailed: ["エラーが発生したため、復元を開始できませんでした。もう一度お試しください。", "An error occurred, so recovery could not start. Please try again.", "发生错误，无法开始恢复。请重试。"],
   sfNote: ["基準seedの復元は、最初に一度だけ行えばOKです。総当たりで計算するため、端末の性能によっては時間がかかることがあります。", "You only need to recover your base seed once. The brute-force search may take a while, depending on your device.", "基础种子只需在最初恢复一次即可。由于采用穷举计算，根据设备性能可能需要较长时间。"],
@@ -1506,7 +1517,7 @@ function openPicker(cb, enterMax) {
   $("sksearch").value = "";
   renderPicker();
   $("skdlg").showModal();
-  $("sksearch").focus();
+  if (matchMedia("(pointer: fine)").matches) $("sksearch").focus();
 }
 function closePicker(val) {
   const cb = pickerCb; pickerCb = null;
@@ -1634,7 +1645,7 @@ seedとカウンタを入れて「予測する」。次に錬金する1個目が
 条件で絞り込み、先は「次に出現を検索」で探せます。気になる護石は ☆ で登録。</p>
 <p><b>4. データの移行</b><br>
 seed・カウンタ・お気に入りは、ファイルで書き出し／読み込みできます。</p>
-<p>※ 通信はしません。作業状態は、再度開くとリセットされます。</p>`,
+<p>※ 通信はしません。作業状態は、再度開くとリセットされます（seed・カウンタ・お気に入り・言語は保持されます）。</p>`,
 en: `<p><b>1. Prepare your base seed and counter</b><br>
 The base seed is the same value as Gogma Seed Finder's, and can also be recovered with this tool alone. You will need a record of charms you actually melded (oldest first).<br>
 - Know the seed -&gt; "Find Your Current Counter"<br>
@@ -1645,7 +1656,7 @@ Enter the seed and counter and press "Predict". Your next meld is the result for
 Filter by conditions, and use the next-match search to look further ahead. Save charms with ☆.</p>
 <p><b>4. Data transfer</b><br>
 Export / import your seed, counter and favorites as a file.</p>
-<p>* No network is used. Working state resets when you reopen the file.</p>`,
+<p>* No network is used. Working state resets when you reopen the file (your seed, counter, favorites and language are kept).</p>`,
 zh: `<p><b>1. 准备基础种子和计数器</b><br>
 基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具恢复。材料是实际炼金得到的护石记录（从旧到新）。<br>
 ・知道种子 → "确定当前计数器位置"<br>
@@ -1656,7 +1667,7 @@ zh: `<p><b>1. 准备基础种子和计数器</b><br>
 按条件筛选，更靠后的结果用"搜索下一个"查找。在意的护石用 ☆ 收藏。</p>
 <p><b>4. 数据迁移</b><br>
 种子、计数器和收藏可导出／导入为文件。</p>
-<p>※ 不联网。重新打开时，作业状态会重置。</p>` },
+<p>※ 不联网。重新打开时，作业状态会重置（种子、计数器、收藏和语言会保留）。</p>` },
 detail: {
 jp: `<p><b>1. seedとカウンタの特定</b><br>
 ゲームで連続で錬金し、スキル・Lv・スロットを古い順にメモしてください。基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。<br>
@@ -2047,6 +2058,7 @@ function sfFinish(stopped, early) {
   sfRunning = false;
   sfReleaseWL();
   clearInterval(sfTimer);
+  sfTimer = null;
   sfWorkers.forEach(w => w.terminate());
   sfWorkers = [];
   $("sfstart").disabled = false;
