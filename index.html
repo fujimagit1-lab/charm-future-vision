@@ -141,13 +141,16 @@ SOFTWARE.
   dialog#skdlg::backdrop, dialog#sldlg::backdrop, dialog#favdlg::backdrop, dialog#helpdlg::backdrop { background: rgba(0,0,0,.55); }
   body:has(dialog[open]) { overflow: hidden; }
   #sklist, #sllist { overflow-y: auto; max-height: 58vh; max-height: 58dvh; margin-top: 8px; }
+  /* キーボード表示中: ダイアログを見える範囲（visualViewport）に収め、一覧を残りの高さでスクロールさせる */
+  dialog#skdlg.vvfit { position: fixed; left: 50%; transform: translateX(-50%); margin: 0; bottom: auto; display: flex; flex-direction: column; }
+  dialog#skdlg.vvfit #sklist { flex: 1 1 auto; min-height: 0; max-height: none; }
   .skitem { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 4px; border-bottom: 1px solid var(--line-soft); flex-wrap: wrap; }
   .skitem .nm { font-size: 14px; }
   #helpdlg p { margin: 8px 0; line-height: 1.7; }
   .sfbar { background: var(--line-soft); border-radius: 999px; height: 10px; overflow: hidden; margin: 10px 0 6px; }
   #sfbarfill { background: var(--link); height: 100%; width: 0%; }
   .sfhit { background: var(--sfhit-bg); border: 1px solid var(--sfhit-line); border-radius: var(--radius); padding: 10px 12px; margin: 8px 0; font-size: 14px; }
-  .sfwarn { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: var(--radius); padding: 10px 12px; margin: 8px 0; font-size: 13px; line-height: 1.6; }
+  .sfwarn, .warnbox { display: block; background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: var(--radius); padding: 10px 12px; margin: 8px 0; font-size: 13px; line-height: 1.6; }
   .predict-panel { background: radial-gradient(ellipse at 92% 0%, rgba(80,157,207,.16), transparent 42%), #1a2430; border-color: #405366; box-shadow: 0 12px 32px rgba(0,0,0,.18); }
   .recovery-section { margin: 0 0 12px; padding: 24px; border: 1px solid #35465a; border-radius: 18px; background: linear-gradient(145deg, rgba(66,104,137,.10), transparent 55%), #141b24; }
   .recovery-input-panel { background: rgba(10,15,22,.36); }
@@ -850,6 +853,7 @@ const I18N = {
   sfEarlyNote: ["最初の候補が見つかったため探索を終了しました（全範囲は調べていないので、別の候補が残っている可能性はあります）。", "Stopped at the first candidate (the full range was not scanned, so other candidates may remain).", "已在找到第一个候选后停止（未搜索全部范围，可能还存在其他候选）。"],
   sfEngineSimd: ["探索エンジン: SIMD高速版", "Engine: SIMD (fast)", "搜索引擎：SIMD 高速版"],
   sfEngineStd: ["探索エンジン: 標準版", "Engine: standard", "搜索引擎：标准版"],
+  sfEngineGpu: ["探索エンジン: WebGPU（GPU）", "Engine: WebGPU (GPU)", "搜索引擎：WebGPU（GPU）"],
   sfEtaMin: ["約{n}分", "~{n} min", "约{n}分钟"],
   sfEtaSec: ["約{n}秒", "~{n} sec", "约{n}秒"],
   sfFilter: ["絞り込み: 観測1個目と整合するPt行は {a} 行、2個目は {b} 行です（小さいほど速く絞り込めます）。", "Filter strength: {a} Pt rows fit observation 1, {b} fit observation 2 (smaller means faster filtering).", "筛选强度：与第 1 个观测一致的 Pt 行有 {a} 行，第 2 个有 {b} 行（越小筛选越快）。"],
@@ -860,7 +864,8 @@ const I18N = {
   sfImpossible: ["入力された護石の組み合わせが実在しません（{n}個目のスキル／スロットの組み合わせがゲーム内に存在しない組み合わせです）。スキル・Lv・スロット・入力順のミスがないか確認してください。", "That charm combination doesn't exist (the skill/slot combination of charm #{n} never occurs in the game). Check the skills, levels, slots, and order.", "输入的护石组合不存在（第 {n} 个的技能/槽位组合在游戏中不存在）。请确认技能、等级、槽位和顺序是否有误。"],
   sfNeedObs: ["観測護石を3件すべて入力してください（上の「カウンター位置の特定」の入力欄に、スキルを選んだ護石を古い順に入力します）。", "Enter all 3 observed charms (in the input rows under \"Find Your Current Counter\" above, oldest first, with skills selected).", "请完整输入全部 3 个观测护石（在上方「确定当前计数器位置」的输入行中，按从旧到新的顺序选择技能）。"],
   sfNeedSlots: ["{n}件目のスロットが1つも入力されていません。seed復元では、護石にあるスロットも入力してください（無いスロットは「－」のままでOK）。", "Charm #{n} has no slots entered at all. For seed recovery, enter the slots the charm has (leave a slot as \"－\" only when the charm has none).", "第 {n} 个护石没有输入任何槽位。恢复基础种子时，请填写护石实际有的槽位（没有的槽位可保持「－」）。"],
-  sfNotFound: ["<b>候補が見つかりませんでした。</b><br>よくある原因と対策:<br>・<b>カウンタ範囲が足りない</b> → 上限を広げてもう一度探索してください（観測した護石の位置が上限より先にあると見つかりません。広げるほど時間はかかります）<br>・<b>入力ミス</b> → スキル・Lv・スロットと、古い順の並びを再確認してください<br>・<b>連続で錬金していない</b> → 間に別の錬金が挟まった護石が混ざると一致しません。連続3件を取り直すのが確実です", "<b>No candidates found.</b><br>Common causes and fixes:<br>・<b>Range too small</b> → raise the upper bound and search again (nothing is found if the observed charms sit beyond the limit; wider ranges take longer)<br>・<b>Input errors</b> → re-check the skills, levels, slots, and the oldest-first order<br>・<b>Not consecutive</b> → charms with other melds in between never match. Re-recording 3 truly consecutive melds is the surest fix", "<b>没有找到候选。</b><br>常见原因与对策：<br>・<b>计数器范围不足</b> → 调大上限后再次搜索（观测护石的位置超过上限时无法找到；范围越大耗时越长）<br>・<b>输入错误</b> → 重新确认技能、等级、槽位以及从旧到新的顺序<br>・<b>不是连续炼金</b> → 中间夹杂其他炼金时无法匹配。重新记录真正连续的 3 个最可靠"],
+  sfNotFound: ["<b>候補が見つかりませんでした。</b><br>よくある原因と対策:<br>・<b>カウンタ範囲が足りない</b> → 範囲を広げてもう一度探索してください（観測した護石の位置が範囲の外にあると見つかりません。下限より前なら下限を下げ、上限より先なら上限を広げてください。広げるほど時間はかかります）{next}<br>・<b>入力ミス</b> → スキル・Lv・スロットと、古い順の並びを再確認してください<br>・<b>連続で錬金していない</b> → 間に別の錬金が挟まった護石が混ざると一致しません。連続3件を取り直すのが確実です", "<b>No candidates found.</b><br>Common causes and fixes:<br>・<b>Range too small</b> → widen the range and search again (nothing is found if the observed charms sit outside the range: lower the lower bound if they are before it, raise the upper bound if they are beyond it; wider ranges take longer){next}<br>・<b>Input errors</b> → re-check the skills, levels, slots, and the oldest-first order<br>・<b>Not consecutive</b> → charms with other melds in between never match. Re-recording 3 truly consecutive melds is the surest fix", "<b>没有找到候选。</b><br>常见原因与对策：<br>・<b>计数器范围不足</b> → 扩大范围后再次搜索（观测护石的位置在范围之外时无法找到；在下限之前请调低下限，在上限之后请调大上限；范围越大耗时越长）{next}<br>・<b>输入错误</b> → 重新确认技能、等级、槽位以及从旧到新的顺序<br>・<b>不是连续炼金</b> → 中间夹杂其他炼金时无法匹配。重新记录真正连续的 3 个最可靠"],
+  sfNextSegment: ["<br>・<b>続きだけを探す</b> → 下限 {nlo}・上限 {nhi} のように前回の続きだけを探索すると、探し終わった範囲を飛ばせるので速いです", "<br>・<b>Search only the continuation</b> → searching just the next part, e.g. lower bound {nlo} and upper bound {nhi}, is faster because it skips the range you already covered", "<br>・<b>只搜索后续范围</b> → 只搜索后续部分（例如下限 {nlo}、上限 {nhi}），可以跳过已搜索的范围，更快"],
   sfFailed: ["エラーが発生したため、復元を開始できませんでした。もう一度お試しください。", "An error occurred, so recovery could not start. Please try again.", "发生错误，无法开始恢复。请重试。"],
   sfNote: ["基準seedの復元は、最初に一度だけ行えばOKです。総当たりで計算するため、端末の性能によっては時間がかかることがあります。", "You only need to recover your base seed once. The brute-force search may take a while, depending on your device.", "基础种子只需在最初恢复一次即可。由于采用穷举计算，根据设备性能可能需要较长时间。"],
   sfRange: ["カウンタ範囲（観測1個目の位置）", "Counter range (position of the 1st observed charm)", "计数器范围（第1个观测护石的位置）"],
@@ -977,6 +982,7 @@ function saveFavorites() {
 }
 // データ書き出し/読み込みの完了メッセージは、専用パネルのステータス欄に出す
 function dataSay(msg) { $("datastat").textContent = msg; }
+function dataSayWarn(msg) { const d = $("datastat"); d.innerHTML = ""; const s = document.createElement("span"); s.className = "warnbox"; s.textContent = msg; d.appendChild(s); }
 function updateFavoriteStatus() {
   const n = Object.keys(favorites).length;
   let stat = tf("favCount", { n });
@@ -1126,7 +1132,7 @@ function generate() {
   const seed = parseInt($("seed").value, 10);
   const start = parseInt($("counter").value, 10);
   const count = parseInt($("count").value, 10);
-  if (isNaN(seed) || isNaN(start)) { $("statrow").style.display = ""; $("stat").textContent = t("needSeedCounter"); return; }
+  if (isNaN(seed) || isNaN(start)) { $("statrow").style.display = ""; $("stat").innerHTML = warnHtml(t("needSeedCounter")); return; }
   if (!confirmHugeCounter(start)) return;
   saveInputs();
   tblHidden = false; renderTblToggle();
@@ -1230,11 +1236,11 @@ $("favimport").addEventListener("change", ev => {
         throw new Error(t("dataInvalid"));
       }
     } catch (err) {
-      dataSay(t("loadFailed") + err.message);
+      dataSayWarn(t("loadFailed") + err.message);
     }
     ev.target.value = "";
   };
-  reader.onerror = () => { dataSay(t("loadFailed")); ev.target.value = ""; };
+  reader.onerror = () => { dataSayWarn(t("loadFailed")); ev.target.value = ""; };
   reader.readAsText(file);
 });
 
@@ -1429,9 +1435,8 @@ function runSeekScan() {
     }
     if (st.found.length >= target || st.scanned >= st.maxScan) {
       if (st.scanned >= st.maxScan) st.exhausted = true;
-      $("seekstat").textContent = st.found.length
-        ? tf("seekFoundMsg", { n: st.scanned.toLocaleString(), h: st.found.length })
-        : tf("seekNotFound", { n: st.maxScan.toLocaleString() });
+      if (st.found.length) $("seekstat").textContent = tf("seekFoundMsg", { n: st.scanned.toLocaleString(), h: st.found.length });
+      else $("seekstat").innerHTML = warnHtml(tf("seekNotFound", { n: st.maxScan.toLocaleString() }));
       $("seekstop").style.display = "none";
       renderSeekPage();
       return;
@@ -1444,10 +1449,10 @@ function runSeekScan() {
 function seekNext() {
   const seed = parseInt($("seed").value, 10);
   const start = parseInt($("counter").value, 10);
-  if (isNaN(seed) || isNaN(start)) { $("seekstat").textContent = t("needSeedCounter"); return; }
+  if (isNaN(seed) || isNaN(start)) { $("seekstat").innerHTML = warnHtml(t("needSeedCounter")); return; }
   const crit = collectCriteria();
   if (!crit.terms.length && !crit.slotMin && crit.bands.size === 4) {
-    $("seekstat").textContent = t("seekNeedCond");
+    $("seekstat").innerHTML = warnHtml(t("seekNeedCond"));
     return;
   }
   if ((crit.terms.length || crit.slotMin) && !comboSatisfiable(crit, crit.bands)) {
@@ -1455,8 +1460,8 @@ function seekNext() {
     $("seekres").innerHTML = "";
     if (comboSatisfiable(crit, new Set([0, 24, 52, 76]))) {
       const okBands = [0, 24, 52, 76].filter(b => comboSatisfiable(crit, new Set([b])));
-      $("seekstat").textContent = tf("seekWrongBands", { bands: okBands.map(b => BAND_SHORT[lang][b]).join(lang === "en" ? ", " : "・") });
-    } else $("seekstat").textContent = t("seekImpossible");
+      $("seekstat").innerHTML = warnHtml(tf("seekWrongBands", { bands: okBands.map(b => BAND_SHORT[lang][b]).join(lang === "en" ? ", " : "・") }));
+    } else $("seekstat").innerHTML = warnHtml(t("seekImpossible"));
     return;
   }
   if (!confirmHugeCounter(start)) return;
@@ -1518,7 +1523,42 @@ function openPicker(cb, enterMax) {
   renderPicker();
   $("skdlg").showModal();
   if (matchMedia("(pointer: fine)").matches) $("sksearch").focus();
+  if (window.visualViewport && !skVvFit) {
+    skVvFit = fitSkDlg;
+    window.visualViewport.addEventListener("resize", skVvFit);
+    window.visualViewport.addEventListener("scroll", skVvFit);
+  }
+  fitSkDlg();
 }
+let skVvFit = null;
+function fitSkDlg() {
+  const dlg = $("skdlg"), vv = window.visualViewport;
+  if (!dlg.open || !vv) return;
+  // キーボード表示中は見える範囲がレイアウトviewportより小さいので、ダイアログをキーボードの直上に寄せる（候補が親指に近くなる）
+  if (vv.height < window.innerHeight * 0.85) {
+    dlg.classList.add("vvfit");
+    dlg.style.top = "auto";
+    dlg.style.bottom = (window.innerHeight - vv.offsetTop - vv.height + 8) + "px";
+    dlg.style.maxHeight = Math.max(200, vv.height - 16) + "px";
+  } else {
+    dlg.classList.remove("vvfit");
+    dlg.style.top = "";
+    dlg.style.bottom = "";
+    dlg.style.maxHeight = "";
+  }
+}
+$("skdlg").addEventListener("close", () => {
+  if (skVvFit && window.visualViewport) {
+    window.visualViewport.removeEventListener("resize", skVvFit);
+    window.visualViewport.removeEventListener("scroll", skVvFit);
+    skVvFit = null;
+  }
+  const d = $("skdlg");
+  d.classList.remove("vvfit");
+  d.style.top = "";
+  d.style.bottom = "";
+  d.style.maxHeight = "";
+});
 function closePicker(val) {
   const cb = pickerCb; pickerCb = null;
   $("skdlg").close();
@@ -1801,13 +1841,13 @@ let locateAbort = false;
 function locate() {
   const res = $("locres");
   const seed = parseInt($("seed").value, 10);
-  if (isNaN(seed)) { res.textContent = t("needSeed"); return; }
+  if (isNaN(seed)) { res.innerHTML = warnHtml(t("needSeed")); return; }
   const obs = obsFromRows();
-  if (obs.length < 3) { res.textContent = t("needObs"); return; }
+  if (obs.length < 3) { res.innerHTML = warnHtml(t("needObs")); return; }
   const numOr = (id, d) => { const n = parseInt($(id).value, 10); return isNaN(n) ? d : n; };
   const lo = Math.min(3000000, Math.max(0, numOr("lmin", 0)));
   const hi = Math.min(3000000, Math.max(0, numOr("lmax", 1000000)));
-  if (hi < lo) { res.textContent = t("rangeInvalid"); return; }
+  if (hi < lo) { res.innerHTML = warnHtml(t("rangeInvalid")); return; }
   locateAbort = false;
   $("locate").disabled = true; $("locstop").style.display = "";
   const found = [];
@@ -1816,7 +1856,7 @@ function locate() {
   function finish(aborted) {
     $("locate").disabled = false; $("locstop").style.display = "none";
     if (aborted) { res.textContent = t("locateStopped"); return; }
-    if (!found.length) { res.innerHTML = tf("locateNotFound", { lo, hi }); return; }
+    if (!found.length) { res.innerHTML = warnHtml(tf("locateNotFound", { lo, hi })); return; }
     const n = obs.length;
     res.innerHTML = (found.length === 1
       ? t("locateFound")
@@ -1899,7 +1939,7 @@ function sfWorkerMain() {
   };
 }
 let sfWorkers = [], sfRunning = false, sfStartTime = 0, sfTotalSeeds = 0, sfCursors = [], sfWcur = 0, sfTimer = null, sfFoundList = [];
-let sfCompleted = 0, sfNextSeed = 0, sfChunkSeeds = 0, sfInflight = [], sfEarlyFlag = false, sfK = 0, sfModPromise = null, sfWakeLock = null, sfEndMsg = "";
+let sfCompleted = 0, sfNextSeed = 0, sfChunkSeeds = 0, sfInflight = [], sfEarlyFlag = false, sfK = 0, sfModPromise = null, sfWakeLock = null, sfEndMsg = "", sfRunWlo = 0, sfRunWhi = 0;
 let sfStarting = false; // 初期化中（検証・WASM読込・Worker生成）の二重起動ガード
 function sfGetModule() {
   if (!sfModPromise) sfModPromise = WebAssembly.compile(sfEngineBytes());
@@ -1935,6 +1975,7 @@ function sfRenderFound() {
     `<div class="sfhit">${tf("sfHit", { seed: sfFmt(m.seed), c: sfFmt(m.counter) })} <button type="button" class="mini sfuse" data-seed="${m.seed}" data-c="${m.counter}">${t("sfUse")}</button></div>`).join("") +
     (sfEndMsg ? `<div class="note">${t(sfEndMsg)}</div>` : "");
 }
+function warnHtml(msg) { return `<span class="warnbox">${msg}</span>`; }
 function sfShowWarn(msg) { $("sfresults").innerHTML = `<div class="sfwarn">${msg}</div>`; }
 function sfCollectObs() {
   const used = [];
@@ -1946,7 +1987,7 @@ function sfCollectObs() {
   return used;
 }
 function sfApplyLang() {
-  $("sfengine").textContent = t(SF_SIMD_OK ? "sfEngineSimd" : "sfEngineStd");
+  sfSetEngineLabel();
   const sel = $("sfwcount");
   let cur = sel.value;
   if (!cur) cur = "auto";
@@ -1965,36 +2006,9 @@ $("sfresults").addEventListener("click", ev => {
   generate();
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
-$("sfstart").addEventListener("click", async () => {
-  if (sfRunning || sfStarting) return;
-  sfStarting = true;
-  $("sfstart").disabled = true;
-  try {
-  const usedAll = sfCollectObs();
-  if (usedAll.length < 3) { sfShowWarn(t("sfNeedObs")); return; }
-  // スロットの未入力（－）は 0 として扱う（無いスロットは入力しなくてよい）。全て未入力の行は 0-0-0 になり、後段の実在チェックで弾かれる
-  const used = usedAll.slice(0, 8);
-  // スロットが全て未入力の行は 0-0-0 扱いになり、実在しないため絶対に特定できない。専用メッセージで止める
-  const noSlot = used.find(u => u.sl.every(v => v === ""));
-  if (noSlot) { sfShowWarn(tf("sfNeedSlots", { n: noSlot.row })); return; }
-  sfK = used.length;
-  const obs = used.map(u => {
-    // 実在の護石はスロットが全て降順なので、観測も降順に揃えてから渡す（locate側の比較と統一。入力順のミスを許容）
-    const sl = u.sl.map(Number).sort((a, b) => b - a);
-    return [u.sk[0][0], u.sk[0][1], u.sk[1][0], u.sk[1][1], u.sk[2][0], u.sk[2][1], sl[0], sl[1], sl[2]];
-  });
-  let wlo = parseInt($("sfwlo").value, 10);
-  let whi = parseInt($("sfwhi").value, 10);
-  if (isNaN(wlo) || wlo < 0) wlo = 0;
-  if (wlo > 10000000) wlo = 10000000;
-  if (isNaN(whi) || whi <= wlo) whi = wlo + 1;
-  if (whi > 10000000) whi = 10000000;
-  const W = whi - wlo;
-  $("sfresults").innerHTML = "";
-  sfEndMsg = "";
-  const [c0, c1] = await sfValidateObs(obs, sfK);
-  if (c0 === 0 || c1 === 0) { sfShowWarn(tf("sfImpossible", { n: c0 === 0 ? 1 : 2 })); return; }
+async function sfStartWasm(obs, wlo, whi, W, c0, c1, usedAll) {
   sfRunning = true; sfFoundList = [];
+  sfRunWlo = wlo; sfRunWhi = whi;
   sfEarlyFlag = $("sfearly").checked;
   sfAcquireWL();
   $("sfstart").disabled = true;
@@ -2046,6 +2060,301 @@ $("sfstart").addEventListener("click", async () => {
   URL.revokeObjectURL(url);
     sfTimer = setInterval(() => sfUpdateStats(false), 300);
     sfUpdateStats(false);
+}
+/* ===== 基準seed復元: WebGPU エンジン（使える環境では WASM より優先） ===== */
+let sfEngineKind = "wasm"; // ラベル表示用の実際に使うエンジン: "gpu" | "wasm"
+let sfGpuOk = null, sfGpuProbe = null, sfGpu = null;
+function sfSetEngineLabel() {
+  $("sfengine").textContent = sfEngineKind === "gpu" ? t("sfEngineGpu") : t(SF_SIMD_OK ? "sfEngineSimd" : "sfEngineStd");
+}
+function sfGpuReady() {
+  if (sfGpuOk !== null) return Promise.resolve(sfGpuOk);
+  if (!sfGpuProbe) {
+    sfGpuProbe = (async () => {
+      try {
+        if (!("gpu" in navigator)) return false;
+        const ad = await navigator.gpu.requestAdapter({ powerPreference: "high-performance" });
+        return !!ad;
+      } catch (e) { return false; }
+    })().then(ok => {
+      sfGpuOk = ok;
+      if (ok && !sfRunning) { sfEngineKind = "gpu"; sfSetEngineLabel(); }
+      return ok;
+    });
+  }
+  return sfGpuProbe;
+}
+const SF_WGSL = `
+struct Params {
+  seedLo: u32,
+  seedHi: u32,
+  wlo: u32,
+  whi: u32,
+  kObs: u32,
+  obs: array<u32, 27>,
+};
+@group(0) @binding(0) var<storage, read> P: Params;
+@group(0) @binding(1) var<storage, read> PT: array<u32>;
+@group(0) @binding(2) var<storage, read> SEG: array<u32>;
+@group(0) @binding(3) var<storage, read> SEGOFF: array<u32>;
+struct OutBuf { count: atomic<u32>, items: array<vec2<u32>, 4096> };
+@group(0) @binding(4) var<storage, read_write> OUT: OutBuf;
+
+fn segLenB(b: u32) -> u32 { if (b == 0u) { return 24u; } if (b == 1u) { return 28u; } if (b == 2u) { return 24u; } return 48u; }
+fn bandStart(b: u32) -> u32 { if (b == 0u) { return 0u; } if (b == 1u) { return 24u; } if (b == 2u) { return 52u; } return 76u; }
+fn obsSkId(k: u32, j: u32) -> u32 { return P.obs[k * 9u + j * 2u]; }
+fn obsSkLv(k: u32, j: u32) -> u32 { return P.obs[k * 9u + j * 2u + 1u]; }
+fn obsSl(k: u32, m: u32) -> u32 { return P.obs[k * 9u + 6u + m]; }
+
+fn initState(seed: u32) -> array<u32, 4> {
+  var ebx = (seed % 100000000u) ^ 0xAC9365u;
+  var ecx: u32 = 0x05491333u;
+  var edx: u32 = 0u;
+  var r8: u32 = 0u;
+  var r9: u32 = 0u;
+  var r10: u32 = 0x159A55E5u;
+  var r11: u32 = 0x1F123BB5u;
+  for (var i = 0u; i < 100u; i = i + 1u) {
+    edx = ecx; r8 = r11; r9 = r10;
+    let r10n = (0x65AC9365u >> (ebx & 3u)) ^ ebx;
+    r11 = (r10n >> 3u) ^ (r10n >> 4u);
+    ebx = (r10n << 4u) ^ (r10n << 3u) ^ r11 ^ r10n;
+    ecx = ebx ^ (ebx << 15u);
+    let r10b = (edx >> 21u) ^ edx ^ ecx;
+    ecx = (ecx >> 4u) ^ r10b;
+    r10 = r8; r11 = edx;
+  }
+  return array<u32, 4>(r9, r8, edx, ecx);
+}
+
+fn stepSt(s: ptr<function, array<u32, 4>>) -> u32 {
+  let t = (*s)[0] ^ ((*s)[0] << 15u);
+  let nw = (*s)[3] ^ ((*s)[3] >> 21u) ^ t ^ (t >> 4u);
+  (*s)[0] = (*s)[1]; (*s)[1] = (*s)[2]; (*s)[2] = (*s)[3]; (*s)[3] = nw;
+  return nw;
+}
+
+fn meldMatches(stIn: array<u32, 4>, k: u32) -> bool {
+  var s = stIn;
+  var o: array<u32, 7>;
+  for (var i = 0u; i < 7u; i = i + 1u) { o[i] = stepSt(&s); }
+  let gv = o[1] % 100u;
+  var b = 3u;
+  if (gv < 60u) { b = 0u; } else if (gv < 87u) { b = 1u; } else if (gv < 98u) { b = 2u; }
+  let rowBase = (bandStart(b) + (o[0] % segLenB(b))) * 6u;
+  if (PT[rowBase + 3u] != obsSl(k, 0u) || PT[rowBase + 4u] != obsSl(k, 1u) || PT[rowBase + 5u] != obsSl(k, 2u)) { return false; }
+  var chosen = array<u32, 3>(0u, 0u, 0u);
+  for (var j = 0u; j < 3u; j = j + 1u) {
+    let pt = PT[rowBase + j];
+    var g0 = 0u; var g1 = 0u;
+    if (pt != 0u) {
+      let off = SEGOFF[pt - 1u];
+      let n = SEGOFF[pt] - SEGOFF[pt - 1u];
+      if (j == 0u) {
+        let r = off + (o[3] % n);
+        g0 = SEG[r * 2u]; g1 = SEG[r * 2u + 1u];
+      } else {
+        var cnt = 0u;
+        for (var i = 0u; i < n; i = i + 1u) {
+          let id = SEG[(off + i) * 2u];
+          var dup = false;
+          for (var q = 0u; q < j; q = q + 1u) { if (chosen[q] == id) { dup = true; } }
+          if (!dup) { cnt = cnt + 1u; }
+        }
+        if (cnt != 0u) {
+          let idx = o[3u + j] % cnt;
+          var c2 = 0u;
+          for (var i = 0u; i < n; i = i + 1u) {
+            let id = SEG[(off + i) * 2u];
+            var dup = false;
+            for (var q = 0u; q < j; q = q + 1u) { if (chosen[q] == id) { dup = true; } }
+            if (dup) { continue; }
+            if (c2 == idx) { g0 = id; g1 = SEG[(off + i) * 2u + 1u]; break; }
+            c2 = c2 + 1u;
+          }
+        }
+      }
+    }
+    chosen[j] = g0;
+    if (g0 != obsSkId(k, j) || g1 != obsSkLv(k, j)) { return false; }
+  }
+  return true;
+}
+
+fn windowMatches(stIn: array<u32, 4>) -> bool {
+  var t = stIn;
+  for (var k = 0u; k < P.kObs; k = k + 1u) {
+    if (!meldMatches(t, k)) { return false; }
+    for (var i = 0u; i < 7u; i = i + 1u) { _ = stepSt(&t); }
+  }
+  return true;
+}
+
+@compute @workgroup_size(256)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let seed = P.seedLo + gid.x;
+  if (seed >= P.seedHi) { return; }
+  var st = initState(seed);
+  let total = P.whi + P.kObs - 1u;
+  for (var pos = 0u; pos < total; pos = pos + 1u) {
+    if (pos >= P.wlo && pos < P.whi && windowMatches(st)) {
+      let idx = atomicAdd(&OUT.count, 1u);
+      if (idx < 4096u) { OUT.items[idx] = vec2<u32>(seed, pos); }
+    }
+    for (var i = 0u; i < 7u; i = i + 1u) { _ = stepSt(&st); }
+  }
+}
+`;
+function sfGpuTables() {
+  const pt = new Uint32Array(124 * 6);
+  PT.forEach((r, i) => { pt[i * 6] = r[0]; pt[i * 6 + 1] = r[1]; pt[i * 6 + 2] = r[2]; pt[i * 6 + 3] = r[3][0]; pt[i * 6 + 4] = r[3][1]; pt[i * 6 + 5] = r[3][2]; });
+  const seg = [], off = [0];
+  for (let s = 1; s <= 10; s++) { for (const pr of SEG[s]) seg.push(pr[0], pr[1]); off.push(seg.length / 2); }
+  return { PT: pt, SEG: new Uint32Array(seg), SEGOFF: new Uint32Array(off) };
+}
+async function sfGpuInit() {
+  if (sfGpu) return sfGpu;
+  if (!("gpu" in navigator)) throw new Error("no webgpu");
+  const adapter = await navigator.gpu.requestAdapter({ powerPreference: "high-performance" });
+  if (!adapter) throw new Error("no adapter");
+  const device = await adapter.requestDevice();
+  let lostMsg = "";
+  device.lost.then(d => { lostMsg = d.message || "lost"; });
+  const module = device.createShaderModule({ code: SF_WGSL });
+  const info = await module.getCompilationInfo();
+  const err = info.messages.find(mm => mm.type === "error");
+  if (err) throw new Error("shader: " + err.message);
+  const pipeline = await device.createComputePipeline({ layout: "auto", compute: { module, entryPoint: "main" } });
+  const tb = sfGpuTables();
+  const mk = (arr) => { const b = device.createBuffer({ size: arr.byteLength, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST }); device.queue.writeBuffer(b, 0, arr); return b; };
+  const ptBuf = mk(tb.PT), segBuf = mk(tb.SEG), offBuf = mk(tb.SEGOFF);
+  const paramsBuf = device.createBuffer({ size: 128, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST });
+  const OUT_SIZE = 8 + 4096 * 8;
+  const outBuf = device.createBuffer({ size: OUT_SIZE, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST });
+  const staging = device.createBuffer({ size: OUT_SIZE, usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST });
+  const bindGroup = device.createBindGroup({ layout: pipeline.getBindGroupLayout(0), entries: [
+    { binding: 0, resource: { buffer: paramsBuf } }, { binding: 1, resource: { buffer: ptBuf } },
+    { binding: 2, resource: { buffer: segBuf } }, { binding: 3, resource: { buffer: offBuf } },
+    { binding: 4, resource: { buffer: outBuf } } ] });
+  sfGpu = { device, pipeline, paramsBuf, outBuf, staging, bindGroup, OUT_SIZE, isLost: () => lostMsg };
+  return sfGpu;
+}
+async function sfGpuReadHits(g) {
+  const dev = g.device;
+  const enc = dev.createCommandEncoder();
+  enc.copyBufferToBuffer(g.outBuf, 0, g.staging, 0, g.OUT_SIZE);
+  dev.queue.submit([enc.finish()]);
+  await g.staging.mapAsync(GPUMapMode.READ);
+  const data = new Uint32Array(g.staging.getMappedRange().slice(0));
+  g.staging.unmap();
+  const n = Math.min(data[0], 4096), hits = [];
+  for (let i = 0; i < n; i++) hits.push({ seed: data[2 + i * 2], counter: data[3 + i * 2] });
+  return hits;
+}
+async function sfStartGpu(obs, wlo, whi, W, c0, c1, usedAll) {
+  const g = await sfGpuInit(); // 失敗したら例外 → 呼び出し側が WASM にフォールバックする
+  sfRunning = true; sfFoundList = []; sfEndMsg = "";
+  sfRunWlo = wlo; sfRunWhi = whi;
+  sfEarlyFlag = $("sfearly").checked;
+  sfAcquireWL();
+  $("sfstart").disabled = true;
+  $("sfstop").disabled = false;
+  $("sfprog").style.display = "block";
+  $("sffilter").textContent = tf("sfFilter", { a: c0, b: c1 }) + (usedAll.length > 8 ? " " + t("sfFirst8") : "");
+  sfCompleted = 0; sfCursors = [0]; sfInflight = [];
+  sfTotalSeeds = 100000000; sfWcur = W; sfStartTime = Date.now();
+  sfEngineKind = "gpu"; sfSetEngineLabel();
+  sfTimer = setInterval(() => sfUpdateStats(false), 300);
+  sfUpdateStats(false);
+  sfGpuLoop(g, obs, wlo, whi, W, c0, c1, usedAll);
+}
+async function sfGpuLoop(g, obs, wlo, whi, W, c0, c1, usedAll) {
+  const TOTAL = 100000000;
+  const dev = g.device;
+  const flat = []; obs.forEach(o => flat.push(...o));
+  // 1回の dispatch が長くなりすぎないよう、処理ペア数ベースでチャンクを決める（モバイルGPUのウォッチドッグ回避）
+  const chunkSeeds = Math.max(256, Math.min(1048576, Math.round(250000000 / Math.max(whi, 1) / 256) * 256));
+  let reported = 0, sinceRead = 0;
+  try {
+    dev.queue.writeBuffer(g.outBuf, 0, new Uint32Array([0]));
+    for (let lo = 0; lo < TOTAL; lo += chunkSeeds) {
+      if (!sfRunning) return; // 中止済み（sfFinish が処理済み）
+      const hi = Math.min(TOTAL, lo + chunkSeeds);
+      const params = new Uint32Array(32);
+      params[0] = lo; params[1] = hi; params[2] = wlo; params[3] = whi; params[4] = obs.length;
+      params.set(flat, 5);
+      dev.queue.writeBuffer(g.paramsBuf, 0, params);
+      const enc = dev.createCommandEncoder();
+      const pass = enc.beginComputePass();
+      pass.setPipeline(g.pipeline);
+      pass.setBindGroup(0, g.bindGroup);
+      pass.dispatchWorkgroups(Math.ceil((hi - lo) / 256));
+      pass.end();
+      dev.queue.submit([enc.finish()]);
+      await dev.queue.onSubmittedWorkDone();
+      if (!sfRunning) return;
+      if (g.isLost()) throw new Error("gpu device lost");
+      sfCompleted = hi;
+      sinceRead++;
+      if (sinceRead >= 8 || hi >= TOTAL) {
+        sinceRead = 0;
+        const hits = await sfGpuReadHits(g);
+        if (!sfRunning) return;
+        if (hits.length > reported) {
+          for (let i = reported; i < hits.length; i++) sfFoundList.push(hits[i]);
+          reported = hits.length;
+          sfRenderFound();
+          if (sfEarlyFlag) { sfFinish(false, true); return; }
+        }
+      }
+    }
+    if (sfRunning) sfFinish(false);
+  } catch (e) {
+    if (!sfRunning) return;
+    // GPU が途中で落ちたら、WASM ワーカーで最初から探索し直す
+    clearInterval(sfTimer); sfTimer = null;
+    sfGpuOk = false; sfGpu = null;
+    sfEngineKind = "wasm"; sfSetEngineLabel();
+    sfFoundList = []; sfCompleted = 0; sfCursors = [0]; sfEndMsg = "";
+    $("sfresults").innerHTML = "";
+    try { await sfStartWasm(obs, wlo, whi, W, c0, c1, usedAll); } catch (e2) { if (sfRunning) sfFail(); }
+  }
+}
+sfGpuReady(); // ラベル表示のため早めに判定しておく
+$("sfstart").addEventListener("click", async () => {
+  if (sfRunning || sfStarting) return;
+  sfStarting = true;
+  $("sfstart").disabled = true;
+  try {
+  const usedAll = sfCollectObs();
+  if (usedAll.length < 3) { sfShowWarn(t("sfNeedObs")); return; }
+  // スロットの未入力（－）は 0 として扱う（無いスロットは入力しなくてよい）。全て未入力の行は 0-0-0 になり、後段の実在チェックで弾かれる
+  const used = usedAll.slice(0, 8);
+  // スロットが全て未入力の行は 0-0-0 扱いになり、実在しないため絶対に特定できない。専用メッセージで止める
+  const noSlot = used.find(u => u.sl.every(v => v === ""));
+  if (noSlot) { sfShowWarn(tf("sfNeedSlots", { n: noSlot.row })); return; }
+  sfK = used.length;
+  const obs = used.map(u => {
+    // 実在の護石はスロットが全て降順なので、観測も降順に揃えてから渡す（locate側の比較と統一。入力順のミスを許容）
+    const sl = u.sl.map(Number).sort((a, b) => b - a);
+    return [u.sk[0][0], u.sk[0][1], u.sk[1][0], u.sk[1][1], u.sk[2][0], u.sk[2][1], sl[0], sl[1], sl[2]];
+  });
+  let wlo = parseInt($("sfwlo").value, 10);
+  let whi = parseInt($("sfwhi").value, 10);
+  if (isNaN(wlo) || wlo < 0) wlo = 0;
+  if (wlo > 10000000) wlo = 10000000;
+  if (isNaN(whi) || whi <= wlo) whi = wlo + 1;
+  if (whi > 10000000) whi = 10000000;
+  const W = whi - wlo;
+  $("sfresults").innerHTML = "";
+  sfEndMsg = "";
+  const [c0, c1] = await sfValidateObs(obs, sfK);
+  if (c0 === 0 || c1 === 0) { sfShowWarn(tf("sfImpossible", { n: c0 === 0 ? 1 : 2 })); return; }
+  // WebGPU が使える環境では GPU で探索する。使えない・初期化に失敗した場合は従来の WASM ワーカーに切り替える
+  if (await sfGpuReady()) {
+    try { await sfStartGpu(obs, wlo, whi, W, c0, c1, usedAll); return; } catch (e) { /* GPU初期化に失敗 → WASMで続行 */ }
+  }
+  await sfStartWasm(obs, wlo, whi, W, c0, c1, usedAll);
   } catch (e) {
     sfFail();
   } finally {
@@ -2065,7 +2374,13 @@ function sfFinish(stopped, early) {
   $("sfstop").disabled = true;
   sfUpdateStats(true);
   if (!sfFoundList.length) {
-    sfShowWarn(stopped ? t("sfStopped") : t("sfNotFound"));
+    if (stopped) sfShowWarn(t("sfStopped"));
+    else {
+      let seg = "";
+      const width = sfRunWhi - sfRunWlo;
+      if (width > 0 && sfRunWhi < 10000000) seg = tf("sfNextSegment", { nlo: sfFmt(sfRunWhi), nhi: sfFmt(Math.min(10000000, sfRunWhi + width)) });
+      sfShowWarn(tf("sfNotFound", { next: seg }));
+    }
   } else if (!stopped) {
     sfEndMsg = early ? "sfEarlyNote" : "sfDoneNote";
     sfRenderFound();
