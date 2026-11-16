@@ -112,6 +112,12 @@ SOFTWARE.
   .row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 4px 0; }
   .chk { font-size: 13px; }
   .obsrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 6px 0; padding: 7px 9px; background: var(--panel-in); border: 1px solid var(--line-soft); border-radius: var(--radius-s); }
+  /* 検索結果は横に余裕がある画面では列をそろえる（狭い画面は従来の折り返し） */
+  .seekhead { display: none; }
+  @media (min-width: 1000px) {
+    #seekres .seekrow { display: grid; grid-template-columns: 66px 78px 46px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 54px auto 34px; align-items: center; column-gap: 10px; }
+    #seekres .seekhead { padding: 0 10px; margin: 2px 0 4px; color: var(--muted); font-size: 11.5px; }
+  }
   .obsrow .no { color: var(--muted); min-width: 22px; flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
   .obsgrp { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
   @media (max-width: 760px) {
@@ -146,6 +152,365 @@ SOFTWARE.
   #sfpanel { background: #1b2632; border-color: #3b536a; }
   .sf-callout { padding: 11px 13px; border-radius: 10px; background: rgba(91,165,215,.09); border: 1px solid rgba(91,165,215,.18); margin: 12px 0; }
   @media (max-width: 760px) { .recovery-section { padding: 16px 12px; margin-top: 25px; } }
+
+  /* ===== Mobile layout refinement: desktop styles remain unchanged ===== */
+  @media (max-width: 760px) {
+    :root {
+      --radius: 16px;
+      --radius-s: 11px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      width: 100%;
+      max-width: none;
+      padding: max(14px, env(safe-area-inset-top)) 13px calc(22px + env(safe-area-inset-bottom));
+      line-height: 1.6;
+      background:
+        radial-gradient(ellipse at 50% -12%, rgba(81, 142, 184, .12), transparent 48%),
+        var(--bg);
+    }
+    .topbar {
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 10px;
+      padding: 4px 2px 14px;
+      margin-bottom: 14px;
+      border-color: rgba(130, 160, 190, .22);
+    }
+    h1 {
+      display: block;
+      min-width: 0;
+      font-size: clamp(19px, 5.2vw, 23px);
+      line-height: 1.25;
+      letter-spacing: .035em;
+    }
+    h1 > span:not(.h1-sub) { display: inline; }
+    h1 > span + span:not(.h1-sub)::before { content: " "; }
+    .h1-sub {
+      display: block;
+      margin-top: 5px;
+      font-size: 10.5px;
+      letter-spacing: .02em;
+    }
+    .topbar > span {
+      flex: 0 0 auto;
+      gap: 6px !important;
+    }
+    #helpbtn, #langbtn {
+      min-height: 38px;
+      padding: 6px 10px;
+      font-size: 11.5px;
+      white-space: nowrap;
+    }
+    .panel {
+      padding: 16px;
+      margin-bottom: 12px;
+      border-radius: 16px;
+      border-color: rgba(126, 151, 177, .17);
+      box-shadow: 0 5px 18px rgba(0, 0, 0, .12);
+    }
+    .panel-title { font-size: 14px; }
+    .note { font-size: 12px; line-height: 1.7; }
+    .row { gap: 9px; margin: 8px 0; }
+    button {
+      min-height: 44px;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 14px;
+      touch-action: manipulation;
+    }
+    .mini, .favtoggle, .lvb {
+      min-height: 40px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+
+    /* Primary prediction card */
+    .predict-panel {
+      padding: 18px 16px 15px;
+      border: 1px solid rgba(112, 174, 214, .32);
+      background:
+        radial-gradient(ellipse at 100% 0%, rgba(88, 166, 218, .18), transparent 48%),
+        linear-gradient(145deg, #1b2937, #17212c 72%);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .22), inset 0 1px rgba(255,255,255,.025);
+    }
+    .predict-panel > .row:first-child {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: end;
+      gap: 11px 10px;
+      margin: 0 0 12px;
+    }
+    .predict-panel label {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: 5px;
+      color: #dce8f3;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+    .predict-panel label:nth-child(3) { grid-column: 1 / -1; }
+    .predict-panel input[type=number],
+    .predict-panel input[type=text],
+    .predict-panel select {
+      display: block;
+      width: 100% !important;
+      min-width: 0;
+      height: 46px;
+      margin: 0;
+      padding: 0 12px;
+      border-radius: 11px;
+      border: 1px solid rgba(143, 174, 201, .24);
+      background: rgba(8, 15, 23, .58);
+      font-size: 16px;
+      font-variant-numeric: tabular-nums;
+    }
+    #go {
+      grid-column: 1 / -1;
+      width: 100%;
+      min-height: 50px;
+      margin-top: 2px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #e3f4ff, #b9e2fb);
+      box-shadow: 0 5px 16px rgba(100, 174, 220, .16);
+      font-size: 15px;
+      letter-spacing: .04em;
+    }
+    #backbtn {
+      grid-column: 1 / -1;
+      width: 100%;
+      margin: 0;
+    }
+    .predict-panel > .note {
+      padding-top: 11px;
+      border-top: 1px solid rgba(156, 188, 214, .13);
+    }
+    .predict-panel > .note a {
+      display: inline-block;
+      margin-top: 4px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* Search conditions */
+    body > .panel:not(.predict-panel) {
+      padding: 16px;
+    }
+    #fskillrows .obsrow {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 7px;
+      padding: 8px;
+      margin: 7px 0;
+      border-radius: 12px;
+    }
+    #fskillrows .skbtn {
+      width: 100%;
+      min-width: 0;
+      min-height: 42px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      border-radius: 9px;
+    }
+    #fskillrows .delfsk { min-height: 38px; padding: 6px 9px; }
+    .chk {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      width: 100%;
+    }
+    .chk label {
+      display: flex;
+      align-items: center;
+      min-height: 40px;
+      gap: 7px;
+      padding: 7px 9px;
+      border: 1px solid var(--line-soft);
+      border-radius: 10px;
+      background: rgba(8, 14, 21, .28);
+      font-size: 12px;
+    }
+    .chk input { width: 16px; height: 16px; margin: 0; flex: 0 0 auto; }
+    #fadd, #fclearall { flex: 1 1 auto; }
+    #fslotrow { overflow-x: auto; }
+    #seek {
+      width: 100%;
+      min-height: 48px;
+      line-height: 1.45;
+    }
+    #seekres { min-width: 0; overflow-wrap: anywhere; }
+    #seekres .row { align-items: stretch; }
+
+    /* Results: preserve the full table and make horizontal scrolling intentional */
+    #stat {
+      flex: 1 1 100%;
+      margin: 2px 0 0;
+      font-size: 12px;
+    }
+    body > .row:has(#stat) {
+      align-items: center;
+      gap: 6px;
+      padding: 0 3px;
+    }
+    #tbltoggle { min-height: 36px; }
+    #tblpanel {
+      margin: 0 -1px 14px;
+      padding: 0;
+      border-radius: 13px;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+      box-shadow: inset -16px 0 18px -20px rgba(160, 190, 220, .65);
+    }
+    #tblpanel table {
+      min-width: 720px;
+      font-size: 12px;
+    }
+    #tblpanel th, #tblpanel td { padding: 9px 9px; }
+    #tblpanel th { background: #1b2632; }
+    #tblpanel .favbtn { min-width: 34px; min-height: 34px; padding: 3px; }
+    #tblpanel tbody tr { background-clip: padding-box; }
+
+    /* Favorites and data transfer */
+    .favdata { gap: 0; }
+    .favdata > .panel { margin-bottom: 11px; }
+    .favbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 9px;
+    }
+    .favbar .panel-title { grid-column: 1 / -1; }
+    #favfilter { width: 100%; }
+    #favopen { width: 100%; }
+    #favstat { grid-column: 1 / -1; }
+    .favdata > .panel:last-child .row { align-items: stretch; }
+    #favexport, #favimportbtn { flex: 1 1 calc(50% - 6px); }
+    #datastat { flex: 1 1 100%; }
+
+    /* Counter recovery */
+    .recovery-section {
+      margin: 24px 0 18px;
+      padding: 10px;
+      border-radius: 19px;
+      border-color: rgba(105, 151, 188, .24);
+      background: linear-gradient(155deg, rgba(56, 96, 128, .12), transparent 55%), #141c26;
+    }
+    .recovery-input-panel {
+      padding: 15px 12px;
+      background: rgba(8, 14, 21, .28);
+      box-shadow: none;
+    }
+    #obsrows .obsrow {
+      padding: 10px;
+      gap: 10px;
+      border-radius: 12px;
+      background: rgba(7, 13, 20, .42);
+    }
+    #obsrows .obsgrp:first-child { gap: 7px; }
+    #obsrows .obsgrp:first-child .no {
+      padding-top: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    #obsrows .skbtn {
+      min-height: 43px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+    #obsrows .obsgrp:last-child {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+    }
+    #obsrows .slsel {
+      min-width: 0;
+      height: 42px;
+      margin: 0;
+      padding: 0 7px;
+      font-size: 16px;
+    }
+    #clrobs { width: 100%; }
+    #locate { width: 100%; }
+    #locstop { width: 100%; }
+    #lmin, #lmax { width: calc(50% - 8px) !important; }
+    #sfpanel {
+      padding: 15px 12px;
+      border-radius: 14px;
+    }
+    #sfpanel > .row { align-items: center; }
+    #sfpanel .sf-callout { padding: 10px; }
+    #sfpanel input[type=number],
+    #sfpanel select {
+      width: 100% !important;
+      min-width: 0;
+      height: 43px;
+      margin: 3px 0 0;
+      font-size: 16px;
+    }
+    #sfpanel > .row:has(#sfwlo) {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    #sfpanel > .row:has(#sfwlo) > span { grid-column: 1 / -1; }
+    #sfpanel > .row:has(#sfwlo) label { display: flex; flex-direction: column; gap: 4px; }
+    #sfpanel > .row:has(#sfstart) {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    #sfstart, #sfstop { width: 100%; }
+    #sfpanel > .row:has(#sfstart) label { padding: 5px 2px; }
+    .sfhit { padding: 12px; line-height: 1.7; }
+    .sfhit .sfuse { width: 100%; margin-top: 8px; }
+
+    /* Dialogs become comfortable, near-full-screen sheets */
+    dialog#skdlg, dialog#sldlg, dialog#favdlg, dialog#helpdlg {
+      width: calc(100vw - 20px);
+      max-width: none;
+      max-height: min(86vh, 760px);
+      padding: 15px;
+      border-radius: 18px;
+      border-color: rgba(137, 169, 197, .3);
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+    }
+    dialog .row { gap: 7px; }
+    dialog .row > .panel-title { flex: 1 1 100%; }
+    dialog .row > button { flex: 1 1 auto; }
+    #sksearch { min-width: 100% !important; height: 44px; margin: 0; }
+    #sklist, #sllist, #favdlglist, #favdlgothers {
+      max-height: 62vh;
+      -webkit-overflow-scrolling: touch;
+    }
+    .skitem { padding: 10px 3px; }
+    .skitem .lvb { min-width: 42px; }
+    #helpdlg p { font-size: 13px; }
+    body > .panel.note:last-child {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 13px;
+      font-size: 11px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    body { padding-left: 10px; padding-right: 10px; }
+    .panel { padding: 13px; }
+    .predict-panel { padding: 15px 12px 13px; }
+    .topbar { gap: 6px; }
+    #helpbtn, #langbtn { padding: 6px 8px; font-size: 10.5px; }
+    #obsrows .obsgrp:last-child { gap: 5px; }
+  }
+
+  /* 条件ボタン（追加×2・クリア）はスマホ幅では3つとも全幅にそろえる */
+  @media (max-width: 760px) {
+    #fadd, #fslotadd, #fclearall { flex: 1 1 100%; }
+  }
+
 </style>
 </head>
 <body>
@@ -180,10 +545,11 @@ SOFTWARE.
   <div id="fskillrows"></div>
   <div class="row">
     <button type="button" class="mini" id="fadd" data-i18n="addSkillCond">＋ スキル条件を追加</button>
+    <button type="button" class="mini" id="fslotadd" data-i18n="slotCondSelect">＋ スロット条件を追加</button>
     <button type="button" class="mini" id="fclearall" data-i18n="clearAllCond">条件をすべてクリア</button>
-    <span class="note" data-i18n="lvNote">Lvとスロットは「以上」で判定します。</span>
   </div>
   <div id="fslotrow"></div>
+  <div class="note" data-i18n="lvNote">条件を指定しない項目は、全ての護石が対象です。Lvとスロットは「以上」で判定します。</div>
   <div class="row">
     <button type="button" id="seek" data-i18n="seekBtn">条件に一致する「次に出現する護石」を検索</button>
     <label><span data-i18n="seekLimit">探索上限</span>
@@ -206,17 +572,19 @@ SOFTWARE.
 </div>
 <div class="panel" id="tblpanel" style="overflow-x:auto; max-height: 70vh; overflow-y:auto;">
   <table>
-    <thead><tr><th scope="col">☆</th><th scope="col">#</th><th scope="col" data-i18n="thCounter">カウンタ</th><th scope="col" data-i18n="thBand">帯</th><th scope="col" data-i18n="thSkill1">スキル1</th><th scope="col" data-i18n="thSkill2">スキル2</th><th scope="col" data-i18n="thSkill3">スキル3</th><th scope="col" data-i18n="thSlots">スロット</th></tr></thead>
+    <thead><tr><th scope="col">☆</th><th scope="col">#</th><th scope="col" data-i18n="thCounter">カウンタ</th><th scope="col" data-i18n="thBand">レア度</th><th scope="col" data-i18n="thSkill1">スキル1</th><th scope="col" data-i18n="thSkill2">スキル2</th><th scope="col" data-i18n="thSkill3">スキル3</th><th scope="col" data-i18n="thSlots">スロット</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
 </div>
 
 <div class="favdata">
-<div class="panel favbar">
-  <b class="panel-title" data-i18n="favTitle">お気に入り</b>
+<div class="panel">
+  <div class="row"><b class="panel-title" data-i18n="favTitle">お気に入り</b></div>
+  <div class="row">
   <button type="button" id="favfilter" class="favtoggle">☆ お気に入りのみ表示</button>
-  <span class="note" id="favstat">お気に入り: 0件</span>
   <button type="button" id="favopen" class="mini" data-i18n="favOpen">お気に入り一覧を開く</button>
+  </div>
+  <div class="note" id="favstat">お気に入り: 0件</div>
 </div>
 
 <div class="panel">
@@ -346,7 +714,7 @@ const I18N = {
   band24: ["レア6(27%)", "Rarity 6 (27%)", "稀有度6(27%)"],
   band0: ["レア5(60%)", "Rarity 5 (60%)", "稀有度5(60%)"],
   addSkillCond: ["＋ スキル条件を追加", "+ Add skill condition", "＋ 添加技能条件"],
-  lvNote: ["Lvとスロットは「以上」で判定します。", "Levels and slots match at the chosen value or higher.", "等级和槽位按「不低于所选值」匹配。"],
+  lvNote: ["条件を指定しない項目は、全ての護石が対象です。Lvとスロットは「以上」で判定します。", "Any category without a condition matches all charms. Levels and slots match at the chosen value or higher.", "未设置条件的项目将匹配所有护石。等级和槽位按「不低于所选值」匹配。"],
   seekBtn: ["条件に一致する「次に出現する護石」を検索", "Find the next charm that matches", "搜索下一个符合条件的护石"],
   seekLimit: ["探索上限", "Search limit", "搜索上限"],
   seek100k: ["10万件先", "Up to 100K ahead", "向后10万个"],
@@ -381,8 +749,9 @@ const I18N = {
   dataInvalid: ["対応していないファイル形式です", "Unsupported file format", "不支持的文件格式"],
   favListTitle: ["お気に入り一覧", "Favorites", "收藏列表"],
   favDlgNote: ["「あと +N」は、今から N 回目に出るという意味です。", "“In +N” means the charm appears on your Nth meld from now.", "“还有 +N”表示从现在起第 N 次炼金时出现。"],
+  thAhead: ["あと", "Ahead", "还有"],
   thCounter: ["カウンタ", "Counter", "计数器"],
-  thBand: ["帯", "Grade", "类别"],
+  thBand: ["レア度", "Rarity", "稀有度"],
   thSkill1: ["スキル1", "Skill 1", "技能1"],
   thSkill2: ["スキル2", "Skill 2", "技能2"],
   thSkill3: ["スキル3", "Skill 3", "技能3"],
@@ -422,7 +791,7 @@ const I18N = {
   predictFromHere: ["ここから予測", "Predict from here", "从这里开始预测"],
   favAdd: ["お気に入りに追加", "Add to favorites", "添加到收藏"],
   favAdded: ["お気に入りに登録済み", "Favorited", "已收藏"],
-  seekNeedCond: ["検索条件（スキル・スロット・帯）を1つ以上指定してください。", "Set at least one search condition (skill, slots, or grade).", "请至少指定一个搜索条件（技能、槽位或类别）。"],
+  seekNeedCond: ["検索条件（スキル・スロット・レア度）を1つ以上指定してください。", "Set at least one search condition (skill, slots, or rarity).", "请至少指定一个搜索条件（技能、槽位或稀有度）。"],
   seekProgress: ["探索中… {n} 件（{h} 件ヒット）", "Scanning… {n} scanned ({h} hits)", "搜索中… 已搜索 {n} 个（命中 {h} 个）"],
   seekStopped: ["中止しました（{n} 件探索、{h} 件ヒット）", "Stopped ({n} scanned, {h} hits)", "已停止（搜索了 {n} 个，命中 {h} 个）"],
   seekFoundMsg: ["{h} 件見つかりました（{n} 件先まで探索）", "Found {h} (scanned {n} ahead)", "找到 {h} 个（已向后搜索 {n} 个）"],
@@ -433,6 +802,8 @@ const I18N = {
   backToCounter: ["↩ カウンタ {c} に戻る", "↩ Back to counter {c}", "↩ 返回计数器 {c}"],
   clearAllCond: ["条件をすべてクリア", "Clear all conditions", "清除全部条件"],
   seekNotFound: ["{n} 件先まで探索しましたが、条件に一致する護石は見つかりませんでした", "Scanned {n} ahead, but no charm matched the conditions", "已向后搜索 {n} 个，但没有找到符合条件的护石"],
+  seekImpossible: ["この条件の組み合わせは存在しません（どのレア度でも出現しない組み合わせです）", "This combination of conditions can never appear, in any rarity.", "这个条件组合不存在（任何稀有度都不会出现）。"],
+  seekWrongBands: ["チェック中のレア度では出現しません。出現するレア度：{bands}", "It cannot appear in the checked rarities. It can appear in: {bands}", "在当前勾选的稀有度中不会出现。会出现的稀有度：{bands}"],
   noSkillMatch: ["該当するスキルがありません。", "No matching skills.", "没有符合的技能。"],
   lvSuffix: ["Lv{lv}以上", "Lv{lv}+", "Lv{lv}以上"],
   delete: ["削除", "Delete", "删除"],
@@ -886,6 +1257,51 @@ function matchPred(p, crit) {
   }
   return true;
 }
+const BAND_SHORT = {
+  jp: { 0: "レア5", 24: "レア6", 52: "レア7", 76: "レア8" },
+  en: { 0: "Rarity 5", 24: "Rarity 6", 52: "Rarity 7", 76: "Rarity 8" },
+  zh: { 0: "稀有度5", 24: "稀有度6", 52: "稀有度7", 76: "稀有度8" }
+};
+/* 条件の組み合わせが、指定した帯のどこかで出現しうるかを厳密に判定する。
+   Pt行×スキル区間の全組合せは有限なので、「探して見つからない」とは別に
+   「構造的に出ない」を言い切れる。 */
+function comboSatisfiable(crit, bands) {
+  const merged = new Map();
+  for (const t of crit.terms) merged.set(t.id, Math.max(merged.get(t.id) || 0, t.lv));
+  const terms = [...merged.entries()].map(([id, lv]) => ({ id, lv }));
+  if (terms.length > 3) return false;
+  let start = 0;
+  for (const b of [0, 24, 52, 76]) {
+    const len = SEG_LEN[b];
+    if (bands.has(b)) {
+      for (let r = start; r < start + len; r++) {
+        const row = PT[r];
+        if (crit.slotMin) {
+          let ok = true;
+          for (let i = 0; i < 3; i++) if (!isNaN(crit.slotMin[i]) && row[3][i] < crit.slotMin[i]) { ok = false; break; }
+          if (!ok) continue;
+        }
+        const pools = [row[0], row[1], row[2]].map(p => p ? SEG[p] : null);
+        const used = [false, false, false];
+        const assign = ti => {
+          if (ti === terms.length) return true;
+          for (let pos = 0; pos < 3; pos++) {
+            if (used[pos] || !pools[pos]) continue;
+            if (pools[pos].some(([id, lv]) => id === terms[ti].id && lv >= terms[ti].lv)) {
+              used[pos] = true;
+              if (assign(ti + 1)) return true;
+              used[pos] = false;
+            }
+          }
+          return false;
+        };
+        if (assign(0)) return true;
+      }
+    }
+    start += len;
+  }
+  return false;
+}
 let counterHistory = [];
 function updateBackBtn() {
   const b = $("backbtn");
@@ -936,9 +1352,9 @@ let seekState = null; // { seed, start, crit, maxScan, s, scanned, found, exhaus
 function seekRowHtml(f) {
   const bc = BAND_LABEL[f.band][1]; const bl = bandName(f.band);
   const favKey = seedKey() + ":" + f.counter;
-  return `<div class="obsrow"><span class="no">+${f.ahead}</span>` +
-    `<span>${tf("counterWord", { c: f.counter })}</span><span class="${bc}">${bl}</span>` +
-    f.skills.map(sk => `<span>${skillLabel(sk)}</span>`).join("") +
+  return `<div class="obsrow seekrow"><span class="no">+${f.ahead}</span>` +
+    `<span>${f.counter}</span><span class="${bc}">${bl}</span>` +
+    f.skills.map(sk => `<span class="sk">${skillLabel(sk)}</span>`).join("") +
     `<span class="slot">${f.slots.join("-")}</span>` +
     `<button type="button" class="mini seekjump" data-c="${f.counter}">${t("predictFromHere")}</button>` +
     `<button type="button" class="favbtn seekfav ${favorites[favKey] ? "active" : ""}" ` +
@@ -955,7 +1371,10 @@ function renderSeekPage() {
   if (st.page > lastPage) st.page = lastPage;
   const slice = st.found.slice(st.page * SEEK_PAGE, st.page * SEEK_PAGE + SEEK_PAGE);
   const hasNext = st.page < lastPage || !st.exhausted;
-  el.innerHTML = slice.map(seekRowHtml).join("") +
+  el.innerHTML =
+    `<div class="seekhead seekrow"><span>${t("thAhead")}</span><span>${t("thCounter")}</span><span>${t("thBand")}</span>` +
+    `<span>${t("thSkill1")}</span><span>${t("thSkill2")}</span><span>${t("thSkill3")}</span><span>${t("thSlots")}</span><span></span><span></span></div>` +
+    slice.map(seekRowHtml).join("") +
     `<div class="row" style="margin-top:6px">` +
     `<button type="button" class="mini" id="seekprev" ${st.page === 0 ? "disabled" : ""}>${t("pagerPrev")}</button>` +
     `<span class="note">${tf("pagerInfo", { p: st.page + 1, h: st.found.length })}</span>` +
@@ -1011,6 +1430,15 @@ function seekNext() {
   const crit = collectCriteria();
   if (!crit.terms.length && !crit.slotMin && crit.bands.size === 4) {
     $("seekstat").textContent = t("seekNeedCond");
+    return;
+  }
+  if ((crit.terms.length || crit.slotMin) && !comboSatisfiable(crit, crit.bands)) {
+    seekState = null;
+    $("seekres").innerHTML = "";
+    if (comboSatisfiable(crit, new Set([0, 24, 52, 76]))) {
+      const okBands = [0, 24, 52, 76].filter(b => comboSatisfiable(crit, new Set([b])));
+      $("seekstat").textContent = tf("seekWrongBands", { bands: okBands.map(b => BAND_SHORT[lang][b]).join(lang === "en" ? ", " : "・") });
+    } else $("seekstat").textContent = t("seekImpossible");
     return;
   }
   if (!confirmHugeCounter(start)) return;
@@ -1100,7 +1528,7 @@ function renderFskillRows() {
         `<div class="obsrow"><span class="no">${i + 1}</span>` +
         `<button type="button" class="skbtn set" data-i="${i}">${skName(sk[0])} ${tf("lvSuffix", { lv: sk[1] })}</button>` +
         `<button type="button" class="mini delfsk" data-i="${i}">${t("delete")}</button></div>`).join("")
-    : `<div class="note">${t("noSkillCond")}</div>`;
+    : "";
 }
 $("fskillrows").addEventListener("click", ev => {
   const b = ev.target.closest(".skbtn");
@@ -1147,13 +1575,15 @@ function renderSlotBtn() {
     if (slotMin) parts.push(slotMin.join("-"));
     label = t("slotCondPrefix") + parts.join(" + ");
   }
-  // 未設定時は行の暗いボックスを付けず、追加ボタンだけを置く（設定時のみスキル行と同じ obsrow 形式）
+  // 未設定時は追加ボタン（#fslotadd、条件ボタン行内）を表示し、設定時のみスキル行と同じ obsrow 形式のチップを出す
+  $("fslotadd").style.display = set ? "none" : "";
   $("fslotrow").innerHTML = set
     ? `<div class="obsrow"><span class="no"></span>` +
       `<button type="button" class="skbtn set" data-slotbtn="1">${label}</button>` +
       `<button type="button" class="mini" data-slotclr="1">${t("delete")}</button></div>`
-    : `<div class="row"><button type="button" class="mini" data-slotbtn="1">${label}</button></div>`;
+    : "";
 }
+$("fslotadd").addEventListener("click", () => { renderSlotList(); $("sldlg").showModal(); });
 $("fslotrow").addEventListener("click", ev => {
   if (ev.target.closest("[data-slotbtn]")) { renderSlotList(); $("sldlg").showModal(); return; }
   if (ev.target.closest("[data-slotclr]")) { slotMin = null; renderSlotBtn(); render(); }
