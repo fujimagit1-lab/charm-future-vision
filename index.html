@@ -114,9 +114,10 @@ SOFTWARE.
   .obsrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 6px 0; padding: 7px 9px; background: var(--panel-in); border: 1px solid var(--line-soft); border-radius: var(--radius-s); }
   /* 検索結果は横に余裕がある画面では列をそろえる（狭い画面は従来の折り返し） */
   .seekhead { display: none; }
-  @media (min-width: 1000px) {
-    #seekres .seekrow { display: grid; grid-template-columns: 66px 78px 46px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 54px auto 34px; align-items: center; column-gap: 10px; }
-    #seekres .seekhead { padding: 0 10px; margin: 2px 0 4px; color: var(--muted); font-size: 11.5px; }
+  @media (min-width: 1150px) {
+    /* スキル1〜3とスロットは固定幅で寄せて、セットで見られるようにする（余った幅は末尾の空列が吸収） */
+    #seekres .seekrow { display: grid; grid-template-columns: 66px 78px 46px 185px 185px 185px 54px auto 34px minmax(0, 1fr); align-items: center; column-gap: 10px; }
+    #seekres .seekhead { background: transparent; border-color: transparent; padding-top: 2px; padding-bottom: 2px; margin: 0 0 2px; color: var(--muted); font-size: 11.5px; }
   }
   .obsrow .no { color: var(--muted); min-width: 22px; flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
   .obsgrp { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
@@ -509,6 +510,8 @@ SOFTWARE.
   /* 条件ボタン（追加×2・クリア）はスマホ幅では3つとも全幅にそろえる */
   @media (max-width: 760px) {
     #fadd, #fslotadd, #fclearall { flex: 1 1 100%; }
+    /* 検索結果の「ここから予測」はスマホ幅では小さめのチップにする */
+    #seekres .seekjump { min-height: 32px; padding: 4px 10px; font-size: 11.5px; border-radius: 8px; }
   }
 
 </style>
@@ -1372,8 +1375,9 @@ function renderSeekPage() {
   const slice = st.found.slice(st.page * SEEK_PAGE, st.page * SEEK_PAGE + SEEK_PAGE);
   const hasNext = st.page < lastPage || !st.exhausted;
   el.innerHTML =
-    `<div class="seekhead seekrow"><span>${t("thAhead")}</span><span>${t("thCounter")}</span><span>${t("thBand")}</span>` +
-    `<span>${t("thSkill1")}</span><span>${t("thSkill2")}</span><span>${t("thSkill3")}</span><span>${t("thSlots")}</span><span></span><span></span></div>` +
+    `<div class="obsrow seekrow seekhead"><span>${t("thAhead")}</span><span>${t("thCounter")}</span><span>${t("thBand")}</span>` +
+    `<span>${t("thSkill1")}</span><span>${t("thSkill2")}</span><span>${t("thSkill3")}</span><span>${t("thSlots")}</span>` +
+    `<button type="button" class="mini" style="visibility:hidden" tabindex="-1" aria-hidden="true">${t("predictFromHere")}</button><span></span></div>` +
     slice.map(seekRowHtml).join("") +
     `<div class="row" style="margin-top:6px">` +
     `<button type="button" class="mini" id="seekprev" ${st.page === 0 ? "disabled" : ""}>${t("pagerPrev")}</button>` +
