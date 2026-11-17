@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-Melding Pot Future Vision (offline) - マカ錬金 未来視（オフライン版）
+Melding Pot Future Vision (offline) - マカ錬金未来視（オフライン版）
 
 Copyright (c) 2026 fujima
 
@@ -116,7 +116,7 @@ SOFTWARE.
   .seekhead { display: none; }
   @media (min-width: 1150px) {
     /* スキル1〜3とスロットは固定幅で寄せて、セットで見られるようにする（余った幅は末尾の空列が吸収） */
-    #seekres .seekrow { display: grid; grid-template-columns: 66px 78px 46px 185px 185px 185px 54px auto 34px minmax(0, 1fr); align-items: center; column-gap: 10px; }
+    #seekres .seekrow { display: grid; grid-template-columns: 66px 78px 68px 185px 185px 185px 54px auto 34px minmax(0, 1fr); align-items: center; column-gap: 10px; }
     #seekres .seekhead { background: transparent; border-color: transparent; padding-top: 2px; padding-bottom: 2px; margin: 0 0 2px; color: var(--muted); font-size: 11.5px; }
   }
   .obsrow .no { color: var(--muted); min-width: 22px; flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
@@ -440,9 +440,8 @@ SOFTWARE.
       font-size: 16px;
     }
     #clrobs { width: 100%; }
-    #locate { width: 100%; }
+    #recstart { width: 100%; }
     #locstop { width: 100%; }
-    #lmin, #lmax { width: calc(50% - 8px) !important; }
     #sfpanel {
       padding: 15px 12px;
       border-radius: 14px;
@@ -457,20 +456,20 @@ SOFTWARE.
       margin: 3px 0 0;
       font-size: 16px;
     }
-    #sfpanel > .row:has(#sfwlo) {
+    #sfpanel .row:has(#sfwlo) {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
     }
-    #sfpanel > .row:has(#sfwlo) > span { grid-column: 1 / -1; }
-    #sfpanel > .row:has(#sfwlo) label { display: flex; flex-direction: column; gap: 4px; }
-    #sfpanel > .row:has(#sfstart) {
+    #sfpanel .row:has(#sfwlo) > span { grid-column: 1 / -1; }
+    #sfpanel .row:has(#sfwlo) label { display: flex; flex-direction: column; gap: 4px; }
+    #sfpanel > .row:has(#recstart) {
       display: flex;
       flex-direction: column;
       align-items: stretch;
     }
-    #sfstart, #sfstop { width: 100%; }
-    #sfpanel > .row:has(#sfstart) label { padding: 5px 2px; }
+    #recstart, #sfstop { width: 100%; }
+    #sfpanel > .row:has(#recstart) label { padding: 5px 2px; }
     .sfhit { padding: 12px; line-height: 1.7; }
     .sfhit .sfuse { width: 100%; margin-top: 8px; }
 
@@ -547,17 +546,17 @@ SOFTWARE.
     <button id="go" data-i18n="predict">予測する</button>
     <button type="button" id="backbtn" class="mini" style="display:none">↩ 元のカウンタに戻る</button>
   </div>
-  <div class="note"><span data-i18n="seedGogmaNote">基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。</span><br><a href="#sfpanel" data-i18n="seedUnknownLink">seedが分からない場合は「基準seedの復元」へ</a></div>
+  <div class="note"><span data-i18n="seedGogmaNote">基準seedは Gogma Seed Finder と同じ値です。</span><br><a href="#sfpanel" data-i18n="seedUnknownLink">seed/カウンタが分からない場合は「基準seed・カウンタ位置の特定」へ</a></div>
 </div>
 
 <div class="panel">
   <div class="row"><b class="panel-title" data-i18n="skillCondCaption">護石を検索</b></div>
   <div class="row">
     <span class="chk">
-      <label><input type="checkbox" class="fband" value="76" checked> <span data-i18n="band76">レア8(2%)</span></label>
-      <label><input type="checkbox" class="fband" value="52" checked> <span data-i18n="band52">レア7(11%)</span></label>
-      <label><input type="checkbox" class="fband" value="24" checked> <span data-i18n="band24">レア6(27%)</span></label>
-      <label><input type="checkbox" class="fband" value="0" checked> <span data-i18n="band0">レア5(60%)</span></label>
+      <label><input type="checkbox" class="fband" value="76" checked> <span data-i18n="band76">レア8（2%）</span></label>
+      <label><input type="checkbox" class="fband" value="52" checked> <span data-i18n="band52">レア7（11%）</span></label>
+      <label><input type="checkbox" class="fband" value="24" checked> <span data-i18n="band24">レア6（27%）</span></label>
+      <label><input type="checkbox" class="fband" value="0" checked> <span data-i18n="band0">レア5（60%）</span></label>
     </span>
   </div>
   <div id="fskillrows"></div>
@@ -567,9 +566,9 @@ SOFTWARE.
     <button type="button" class="mini" id="fclearall" data-i18n="clearAllCond">条件をすべてクリア</button>
   </div>
   <div id="fslotrow"></div>
-  <div class="note" data-i18n="lvNote">条件を指定しない項目は、全ての護石が対象です。Lvとスロットは「以上」で判定します。</div>
+  <div class="note" data-i18n="lvNote">条件を指定しない項目は、すべての護石が対象です。Lvとスロットは「以上」で判定します。</div>
   <div class="row">
-    <button type="button" id="seek" data-i18n="seekBtn">条件に一致する「次に出現する護石」を検索</button>
+    <button type="button" id="seek" data-i18n="seekBtn">条件に一致する護石を検索</button>
     <label><span data-i18n="seekLimit">探索上限</span>
       <select id="seekmax">
         <option value="100000" data-i18n="seek100k">10万件先</option>
@@ -602,7 +601,7 @@ SOFTWARE.
   <button type="button" id="favfilter" class="favtoggle">☆ お気に入りのみ表示</button>
   <button type="button" id="favopen" class="mini" data-i18n="favOpen">お気に入り一覧を開く</button>
   </div>
-  <div class="note" id="favstat">お気に入り: 0件</div>
+  <div class="note" id="favstat">お気に入り：0件</div>
 </div>
 
 <div class="panel">
@@ -617,40 +616,32 @@ SOFTWARE.
 </div>
 
 <div class="recovery-section">
-<div class="panel recovery-input-panel">
-  <div class="row"><b class="panel-title" data-i18n="locateTitle">カウンタ位置の特定</b></div>
-  <div class="note" data-i18n="locateNote">マカ錬金で引いた護石を、古い順に3つ入力してください。スキル・スロットは、ある分だけ入力すればOKです。基準seedの復元ではスロットの入力が必要です。</div>
+<div class="panel recovery-input-panel" id="sfpanel">
+  <div class="row"><b class="panel-title" data-i18n="recTitle">基準seed・カウンタ位置の特定</b> <span class="note" id="sfengine"></span></div>
+  <div class="note" data-i18n="recNote">マカ錬金で引いた護石を、古い順に3つ入力してください。スキル・スロットは、ある分だけ入力すればOKです。<br>基準seedが入力されていればカウンタ位置を特定し、未入力なら基準seedを特定します（ボタンは自動で切り替わります）。基準seedの特定にはスロットの入力が必要です。</div>
   <div id="obsrows"></div>
   <div class="row">
-    <button type="button" class="mini" id="clrobs" data-i18n="clearAll">全てクリア</button>
+    <button type="button" class="mini" id="clrobs" data-i18n="clearAll">すべてクリア</button>
+  </div>
+  <div id="sfsettings">
+    <div class="row">
+      <span data-i18n="sfRange">探索範囲（観測1件目の位置）</span>
+      <label><span data-i18n="sfFrom">下限</span> <input type="number" id="sfwlo" value="0" min="0" max="10000000" step="100" style="width:110px"></label>
+      <label><span data-i18n="sfTo">上限</span> <input type="number" id="sfwhi" value="10000" min="1" max="10000000" step="100" style="width:110px"></label>
+      <label><span data-i18n="sfWorkers">ワーカー数</span> <select id="sfwcount"></select></label>
+    </div>
   </div>
   <div class="row">
-    <label><span data-i18n="searchRange">探索範囲</span> <input type="number" id="lmin" value="0" style="width:100px"> 〜 <input type="number" id="lmax" value="1000000" max="3000000" style="width:110px"> <span data-i18n="thUnit">個目</span></label>
-    <button id="locate" data-i18n="locateBtn">カウンタを特定</button>
-    <button type="button" class="mini" id="locstop" style="display:none" data-i18n="stop">中止</button> <span class="note" data-i18n="rangeCap">（上限 3,000,000）</span>
+    <button type="button" id="recstart">seedを特定</button>
+    <button type="button" class="mini" id="locstop" style="display:none" data-i18n="stop">中止</button>
+    <button type="button" id="sfstop" disabled data-i18n="stop">中止</button>
+    <label class="note" id="sfearlywrap"><input type="checkbox" id="sfearly" checked> <span data-i18n="sfEarly">最初の候補が見つかったら終了</span></label>
   </div>
   <div class="note" id="locres" aria-live="polite"></div>
-</div>
-
-<div class="panel" id="sfpanel">
-  <div class="row"><b class="panel-title" data-i18n="sfTitle">基準seedの復元</b> <span class="note" id="sfengine"></span></div>
-  <div class="note sf-callout" data-i18n="sfSharedNote"><b>入力欄は上の「カウンタ位置の特定」と共用です。</b>先に<a href="#obsrows">上の入力欄</a>へ入力してから、「復元開始」を押してください。</div>
-  <div class="note" data-i18n="sfNote">基準seedの復元は、最初に一度だけ行えばOKです。総当たりで計算するため、端末の性能によっては時間がかかることがあります。</div>
-  <div class="row">
-    <span data-i18n="sfRange">カウンタ範囲（観測1個目の位置）</span>
-    <label><span data-i18n="sfFrom">下限</span> <input type="number" id="sfwlo" value="0" min="0" max="10000000" step="100" style="width:110px"></label>
-    <label><span data-i18n="sfTo">上限</span> <input type="number" id="sfwhi" value="10000" min="1" max="10000000" step="100" style="width:110px"></label>
-    <label><span data-i18n="sfWorkers">ワーカー数</span> <select id="sfwcount"></select></label>
-  </div>
-  <div class="row">
-    <button type="button" id="sfstart" data-i18n="sfStart">復元開始</button>
-    <button type="button" id="sfstop" disabled data-i18n="stop">中止</button>
-    <label class="note"><input type="checkbox" id="sfearly" checked> <span data-i18n="sfEarly">最初の候補が見つかったら終了</span></label>
-  </div>
   <div id="sfprog" style="display:none">
     <div class="sfbar"><div id="sfbarfill"></div></div>
     <div class="note" id="sfstats" aria-live="polite"></div>
-    <div class="note" id="sffilter"></div>
+    <div class="note" id="sfwaitnote" data-i18n="sfWaitNote">基準seedの特定は最初に一度だけ行えばOKです。総当たりで計算するため、端末の性能によっては時間がかかることがあります。</div>
   </div>
   <div id="sfresults"></div>
 </div>
@@ -696,7 +687,7 @@ SOFTWARE.
 </dialog>
 
 <div class="panel note" data-i18n="footerNote">
-  <b>基準seedについて:</b> 基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。Gogma Seed Finder の作者の方に感謝します。<br><b>その他:</b> 計算はすべてこのページ内で完結し、通信はしません。入力はブラウザ内にのみ保存されます。<br>非公式ファンツールです。「モンスターハンターワイルズ」はカプコンの商標です。 / MIT License — Copyright (c) 2026 fujima
+  <b>基準seedについて：</b> 基準seedは Gogma Seed Finder と同じ値で、このツール単体でも特定できます。Gogma Seed Finder の作者の方に感謝します。<br><b>その他：</b> 計算はすべてこのページ内で完結し、通信はしません。入力はブラウザ内にのみ保存されます。<br>非公式ファンツールです。「モンスターハンターワイルズ」はカプコンの商標です。 / MIT License — Copyright (c) 2026 fujima
 </div>
 
 <script>
@@ -718,35 +709,34 @@ const BAND_EN = { 0: "Rarity 5", 24: "Rarity 6", 52: "Rarity 7", 76: "Rarity 8" 
 const BAND_ZH = { 0: "稀有度5", 24: "稀有度6", 52: "稀有度7", 76: "稀有度8" };
 function bandName(b) { return lang === "en" ? (BAND_EN[b] || String(b)) : lang === "zh" ? (BAND_ZH[b] || String(b)) : (BAND_LABEL[b] ? BAND_LABEL[b][0] : String(b)); }
 const I18N = {
-  docTitle: ["マカ錬金未来視（オフライン版 Ver.1.042対応）", "Melding Pot Future Vision (Offline, Ver.1.042)", "马卡炼金未来视（离线版 Ver.1.042）"],
-  h1: ["<span>マカ錬金</span><span>未来視</span><span class=\"h1-sub\">（オフライン版 Ver.1.042対応）</span>", "<span>Melding Pot</span><span>Future Vision</span><span class=\"h1-sub\">(Offline, Ver.1.042)</span>", "<span>马卡炼金</span><span>未来视</span><span class=\"h1-sub\">（离线版 Ver.1.042）</span>"],
+  docTitle: ["マカ錬金未来視（オフライン版 Ver.1.042対応）", "Melding Pot Future Vision (Offline, Ver.1.042)", "马卡炼金未来视（离线版 Ver.1.042对应）"],
+  h1: ["<span>マカ錬金</span><span>未来視</span><span class=\"h1-sub\">（オフライン版 Ver.1.042対応）</span>", "<span>Melding Pot</span><span>Future Vision</span><span class=\"h1-sub\">(Offline, Ver.1.042)</span>", "<span>马卡炼金</span><span>未来视</span><span class=\"h1-sub\">（离线版 Ver.1.042对应）</span>"],
   baseSeed: ["基準seed", "Base seed", "基础种子"],
-  seedUnknownLink: ["seedが分からない場合は「基準seedの復元」へ", "Don't know your seed? Go to \"Recover Base Seed\"", "不知道种子？前往「恢复基础种子」"],
-  seedGogmaNote: ["基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。", "The base seed is the same value as Gogma Seed Finder's, and can also be recovered with this tool alone.", "基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具恢复。"],
+  seedUnknownLink: ["seed/カウンタが分からない場合は「基準seed・カウンタ位置の特定」へ", "Don't know your seed/counter? Go to \"Find Base Seed / Counter\"", "不知道种子/计数器？前往「确定基础种子・计数器位置」"],
+  seedGogmaNote: ["基準seedは Gogma Seed Finder と同じ値です。", "The base seed is the same value as Gogma Seed Finder's.", "基础种子与 Gogma Seed Finder 是同一个值。"],
   curCounter: ["現在のカウンタ", "Current counter", "当前计数器"],
   showCount: ["表示件数", "Show", "显示数量"],
   predict: ["予測する", "Predict", "预测"],
   skillCondCaption: ["護石を検索", "Search charms", "搜索护石"],
-  band76: ["レア8(2%)", "Rarity 8 (2%)", "稀有度8(2%)"],
-  band52: ["レア7(11%)", "Rarity 7 (11%)", "稀有度7(11%)"],
-  band24: ["レア6(27%)", "Rarity 6 (27%)", "稀有度6(27%)"],
-  band0: ["レア5(60%)", "Rarity 5 (60%)", "稀有度5(60%)"],
+  band76: ["レア8（2%）", "Rarity 8 (2%)", "稀有度8（2%）"],
+  band52: ["レア7（11%）", "Rarity 7 (11%)", "稀有度7（11%）"],
+  band24: ["レア6（27%）", "Rarity 6 (27%)", "稀有度6（27%）"],
+  band0: ["レア5（60%）", "Rarity 5 (60%)", "稀有度5（60%）"],
   addSkillCond: ["＋ スキル条件を追加", "+ Add skill condition", "＋ 添加技能条件"],
-  lvNote: ["条件を指定しない項目は、全ての護石が対象です。Lvとスロットは「以上」で判定します。", "Any category without a condition matches all charms. Levels and slots match at the chosen value or higher.", "未设置条件的项目将匹配所有护石。等级和槽位按「不低于所选值」匹配。"],
-  seekBtn: ["条件に一致する「次に出現する護石」を検索", "Find the next charm that matches", "搜索下一个符合条件的护石"],
+  lvNote: ["条件を指定しない項目は、すべての護石が対象です。Lvとスロットは「以上」で判定します。", "Any category without a condition matches all charms. Levels and slots match at the chosen value or higher.", "未设置条件的项目将匹配所有护石。等级和槽位按「不低于所选值」匹配。"],
+  seekBtn: ["条件に一致する護石を検索", "Find charms that match", "搜索符合条件的护石"],
   seekLimit: ["探索上限", "Search limit", "搜索上限"],
   seek100k: ["10万件先", "Up to 100K ahead", "向后10万个"],
   seek1m: ["100万件先", "Up to 1M ahead", "向后100万个"],
   seek10m: ["1000万件先", "Up to 10M ahead", "向后1000万个"],
   stop: ["中止", "Stop", "停止"],
   seekNote: ["一覧より先も探せます。結果は10件ずつ表示します。", "Searches beyond the list above, 10 results per page.", "可搜索列表之后的结果，每页显示10个。"],
-  locateTitle: ["カウンタ位置の特定", "Find Your Current Counter", "确定当前计数器位置"],
-  locateNote: ["マカ錬金で引いた護石を、古い順に3つ入力してください。スキル・スロットは、ある分だけ入力すればOKです。基準seedの復元ではスロットの入力が必要です。", "Enter 3 charms from the Melding Pot, oldest first. For skills and slots, just enter the ones the charm has. Base seed recovery requires the slots to be entered.", "请输入马卡炼金炼出的护石，按从旧到新的顺序填 3 个。技能和槽位只需填写实际有的部分。恢复基础种子时需要填写槽位。"],
-  clearAll: ["全てクリア", "Clear all", "全部清除"],
-  searchRange: ["探索範囲", "Search range", "搜索范围"],
-  thUnit: ["個目", "(meld #)", "个"],
+  recTitle: ["基準seed・カウンタ位置の特定", "Find Base Seed / Counter", "确定基础种子・计数器位置"],
+  recNote: ["マカ錬金で引いた護石を、古い順に3つ入力してください。スキル・スロットは、ある分だけ入力すればOKです。<br>基準seedが入力されていればカウンタ位置を特定し、未入力なら基準seedを特定します（ボタンは自動で切り替わります）。基準seedの特定にはスロットの入力が必要です。", "Enter 3 charms from the Melding Pot, oldest first. For skills and slots, just enter the ones the charm has.<br>If the base seed is entered, the button finds your counter position; if it is empty, it finds the base seed instead (the button switches automatically). Finding the seed requires the slots to be entered.", "请输入马卡炼金炼出的护石，按从旧到新的顺序填 3 个。技能和槽位只需填写实际有的部分。<br>已填写基础种子时，按钮用于确定计数器位置；未填写时则用于确定基础种子（按钮会自动切换）。确定基础种子时必须填写槽位。"],
+  sfWaitNote: ["基準seedの特定は最初に一度だけ行えばOKです。総当たりで計算するため、端末の性能によっては時間がかかることがあります。", "You only need to find your base seed once. The brute-force search may take a while, depending on your device.", "基础种子只需在最初确定一次即可。由于采用穷举计算，根据设备性能可能需要较长时间。"],
+  clearAll: ["すべてクリア", "Clear all", "全部清除"],
   locateBtn: ["カウンタを特定", "Find counter", "确定计数器"],
-  obsNotExist: ["{n}件目の護石は存在しない組み合わせです。スキル・Lv・スロットを確認してください", "Charm #{n} is a combination that cannot exist. Check its skills, levels and slots.", "第 {n} 个护石是不存在的组合。请检查技能、等级和槽位。"],
+  obsNotExist: ["{n}件目の護石は存在しない組み合わせです。スキル・Lv・スロットを確認してください。", "Charm #{n} is a combination that cannot exist. Check its skills, levels and slots.", "第 {n} 个护石是不存在的组合。请检查技能、等级和槽位。"],
   searchSkillPh: ["スキル名で絞り込み", "Filter by skill name", "按技能名筛选"],
   clearSelection: ["選択を外す", "Clear selection", "取消选择"],
   close: ["閉じる", "Close", "关闭"],
@@ -765,7 +755,7 @@ const I18N = {
   dataOverwriteWarn: ["読み込むと、現在の基準seed・カウンタ・お気に入りがファイルの内容で上書きされます。続けますか？", "Importing will overwrite your current base seed, counter and favorites with the file's contents. Continue?", "导入后，当前的基础种子、计数器和收藏将被文件内容覆盖。要继续吗？"],
   dataTitle: ["データの移行", "Data transfer", "数据迁移"],
   dataNote: ["seed・カウンタ・お気に入りをファイルに書き出して、他の端末で読み込めます。", "Export your seed, counter and favorites to a file, and import it on another device.", "将种子、计数器和收藏导出到文件，可在其他设备上导入。"],
-  dataInvalid: ["対応していないファイル形式です", "Unsupported file format", "不支持的文件格式"],
+  dataInvalid: ["対応していないファイル形式です。", "Unsupported file format", "不支持的文件格式"],
   favListTitle: ["お気に入り一覧", "Favorites", "收藏列表"],
   favDlgNote: ["「あと +N」は、今から N 回目に出るという意味です。", "“In +N” means the charm appears on your Nth meld from now.", "“还有 +N”表示从现在起第 N 次炼金时出现。"],
   thAhead: ["あと", "Ahead", "还有"],
@@ -775,8 +765,8 @@ const I18N = {
   thSkill2: ["スキル2", "Skill 2", "技能2"],
   thSkill3: ["スキル3", "Skill 3", "技能3"],
   thSlots: ["スロット", "Slots", "槽位"],
-  footerNote: ["<b>基準seedについて:</b> 基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。Gogma Seed Finder の作者の方に感謝します。<br><b>その他:</b> 計算はすべてこのページ内で完結し、通信はしません。入力はブラウザ内にのみ保存されます。<br>非公式ファンツールです。「モンスターハンターワイルズ」はカプコンの商標です。 / MIT License — Copyright (c) 2026 fujima", "<b>Base seed:</b> The base seed is the same value as Gogma Seed Finder's, and can also be recovered with this tool alone. Thanks to the author of Gogma Seed Finder.<br><b>Notes:</b> Everything is computed on this page; nothing is sent over the network. Inputs are stored only in your browser.<br>Unofficial fan tool. MONSTER HUNTER WILDS is a trademark of CAPCOM CO., LTD. / MIT License — Copyright (c) 2026 fujima", "<b>关于基础种子：</b>基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具恢复。感谢 Gogma Seed Finder 的作者。<br><b>其他：</b>全部计算都在本页面内完成，不进行任何通信。输入仅保存在浏览器中。<br>非官方粉丝工具。《怪物猎人：荒野》是卡普空公司的商标。 / MIT License — Copyright (c) 2026 fujima"],
-  favCount: ["お気に入り: {n}件", "Favorites: {n}", "收藏：{n} 个"],
+  footerNote: ["<b>基準seedについて：</b> 基準seedは Gogma Seed Finder と同じ値で、このツール単体でも特定できます。Gogma Seed Finder の作者の方に感謝します。<br><b>その他：</b> 計算はすべてこのページ内で完結し、通信はしません。入力はブラウザ内にのみ保存されます。<br>非公式ファンツールです。「モンスターハンターワイルズ」はカプコンの商標です。 / MIT License — Copyright (c) 2026 fujima", "<b>Base seed:</b> The base seed is the same value as Gogma Seed Finder's, and can also be found with this tool alone. Thanks to the author of Gogma Seed Finder.<br><b>Notes:</b> Everything is computed on this page; nothing is sent over the network. Inputs are stored only in your browser.<br>Unofficial fan tool. MONSTER HUNTER WILDS is a trademark of CAPCOM CO., LTD. / MIT License — Copyright (c) 2026 fujima", "<b>关于基础种子：</b>基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具确定。感谢 Gogma Seed Finder 的作者。<br><b>其他：</b>全部计算都在本页面内完成，不进行任何通信。输入仅保存在浏览器中。<br>非官方粉丝工具。《怪物猎人：荒野》是卡普空公司的商标。 / MIT License — Copyright (c) 2026 fujima"],
+  favCount: ["お気に入り：{n}件", "Favorites: {n}", "收藏：{n} 个"],
   favNext: ["（次に引けるのは カウンタ {c}、あと +{d}）", " (next one at counter {c}, in +{d})", "（下一个可抽到的是 计数器 {c}，还有 +{d}）"],
   favOnlyOn: ["★ お気に入り表示中（解除）", "★ Showing favorites (click to undo)", "★ 正在显示收藏（点击取消）"],
   favOnlyOff: ["☆ お気に入りのみ表示", "☆ Show favorites only", "☆ 只显示收藏"],
@@ -801,49 +791,48 @@ const I18N = {
   statShown: ["{n} 件を表示（条件なし）", "Showing {n} (no conditions)", "显示 {n} 个（无条件）"],
   resultsClose: ["結果を閉じる", "Hide results", "关闭结果"],
   resultsShow: ["結果を表示", "Show results", "显示结果"],
-  needSeedCounter: ["基準seed とカウンタを入力してください。", "Please enter a base seed and a counter.", "请输入基础种子和计数器。"],
+  needSeedCounter: ["基準seedとカウンタを入力してください。", "Please enter a base seed and a counter.", "请输入基础种子和计数器。"],
   computing: ["計算中…", "Computing…", "计算中…"],
   hugeCounterWarn: ["カウンタが {n} と大きいため、計算を始めるまでに時間がかかることがあります。続行しますか？", "The counter is large ({n}), so the calculation may take a while to start. Continue?", "计数器较大（{n}），开始计算可能需要一些时间。要继续吗？"],
-  favNotArray: ["配列形式のJSONではありません", "Not an array-format JSON", "不是数组格式的 JSON"],
-  favImported: ["お気に入り: {n}件（読み込み完了）", "Favorites: {n} (import complete)", "收藏：{n} 个（导入完成）"],
-  loadFailed: ["読み込み失敗: ", "Import failed: ", "导入失败："],
+  favNotArray: ["配列形式のJSONではありません。", "Not an array-format JSON", "不是数组格式的 JSON"],
+  favImported: ["お気に入り：{n}件（読み込み完了）", "Favorites: {n} (import complete)", "收藏：{n} 个（导入完成）"],
+  loadFailed: ["読み込み失敗：", "Import failed: ", "导入失败："],
   predictFromHere: ["ここから予測", "Predict from here", "从这里开始预测"],
   favAdd: ["お気に入りに追加", "Add to favorites", "添加到收藏"],
   favAdded: ["お気に入りに登録済み", "Favorited", "已收藏"],
   seekNeedCond: ["検索条件（スキル・スロット・レア度）を1つ以上指定してください。", "Set at least one search condition (skill, slots, or rarity).", "请至少指定一个搜索条件（技能、槽位或稀有度）。"],
-  seekProgress: ["探索中… {n} 件（{h} 件ヒット）", "Scanning… {n} scanned ({h} hits)", "搜索中… 已搜索 {n} 个（命中 {h} 个）"],
-  seekStopped: ["中止しました（{n} 件探索、{h} 件ヒット）", "Stopped ({n} scanned, {h} hits)", "已停止（搜索了 {n} 个，命中 {h} 个）"],
-  seekFoundMsg: ["{h} 件見つかりました（{n} 件先まで探索）", "Found {h} (scanned {n} ahead)", "找到 {h} 个（已向后搜索 {n} 个）"],
+  seekProgress: ["検索中… {n} 件（{h} 件一致）", "Searching… {n} searched ({h} matches)", "搜索中… 已搜索 {n} 个（符合 {h} 个）"],
+  seekStopped: ["中止しました（{n} 件検索、{h} 件一致）", "Stopped ({n} searched, {h} matches)", "已停止（搜索了 {n} 个，符合 {h} 个）"],
+  seekFoundMsg: ["{h} 件見つかりました（{n} 件先まで検索）", "Found {h} (searched {n} ahead)", "找到 {h} 个（已向后搜索 {n} 个）"],
   pagerPrev: ["← 前のページ", "← Prev", "← 上一页"],
   pagerNext: ["次のページ →", "Next →", "下一页 →"],
   pagerInfo: ["{p} ページ目（合計 {h} 件）", "Page {p} ({h} found)", "第 {p} 页（共找到 {h} 个）"],
   seekExhausted: ["探索上限に到達しました（これ以上先はありません）", "Search limit reached (nothing further ahead)", "已达到搜索上限（更后面没有了）"],
   backToCounter: ["↩ カウンタ {c} に戻る", "↩ Back to counter {c}", "↩ 返回计数器 {c}"],
   clearAllCond: ["条件をすべてクリア", "Clear all conditions", "清除全部条件"],
-  seekNotFound: ["{n} 件先まで探索しましたが、条件に一致する護石は見つかりませんでした", "Scanned {n} ahead, but no charm matched the conditions", "已向后搜索 {n} 个，但没有找到符合条件的护石"],
+  seekNotFound: ["{n} 件先まで検索しましたが、条件に一致する護石は見つかりませんでした。", "Searched {n} ahead, but no charm matched the conditions.", "已向后搜索 {n} 个，但没有找到符合条件的护石。"],
   seekImpossible: ["この条件の組み合わせは存在しません（どのレア度でも出現しない組み合わせです）", "This combination of conditions can never appear, in any rarity.", "这个条件组合不存在（任何稀有度都不会出现）。"],
-  seekWrongBands: ["チェック中のレア度では出現しません。出現するレア度：{bands}", "It cannot appear in the checked rarities. It can appear in: {bands}", "在当前勾选的稀有度中不会出现。会出现的稀有度：{bands}"],
+  seekWrongBands: ["チェック中のレア度では出現しません。出現するレア度：{bands}。", "It cannot appear in the checked rarities. It can appear in: {bands}", "在当前勾选的稀有度中不会出现。会出现的稀有度：{bands}"],
   noSkillMatch: ["該当するスキルがありません。", "No matching skills.", "没有符合的技能。"],
   lvSuffix: ["Lv{lv}以上", "Lv{lv}+", "Lv{lv}以上"],
   delete: ["削除", "Delete", "删除"],
-  noSkillCond: ["スキル条件なし（全ての護石が対象）", "No skill conditions (all charms are candidates)", "无技能条件（所有护石均为对象）"],
-  slotCondPrefix: ["スロット条件: ", "Slot condition: ", "槽位条件："],
+  noSkillCond: ["スキル条件なし（すべての護石が対象）", "No skill conditions (all charms are candidates)", "无技能条件（所有护石均为对象）"],
+  slotCondPrefix: ["スロット条件：", "Slot condition: ", "槽位条件："],
   slotCondSelect: ["＋ スロット条件を追加", "+ Add slot condition", "＋ 添加槽位条件"],
   slotPatternMin: ["{p} 以上", "{p} or higher", "{p} 以上"],
-  slotMatches: ["該当: {hits}", "Matches: {hits}", "符合：{hits}"],
-  slotRarities: ["出現レア度: {r}", "Appears in: {r}", "出现稀有度：{r}"],
-  slotRarityOnly: ["出現レア度: {r} のみ", "Appears in: {r} only", "出现稀有度：仅{r}"],
+  slotMatches: ["該当：{hits}", "Matches: {hits}", "符合：{hits}"],
+  slotRarities: ["出現レア度：{r}", "Appears in: {r}", "出现稀有度：{r}"],
+  slotRarityOnly: ["出現レア度：{r} のみ", "Appears in: {r} only", "出现稀有度：仅{r}"],
   select: ["選択", "Select", "选择"],
   selectSkill: ["スキル{n}を選ぶ", "Select skill {n}", "选择技能{n}"],
   slotsWord: ["スロット", "Slots", "槽位"],
-  needSeed: ["基準seed を入力してください。", "Please enter a base seed.", "请输入基础种子。"],
+  needSeed: ["基準seedを入力してください。", "Please enter a base seed.", "请输入基础种子。"],
   needObs: ["護石を3件すべて入力してください（各行でスキルを選んでください）。", "Enter all 3 charms (select skills in each row).", "请完整输入全部 3 个护石（每行都要选择技能）。"],
-  scanning: ["探索中…", "Scanning…", "搜索中…"],
+  scanning: ["探索中…", "Searching…", "搜索中…"],
   locateProgress: ["探索中… {pct}%", "Searching… {pct}%", "搜索中… {pct}%"],
   locateStopped: ["探索を中止しました", "Search stopped", "搜索已停止"],
-  rangeCap: ["（上限 3,000,000）", "(max 3,000,000)", "（上限 3,000,000）"],
-  rangeInvalid: ["探索範囲が不正です（下限が上限を超えています）。", "Invalid range (min exceeds max).", "搜索范围无效（下限大于上限）。"],
-  locateNotFound: ["一致する位置が見つかりませんでした（{lo}〜{hi}個目を探索）。基準seed・入力内容（スキル名/Lv/スロット）・探索範囲を確認してください。", "No matching position found (searched melds {lo}–{hi}). Check the base seed, the skills/levels/slots you entered, and the search range.", "未找到匹配的位置（已搜索第 {lo}～{hi} 个）。请确认基础种子、输入内容（技能名/等级/槽位）和搜索范围。"],
+  locExtending: ["50万個目までで見つからなかったので、100万個目まで広げて探索しています…", "Not found in the first 500,000 melds — extending the search to 1,000,000…", "在前50万个中未找到，正在扩大到100万个继续搜索…"],
+  locateNotFound: ["一致する位置が見つかりませんでした（{lo}〜{hi}個目を探索）。基準seed・入力内容（スキル名/Lv/スロット）を確認してください。", "No matching position found (searched melds {lo}–{hi}). Check the base seed and the skills/levels/slots you entered.", "未找到匹配的位置（已搜索第 {lo}～{hi} 个）。请确认基础种子和输入内容（技能名/等级/槽位）。"],
   locateFound: ["<b>特定できました。</b>", "<b>Found it.</b>", "<b>已确定。</b>"],
   candFew: ["<b>{n}件の候補があります。</b>スロットも入力すると絞り込めます。", "<b>{n} candidate(s).</b> Adding the slots as well will narrow it down.", "<b>有 {n} 个候选。</b>再输入槽位可以进一步缩小范围。"],
   candMany: ["<b>{n}件以上の候補があります。</b>スロットも入力すると絞り込めます。", "<b>{n}+ candidates.</b> Adding the slots as well will narrow it down.", "<b>有 {n} 个以上候选。</b>再输入槽位可以进一步缩小范围。"],
@@ -851,33 +840,28 @@ const I18N = {
   sfAuto: ["自動（論理コア数 {n}）", "Auto ({n} logical cores)", "自动（逻辑核心 {n}）"],
   sfDoneNote: ["探索完了。候補が複数ある場合は、スロットも入力してもう一度探索すると絞り込めます。", "Search complete. If several candidates remain, add the slots as well and search again to narrow it down.", "搜索完成。如果有多个候选，可再输入槽位后再次搜索来缩小范围。"],
   sfEarly: ["最初の候補が見つかったら終了", "Stop at the first candidate", "找到第一个候选后停止"],
-  sfEarlyNote: ["最初の候補が見つかったため探索を終了しました（全範囲は調べていないので、別の候補が残っている可能性はあります）。", "Stopped at the first candidate (the full range was not scanned, so other candidates may remain).", "已在找到第一个候选后停止（未搜索全部范围，可能还存在其他候选）。"],
-  sfEngineSimd: ["探索エンジン: SIMD高速版", "Engine: SIMD (fast)", "搜索引擎：SIMD 高速版"],
-  sfEngineStd: ["探索エンジン: 標準版", "Engine: standard", "搜索引擎：标准版"],
-  sfEngineGpu: ["探索エンジン: WebGPU（GPU）", "Engine: WebGPU (GPU)", "搜索引擎：WebGPU（GPU）"],
+  sfEarlyNote: ["最初の候補が見つかったため探索を終了しました（全範囲は調べていないので、別の候補が残っている可能性はあります）。", "Stopped at the first candidate (the full range was not searched, so other candidates may remain).", "已在找到第一个候选后停止（未搜索全部范围，可能还存在其他候选）。"],
+  sfEngineSimd: ["探索エンジン：SIMD高速版", "Engine: SIMD (fast)", "搜索引擎：SIMD 高速版"],
+  sfEngineStd: ["探索エンジン：標準版", "Engine: standard", "搜索引擎：标准版"],
+  sfEngineGpu: ["探索エンジン：WebGPU（GPU）", "Engine: WebGPU (GPU)", "搜索引擎：WebGPU（GPU）"],
   sfEtaMin: ["約{n}分", "~{n} min", "约{n}分钟"],
   sfEtaSec: ["約{n}秒", "~{n} sec", "约{n}秒"],
-  sfFilter: ["絞り込み: 観測1個目と整合するPt行は {a} 行、2個目は {b} 行です（小さいほど速く絞り込めます）。", "Filter strength: {a} Pt rows fit observation 1, {b} fit observation 2 (smaller means faster filtering).", "筛选强度：与第 1 个观测一致的 Pt 行有 {a} 行，第 2 个有 {b} 行（越小筛选越快）。"],
-  sfFirst8: ["観測は最初の8件を使用します。", "Using the first 8 observations.", "仅使用前 8 个观测。"],
-  sfFoundCount: ["<br>発見: {n} 件", "<br>Found: {n}", "<br>已找到：{n} 个"],
+  sfFoundCount: ["<br>発見：{n} 件", "<br>Found: {n}", "<br>已找到：{n} 个"],
   sfFrom: ["下限", "Min", "下限"],
-  sfHit: ["基準seed: <b>{seed}</b> ／ 観測1個目のカウンタ: <b>{c}</b>", "Base seed: <b>{seed}</b> · 1st observed charm at counter <b>{c}</b>", "基础种子：<b>{seed}</b> ／ 第1个观测护石的计数器：<b>{c}</b>"],
-  sfImpossible: ["入力された護石の組み合わせが実在しません（{n}個目のスキル／スロットの組み合わせがゲーム内に存在しない組み合わせです）。スキル・Lv・スロット・入力順のミスがないか確認してください。", "That charm combination doesn't exist (the skill/slot combination of charm #{n} never occurs in the game). Check the skills, levels, slots, and order.", "输入的护石组合不存在（第 {n} 个的技能/槽位组合在游戏中不存在）。请确认技能、等级、槽位和顺序是否有误。"],
-  sfNeedObs: ["観測護石を3件すべて入力してください（上の「カウンタ位置の特定」の入力欄に、スキルを選んだ護石を古い順に入力します）。", "Enter all 3 observed charms (in the input rows under \"Find Your Current Counter\" above, oldest first, with skills selected).", "请完整输入全部 3 个观测护石（在上方「确定当前计数器位置」的输入行中，按从旧到新的顺序选择技能）。"],
-  sfNeedSlots: ["{n}件目のスロットが1つも入力されていません。seed復元では、護石にあるスロットも入力してください（無いスロットは「－」のままでOK）。", "Charm #{n} has no slots entered at all. For seed recovery, enter the slots the charm has (leave a slot as \"－\" only when the charm has none).", "第 {n} 个护石没有输入任何槽位。恢复基础种子时，请填写护石实际有的槽位（没有的槽位可保持「－」）。"],
-  sfNotFound: ["<b>候補が見つかりませんでした。</b><br>よくある原因と対策:<br>・<b>カウンタ範囲が足りない</b> → 範囲を広げてもう一度探索してください（観測した護石の位置が範囲の外にあると見つかりません。下限より前なら下限を下げ、上限より先なら上限を広げてください。広げるほど時間はかかります）{next}<br>・<b>入力ミス</b> → スキル・Lv・スロットと、古い順の並びを再確認してください<br>・<b>連続で錬金していない</b> → 間に別の錬金が挟まった護石が混ざると一致しません。連続3件を取り直すのが確実です", "<b>No candidates found.</b><br>Common causes and fixes:<br>・<b>Range too small</b> → widen the range and search again (nothing is found if the observed charms sit outside the range: lower the lower bound if they are before it, raise the upper bound if they are beyond it; wider ranges take longer){next}<br>・<b>Input errors</b> → re-check the skills, levels, slots, and the oldest-first order<br>・<b>Not consecutive</b> → charms with other melds in between never match. Re-recording 3 truly consecutive melds is the surest fix", "<b>没有找到候选。</b><br>常见原因与对策：<br>・<b>计数器范围不足</b> → 扩大范围后再次搜索（观测护石的位置在范围之外时无法找到；在下限之前请调低下限，在上限之后请调大上限；范围越大耗时越长）{next}<br>・<b>输入错误</b> → 重新确认技能、等级、槽位以及从旧到新的顺序<br>・<b>不是连续炼金</b> → 中间夹杂其他炼金时无法匹配。重新记录真正连续的 3 个最可靠"],
-  sfNextSegment: ["<br>・<b>続きだけを探す</b> → 下限 {nlo}・上限 {nhi} のように前回の続きだけを探索すると、探し終わった範囲を飛ばせるので速いです", "<br>・<b>Search only the continuation</b> → searching just the next part, e.g. lower bound {nlo} and upper bound {nhi}, is faster because it skips the range you already covered", "<br>・<b>只搜索后续范围</b> → 只搜索后续部分（例如下限 {nlo}、上限 {nhi}），可以跳过已搜索的范围，更快"],
-  sfFailed: ["エラーが発生したため、復元を開始できませんでした。もう一度お試しください。", "An error occurred, so recovery could not start. Please try again.", "发生错误，无法开始恢复。请重试。"],
-  sfNote: ["基準seedの復元は、最初に一度だけ行えばOKです。総当たりで計算するため、端末の性能によっては時間がかかることがあります。", "You only need to recover your base seed once. The brute-force search may take a while, depending on your device.", "基础种子只需在最初恢复一次即可。由于采用穷举计算，根据设备性能可能需要较长时间。"],
-  sfRange: ["カウンタ範囲（観測1個目の位置）", "Counter range (position of the 1st observed charm)", "计数器范围（第1个观测护石的位置）"],
-  sfSharedNote: ["<b>入力欄は上の「カウンタ位置の特定」と共用です。</b>先に<a href=\"#obsrows\">上の入力欄</a>へ入力してから、「復元開始」を押してください。", "<b>Shared with “Find Your Current Counter” above.</b> Enter your melds in <a href=\"#obsrows\">the rows above</a> first, then press “Start recovery”.", "<b>与上方「确定当前计数器位置」共用输入行。</b>请先在<a href=\"#obsrows\">上方输入行</a>中填写，再点击「开始恢复」。"],
-  sfStart: ["復元開始", "Start recovery", "开始恢复"],
+  sfHit: ["基準seed：<b>{seed}</b> ／ 観測1件目のカウンタ：<b>{c}</b>", "Base seed: <b>{seed}</b> · 1st observed charm at counter <b>{c}</b>", "基础种子：<b>{seed}</b> ／ 第1个观测护石的计数器：<b>{c}</b>"],
+  sfImpossible: ["入力された護石の組み合わせが存在しません（{n}件目のスキル／スロットの組み合わせがゲーム内に存在しない組み合わせです）。スキル・Lv・スロット・入力順のミスがないか確認してください。", "That charm combination doesn't exist (the skill/slot combination of charm #{n} never occurs in the game). Check the skills, levels, slots, and order.", "输入的护石组合不存在（第 {n} 个的技能/槽位组合在游戏中不存在）。请确认技能、等级、槽位和顺序是否有误。"],
+  sfNeedObs: ["観測護石を3件すべて入力してください（スキルを選んだ護石を古い順に入力します）。", "Enter all 3 observed charms (oldest first, with skills selected).", "请完整输入全部 3 个观测护石（按从旧到新的顺序选择技能）。"],
+  sfNeedSlots: ["{n}件目のスロットが1つも入力されていません。seedの特定では、護石にあるスロットも入力してください（無いスロットは「－」のままでOK）。", "Charm #{n} has no slots entered at all. For finding the seed, enter the slots the charm has (leave a slot as \"－\" only when the charm has none).", "第 {n} 个护石没有输入任何槽位。确定基础种子时，请填写护石实际有的槽位（没有的槽位可保持「－」）。"],
+  sfNotFound: ["<b>候補が見つかりませんでした。</b><br>よくある原因と対策:<br>・<b>探索範囲が足りない</b> → 範囲を広げてもう一度探索してください（観測した護石の位置が範囲の外にあると見つかりません。）{next}<br>・<b>入力ミス</b> → スキル・Lv・スロットと、古い順の並びを再確認してください。<br>・<b>連続で錬金していない</b> → 間に別の錬金が挟まった護石が混ざると一致しません。古い順に3つ入力してください。", "<b>No candidates found.</b><br>Common causes and fixes:<br>・<b>Range too small</b> → widen the range and search again (nothing is found if the observed charms sit outside the range.){next}<br>・<b>Input errors</b> → re-check the skills, levels, slots, and the oldest-first order.<br>・<b>Not consecutive</b> → charms with other melds in between never match. Enter 3 charms in oldest-first order.", "<b>没有找到候选。</b><br>常见原因与对策：<br>・<b>搜索范围不足</b> → 扩大范围后再次搜索（观测护石的位置在范围之外时无法找到。）{next}<br>・<b>输入错误</b> → 重新确认技能、等级、槽位以及从旧到新的顺序。<br>・<b>不是连续炼金</b> → 中间夹杂其他炼金时无法匹配。请按从旧到新的顺序输入 3 个。"],
+  sfNextSegment: ["<br>・<b>続きだけを探す</b> → 下限 {nlo}・上限 {nhi} のように前回の続きだけを探索すると、探し終わった範囲を飛ばせるので速いです。", "<br>・<b>Search only the continuation</b> → searching just the next part, e.g. lower bound {nlo} and upper bound {nhi}, is faster because it skips the range you already covered.", "<br>・<b>只搜索后续范围</b> → 只搜索后续部分（例如下限 {nlo}、上限 {nhi}），可以跳过已搜索的范围，更快。"],
+  sfFailed: ["エラーが発生したため、特定を開始できませんでした。もう一度お試しください。", "An error occurred, so the search could not start. Please try again.", "发生错误，无法开始确定。请重试。"],
+  sfRange: ["探索範囲（観測1件目の位置）", "Search range (position of the 1st observed charm)", "搜索范围（第1个观测护石的位置）"],
+  sfStart: ["seedを特定", "Find seed", "确定种子"],
   sfStats: ["進捗 {pct}%（{done} / {total} ペア）<br>速度 {rate} Mペア/秒 ／ 経過 {min}分{sec}秒 ／ 残り {eta}", "Progress {pct}% ({done} / {total} pairs)<br>Speed {rate} M pairs/s · Elapsed {min}m{sec}s · Remaining {eta}", "进度 {pct}%（{done} / {total} 对）<br>速度 {rate} M对/秒 ／ 已用 {min}分{sec}秒 ／ 剩余 {eta}"],
   sfStopped: ["探索を中止しました。", "Search stopped.", "已停止搜索。"],
-  sfTitle: ["基準seedの復元", "Recover Base Seed", "恢复基础种子"],
   sfTo: ["上限", "Max", "上限"],
   sfUse: ["このseedとカウンタで予測", "Predict with this seed & counter", "用此种子和计数器预测"],
-  sfWorkers: ["ワーカー数", "Workers", "线程数"],
+  sfWorkers: ["ワーカー数", "Workers", "工作线程数"],
 };
 function t(key) { const e = I18N[key]; return e ? e[lang === "en" ? 1 : lang === "zh" ? 2 : 0] : key; }
 function tf(key, params) { let v = t(key); for (const k in params) v = v.split("{" + k + "}").join(String(params[k])); return v; }
@@ -1061,7 +1045,7 @@ function renderFavList() {
     : "";
 }
 function toggleFavorite(r) {
-  if (!seedKey()) return; // seed未入力では登録しない
+  if (!seedKey()) { $("statrow").style.display = ""; $("stat").innerHTML = warnHtml(t("needSeed")); return; } // seed未入力では登録しない（理由を表示する）
   const key = favoriteKey(r);
   if (favorites[key]) delete favorites[key];
   else favorites[key] = {
@@ -1098,11 +1082,13 @@ function render() {
     document.querySelectorAll(".fband:not(:checked)").length > 0;
   const tb = $("tbody");
   const crit = collectCriteria();
+  const hasCrit = crit.terms.length > 0 || !!crit.slotMin || crit.bands.size !== 4;
   let html = "", shown = 0, hits = 0;
   rows.forEach((r, i) => {
-    const hit = matchPred(r, crit);
+    const match = matchPred(r, crit);
+    const hit = hasCrit && match;
     if (hit) hits++;
-    if (only && !hit) return;
+    if (only && !match) return;
     if (favoritesOnly && !isFavorite(r)) return;
     shown++;
     const bc = BAND_LABEL[r.band][1]; const bl = bandName(r.band);
@@ -1117,7 +1103,7 @@ function render() {
   $("stat").textContent = rows.length
     ? (favoritesOnly
         ? tf("statFavShown", { n: shown })
-        : only ? tf("statMatched", { total: rows.length, hits }) : tf("statShown", { n: rows.length }))
+        : only ? tf("statMatched", { total: rows.length, hits: hasCrit ? hits : shown }) : tf("statShown", { n: rows.length }))
     : "";
   renderTblToggle();
   updateFavoriteStatus();
@@ -1372,7 +1358,7 @@ $("counter").addEventListener("input", () => {
   if (counterHistory.length) { counterHistory = []; updateBackBtn(); }
 });
 const SEEK_PAGE = 10;
-let seekState = null; // { seed, start, crit, maxScan, s, scanned, found, exhausted, page }
+let seekState = null; // { seed, start, crit, maxScan, s, searched, found, exhausted, page }
 function seekRowHtml(f) {
   const bc = BAND_LABEL[f.band][1]; const bl = bandName(f.band);
   const favKey = seedKey() + ":" + f.counter;
@@ -1412,37 +1398,37 @@ function runSeekScan() {
   if (!st) return;
   seekAbort = false;
   $("seekstop").style.display = "";
-  $("seekstat").textContent = tf("seekProgress", { n: st.scanned.toLocaleString(), h: st.found.length });
+  $("seekstat").textContent = tf("seekProgress", { n: st.searched.toLocaleString(), h: st.found.length });
   const target = (st.page + 1) * SEEK_PAGE;
   function chunk() {
     if (seekState !== st) return;
     if (seekAbort) {
-      $("seekstat").textContent = tf("seekStopped", { n: st.scanned.toLocaleString(), h: st.found.length });
+      $("seekstat").textContent = tf("seekStopped", { n: st.searched.toLocaleString(), h: st.found.length });
       $("seekstop").style.display = "none";
       renderSeekPage();
       return;
     }
-    const end = Math.min(st.scanned + 50000, st.maxScan);
-    while (st.scanned < end && st.found.length < target) {
+    const end = Math.min(st.searched + 50000, st.maxScan);
+    while (st.searched < end && st.found.length < target) {
       const outs = [];
       for (let j = 0; j < 7; j++) { st.s = stepState(st.s); outs.push(st.s[3]); }
       // 帯が条件外なら予測計算ごと省略する（matchPred の最初の判定と同じ結果になる）
-      if (!st.crit.bands.has(gradeBand(outs[1]))) { st.scanned++; continue; }
+      if (!st.crit.bands.has(gradeBand(outs[1]))) { st.searched++; continue; }
       const p = predictFromOutputs(outs);
       if (matchPred(p, st.crit)) {
-        st.found.push({ ahead: st.scanned + 1, counter: st.start + st.scanned, band: p.band, skills: p.skills, slots: p.slots });
+        st.found.push({ ahead: st.searched + 1, counter: st.start + st.searched, band: p.band, skills: p.skills, slots: p.slots });
       }
-      st.scanned++;
+      st.searched++;
     }
-    if (st.found.length >= target || st.scanned >= st.maxScan) {
-      if (st.scanned >= st.maxScan) st.exhausted = true;
-      if (st.found.length) $("seekstat").textContent = tf("seekFoundMsg", { n: st.scanned.toLocaleString(), h: st.found.length });
+    if (st.found.length >= target || st.searched >= st.maxScan) {
+      if (st.searched >= st.maxScan) st.exhausted = true;
+      if (st.found.length) $("seekstat").textContent = tf("seekFoundMsg", { n: st.searched.toLocaleString(), h: st.found.length });
       else $("seekstat").innerHTML = warnHtml(tf("seekNotFound", { n: st.maxScan.toLocaleString() }));
       $("seekstop").style.display = "none";
       renderSeekPage();
       return;
     }
-    $("seekstat").textContent = tf("seekProgress", { n: st.scanned.toLocaleString(), h: st.found.length });
+    $("seekstat").textContent = tf("seekProgress", { n: st.searched.toLocaleString(), h: st.found.length });
     setTimeout(chunk, 0);
   }
   setTimeout(chunk, 10);
@@ -1452,7 +1438,7 @@ function seekNext() {
   const start = parseInt($("counter").value, 10);
   if (isNaN(seed) || isNaN(start)) { $("seekstat").innerHTML = warnHtml(t("needSeedCounter")); return; }
   const crit = collectCriteria();
-  if (!crit.terms.length && !crit.slotMin && crit.bands.size === 4) {
+  if (!crit.terms.length && !crit.slotMin && (crit.bands.size === 4 || crit.bands.size === 0)) {
     $("seekstat").innerHTML = warnHtml(t("seekNeedCond"));
     return;
   }
@@ -1469,7 +1455,7 @@ function seekNext() {
   saveInputs();
   const maxScan = parseInt($("seekmax").value, 10);
   const s = advanceState(initState(seed), 7 * start);
-  seekState = { seed, start, crit, maxScan, s, scanned: 0, found: [], exhausted: false, page: 0 };
+  seekState = { seed, start, crit, maxScan, s, searched: 0, found: [], exhausted: false, page: 0 };
   $("seekres").innerHTML = "";
   runSeekScan();
 }
@@ -1677,43 +1663,43 @@ $("sllist").addEventListener("click", ev => {
 const HELP_HTML = {
 simple: {
 jp: `<p><b>1. 基準seedとカウンタを用意する</b><br>
-基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。材料は、実際に錬金した護石の記録です（古い順）。<br>
-・seedが分かる → 「カウンタ位置の特定」<br>
-・両方分からない → 「基準seedの復元」</p>
+基準seedは Gogma Seed Finder と同じ値です。材料は、実際に錬金した護石の記録です（古い順）。<br>
+・seedが分かる → seedを入力すると、ボタンが「カウンタを特定」になります。<br>
+・両方分からない → seedが未入力だと、ボタンが「seedを特定」になります。</p>
 <p><b>2. 予測する</b><br>
 seedとカウンタを入れて「予測する」。次に錬金する1個目が、そのカウンタの結果です。</p>
 <p><b>3. 探す・登録する</b><br>
-条件で絞り込み、先は「次に出現を検索」で探せます。気になる護石は ☆ で登録。</p>
+条件で絞り込み、先は「条件に一致する護石を検索」で探せます。気になる護石は ☆ で登録。</p>
 <p><b>4. データの移行</b><br>
 seed・カウンタ・お気に入りは、ファイルで書き出し／読み込みできます。</p>
 <p>※ 通信はしません。作業状態は、再度開くとリセットされます（seed・カウンタ・お気に入り・言語は保持されます）。</p>`,
 en: `<p><b>1. Prepare your base seed and counter</b><br>
-The base seed is the same value as Gogma Seed Finder's, and can also be recovered with this tool alone. You will need a record of charms you actually melded (oldest first).<br>
-- Know the seed -&gt; "Find Your Current Counter"<br>
-- Know neither -&gt; "Recover Base Seed"</p>
+The base seed is the same value as Gogma Seed Finder's. You will need a record of charms you actually melded (oldest first).<br>
+- Know the seed → enter it, and the button becomes "Find counter".<br>
+- Know neither → leave the seed empty, and the button becomes "Find seed".</p>
 <p><b>2. Predict</b><br>
 Enter the seed and counter and press "Predict". Your next meld is the result for that counter.</p>
 <p><b>3. Search and save</b><br>
-Filter by conditions, and use the next-match search to look further ahead. Save charms with ☆.</p>
+Filter by conditions, and use the "Find charms that match" search to look further ahead. Save charms with ☆.</p>
 <p><b>4. Data transfer</b><br>
 Export / import your seed, counter and favorites as a file.</p>
 <p>* No network is used. Working state resets when you reopen the file (your seed, counter, favorites and language are kept).</p>`,
 zh: `<p><b>1. 准备基础种子和计数器</b><br>
-基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具恢复。材料是实际炼金得到的护石记录（从旧到新）。<br>
-・知道种子 → "确定当前计数器位置"<br>
-・两者都不知道 → "恢复基础种子"</p>
+基础种子与 Gogma Seed Finder 是同一个值。材料是实际炼金得到的护石记录（从旧到新）。<br>
+・知道种子 → 输入种子后，按钮变为「确定计数器」。<br>
+・两者都不知道 → 不输入种子时，按钮变为「确定种子」。</p>
 <p><b>2. 预测</b><br>
-输入种子和计数器后点击"预测"。下一次炼金的第1个，就是该计数器的结果。</p>
+输入种子和计数器后点击「预测」。下一次炼金的第1个，就是该计数器的结果。</p>
 <p><b>3. 搜索与收藏</b><br>
-按条件筛选，更靠后的结果用"搜索下一个"查找。在意的护石用 ☆ 收藏。</p>
+按条件筛选，更靠后的结果用「搜索符合条件的护石」查找。在意的护石用 ☆ 收藏。</p>
 <p><b>4. 数据迁移</b><br>
 种子、计数器和收藏可导出／导入为文件。</p>
 <p>※ 不联网。重新打开时，作业状态会重置（种子、计数器、收藏和语言会保留）。</p>` },
 detail: {
 jp: `<p><b>1. seedとカウンタの特定</b><br>
-ゲームで連続で錬金し、スキル・Lv・スロットを古い順にメモしてください。基準seedは Gogma Seed Finder と同じ値で、このツール単体でも復元できます。<br>
-・カウンタ特定：結果の「ここから予測」でそのまま予測へ。スロットは、ある分を入れるほど候補が絞れます（seed復元では入力が必要）。<br>
-・seed復元：範囲の上限は、今までの錬金回数の見当で指定。端末によっては時間がかかります。</p>
+ゲームで連続で錬金し、スキル・Lv・スロットを古い順にメモしてください。基準seedは Gogma Seed Finder と同じ値で、このツール単体でも特定できます。<br>
+・カウンタ特定：結果の「ここから予測」でそのまま予測へ。スロットは、ある分を入れるほど候補が絞れます（seedの特定では入力が必要）。<br>
+・seedの特定：範囲の上限は、今までの錬金回数の見当で指定。端末によっては時間がかかります。</p>
 <p><b>2. 予測</b><br>
 一覧はカウンタ順に並びます。表示件数より先は検索で探してください。</p>
 <p><b>3. 検索とお気に入り</b><br>
@@ -1721,11 +1707,11 @@ jp: `<p><b>1. seedとカウンタの特定</b><br>
 <p><b>4. データの移行</b><br>
 書き出したファイルは、別の端末で読み込めます。</p>
 <p><b>メモ</b><br>
-入力はこの端末にのみ保存されます。</p>`,
+入力はブラウザ内にのみ保存されます。</p>`,
 en: `<p><b>1. Finding seed and counter</b><br>
-Meld several times in a row in-game and note skills, levels and slots, oldest first. The base seed is the same value as Gogma Seed Finder's, and can also be recovered with this tool alone.<br>
-- Counter: press "Predict from here" in the result to continue. Entering the slots narrows the candidates (seed recovery requires them).<br>
-- Seed recovery: set the range upper bound to roughly how many melds you have done. It may take a while on slower devices.</p>
+Meld several times in a row in-game and note skills, levels and slots, oldest first. The base seed is the same value as Gogma Seed Finder's, and can also be found with this tool alone.<br>
+- Counter: press "Predict from here" in the result to continue. Entering the slots narrows the candidates (finding the seed requires them).<br>
+- Finding the seed: set the range upper bound to roughly how many melds you have done. It may take a while on slower devices.</p>
 <p><b>2. Predict</b><br>
 Results are listed in counter order. Use search to look beyond the list size.</p>
 <p><b>3. Search and favorites</b><br>
@@ -1733,11 +1719,11 @@ Filter by skill, slots and rarity. Starred charms show how many melds away they 
 <p><b>4. Data transfer</b><br>
 An exported file can be imported on another device.</p>
 <p><b>Notes</b><br>
-Inputs are stored only on this device.</p>`,
+Inputs are stored only in this browser.</p>`,
 zh: `<p><b>1. 确定种子和计数器</b><br>
-请在游戏中连续炼金，并按从旧到新的顺序记录技能、等级和槽位。基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具恢复。<br>
-・确定计数器：点击结果中的"从这里开始预测"即可继续。填写槽位可缩小候选范围（恢复种子时必填）。<br>
-・恢复种子：范围上限按至今的炼金次数大致指定。设备较慢时可能需要较长时间。</p>
+请在游戏中连续炼金，并按从旧到新的顺序记录技能、等级和槽位。基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具确定。<br>
+・确定计数器：点击结果中的「从这里开始预测」即可继续。填写槽位可缩小候选范围（确定种子时必填）。<br>
+・确定种子：范围上限按至今的炼金次数大致指定。设备较慢时可能需要较长时间。</p>
 <p><b>2. 预测</b><br>
 列表按计数器顺序排列。超出显示数量的结果请用搜索查找。</p>
 <p><b>3. 搜索与收藏</b><br>
@@ -1745,7 +1731,7 @@ zh: `<p><b>1. 确定种子和计数器</b><br>
 <p><b>4. 数据迁移</b><br>
 导出的文件可在其他设备上导入。</p>
 <p><b>备注</b><br>
-输入内容只保存在本设备中。</p>` }
+输入内容只保存在浏览器中。</p>` }
 };
 let helpDetail = false;
 function syncHelpView() {
@@ -1773,6 +1759,7 @@ function applyLang() {
   if (seekState && seekState.found.length) renderSeekPage();
   updateFavoriteStatus();
   sfApplyLang();
+  updateRecMode();
   renderHelp();
 }
 $("langbtn").addEventListener("click", () => {
@@ -1885,19 +1872,17 @@ function locate() {
   if (obs.length < 3) { res.innerHTML = warnHtml(t("needObs")); return; }
   const badObs = obs.findIndex(ob => !obsExistsLocate(ob));
   if (badObs >= 0) { res.innerHTML = warnHtml(tf("obsNotExist", { n: badObs + 1 })); return; }
-  const numOr = (id, d) => { const n = parseInt($(id).value, 10); return isNaN(n) ? d : n; };
-  const lo = Math.min(3000000, Math.max(0, numOr("lmin", 0)));
-  const hi = Math.min(3000000, Math.max(0, numOr("lmax", 1000000)));
-  if (hi < lo) { res.innerHTML = warnHtml(t("rangeInvalid")); return; }
   locateAbort = false;
-  $("locate").disabled = true; $("locstop").style.display = "";
+  $("recstart").disabled = true; $("locstop").style.display = "";
   const found = [];
-  const warmTotal = 7 * lo, total = hi - lo + 1;
-  let s = initState(seed), warmed = 0, c = lo;
+  // 探索範囲は固定：まず50万個目まで探し、候補が無ければ100万個目まで自動で広げる
+  let hi = 500000;
+  const HI_MAX = 1000000;
+  let s = initState(seed), c = 0;
   function finish(aborted) {
-    $("locate").disabled = false; $("locstop").style.display = "none";
+    $("recstart").disabled = false; $("locstop").style.display = "none";
     if (aborted) { res.textContent = t("locateStopped"); return; }
-    if (!found.length) { res.innerHTML = warnHtml(tf("locateNotFound", { lo, hi })); return; }
+    if (!found.length) { res.innerHTML = warnHtml(tf("locateNotFound", { lo: 0, hi })); return; }
     const n = obs.length;
     res.innerHTML = (found.length === 1
       ? t("locateFound")
@@ -1909,11 +1894,16 @@ function locate() {
     if (locateAbort) { finish(true); return; }
     const t0 = performance.now();
     while (performance.now() - t0 < 30) {
-      if (warmed < warmTotal) {
-        const batch = Math.min(warmTotal - warmed, 20000);
-        s = advanceState(s, batch); warmed += batch; continue;
+      if (c > hi || found.length >= 50) {
+        // 50万個目までで候補ゼロなら、状態を引き継いだまま100万個目まで広げて続ける
+        if (!found.length && hi < HI_MAX) {
+          hi = HI_MAX;
+          res.textContent = t("locExtending");
+          setTimeout(chunk, 600);
+          return;
+        }
+        finish(false); return;
       }
-      if (c > hi || found.length >= 50) { finish(false); return; }
       let ts = s, ok = true;
       for (let k = 0; k < obs.length; k++) {
         const outs = [];
@@ -1924,14 +1914,12 @@ function locate() {
       for (let j = 0; j < 7; j++) s = stepState(s);
       c++;
     }
-    const all = warmTotal + total, done = warmed + Math.min(c - lo, total);
-    res.textContent = tf("locateProgress", { pct: Math.floor(100 * done / all) });
+    res.textContent = tf("locateProgress", { pct: Math.floor(100 * c / (hi + 1)) });
     setTimeout(chunk, 0);
   }
   res.textContent = t("scanning");
   setTimeout(chunk, 10);
 }
-$("locate").addEventListener("click", locate);
 $("locstop").addEventListener("click", () => { locateAbort = true; });
 $("locres").addEventListener("click", ev => {
   if (ev.target.closest(".backjump")) { doBack(); return; }
@@ -2041,6 +2029,7 @@ $("sfresults").addEventListener("click", ev => {
   const b = ev.target.closest(".sfuse");
   if (!b) return;
   $("seed").value = b.dataset.seed;
+  updateRecMode();
   counterHistory = [];
   $("counter").value = +b.dataset.c + sfK;
   updateBackBtn();
@@ -2053,10 +2042,9 @@ async function sfStartWasm(obs, wlo, whi, W, c0, c1, usedAll) {
   sfRunWlo = wlo; sfRunWhi = whi;
   sfEarlyFlag = $("sfearly").checked;
   sfAcquireWL();
-  $("sfstart").disabled = true;
+  $("recstart").disabled = true;
   $("sfstop").disabled = false;
   $("sfprog").style.display = "block";
-  $("sffilter").textContent = tf("sfFilter", { a: c0, b: c1 }) + (usedAll.length > 8 ? " " + t("sfFirst8") : "");
   const mod = await sfGetModule();
   const TOTAL = 100000000;
   const wsel = $("sfwcount").value;
@@ -2346,10 +2334,9 @@ async function sfStartGpu(obs, wlo, whi, W, c0, c1, usedAll) {
   sfRunWlo = wlo; sfRunWhi = whi;
   sfEarlyFlag = $("sfearly").checked;
   sfAcquireWL();
-  $("sfstart").disabled = true;
+  $("recstart").disabled = true;
   $("sfstop").disabled = false;
   $("sfprog").style.display = "block";
-  $("sffilter").textContent = tf("sfFilter", { a: c0, b: c1 }) + (usedAll.length > 8 ? " " + t("sfFirst8") : "");
   sfCompleted = 0; sfCursors = [0]; sfInflight = [];
   sfTotalSeeds = 100000000; sfWcur = W; sfStartTime = Date.now();
   sfEngineKind = "gpu"; sfSetEngineLabel();
@@ -2417,10 +2404,10 @@ async function sfGpuLoop(g, obs, wlo, whi, W, c0, c1, usedAll) {
   }
 }
 sfGpuReady(); // ラベル表示のため早めに判定しておく
-$("sfstart").addEventListener("click", async () => {
+async function sfStart() {
   if (sfRunning || sfStarting) return;
   sfStarting = true;
-  $("sfstart").disabled = true;
+  $("recstart").disabled = true;
   try {
   const usedAll = sfCollectObs();
   if (usedAll.length < 3) { sfShowWarn(t("sfNeedObs")); return; }
@@ -2458,9 +2445,9 @@ $("sfstart").addEventListener("click", async () => {
     sfFail();
   } finally {
     sfStarting = false;
-    if (!sfRunning) $("sfstart").disabled = false;
+    if (!sfRunning) $("recstart").disabled = false;
   }
-});
+}
 function sfFinish(stopped, early) {
   if (!sfRunning) return;
   sfRunning = false;
@@ -2469,7 +2456,7 @@ function sfFinish(stopped, early) {
   sfTimer = null;
   sfWorkers.forEach(w => w.terminate());
   sfWorkers = [];
-  $("sfstart").disabled = false;
+  $("recstart").disabled = false;
   $("sfstop").disabled = true;
   sfUpdateStats(true);
   if (!sfFoundList.length) {
@@ -2493,11 +2480,25 @@ function sfFail() {
   sfWorkers.forEach(w => { try { w.terminate(); } catch (e) {} });
   sfWorkers = [];
   sfModPromise = null; // 失敗したWASMコンパイル結果はキャッシュしない（次回は再試行できる）
-  $("sfstart").disabled = false;
+  $("recstart").disabled = false;
   $("sfstop").disabled = true;
   $("sfprog").style.display = "none";
   sfShowWarn(t("sfFailed"));
 }
+// 統合ボタンのモード切替：基準seedが未入力なら基準seed復元、入力されていればカウンタ位置の特定
+function recMode() { return $("seed").value.trim() === "" ? "sf" : "locate"; }
+function updateRecMode() {
+  const m = recMode();
+  $("recstart").textContent = m === "sf" ? t("sfStart") : t("locateBtn");
+  $("sfsettings").style.display = m === "sf" ? "" : "none";
+  $("sfearlywrap").style.display = m === "sf" ? "" : "none";
+  if (!sfRunning) $("sfstop").style.display = m === "sf" ? "" : "none";
+}
+$("seed").addEventListener("input", updateRecMode);
+$("recstart").addEventListener("click", () => {
+  updateRecMode();
+  if (recMode() === "sf") sfStart(); else locate();
+});
 $("sfstop").addEventListener("click", () => { if (sfRunning) sfFinish(true); });
 $("go").addEventListener("click", () => { generate(); $("stat").scrollIntoView({ behavior: "smooth", block: "start" }); });
 for (const id of ["seed", "counter"]) $(id).addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); $("go").click(); } });
