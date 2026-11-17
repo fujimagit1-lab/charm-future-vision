@@ -28,7 +28,7 @@ SOFTWARE.
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-i18n="docTitle">マカ錬金未来視（オフライン版 Ver.1.042対応）</title>
+<title data-i18n="docTitle">マカ錬金未来視 -MHWs-（オフライン版 Ver.1.042対応）</title>
 <style>
   :root {
     --radius: 10px; --radius-s: 7px;
@@ -146,7 +146,8 @@ SOFTWARE.
   dialog#skdlg.vvfit #sklist { flex: 1 1 auto; min-height: 0; max-height: none; }
   .skitem { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 4px; border-bottom: 1px solid var(--line-soft); flex-wrap: wrap; }
   .skitem .nm { font-size: 14px; }
-  #helpdlg p { margin: 8px 0; line-height: 1.7; }
+  #helpdlg p { margin: 14px 0 8px; line-height: 1.7; font-size: 14px; }
+  #helpdlg p > b:first-child { font-size: 16px; letter-spacing: .03em; }
   .sfbar { background: var(--line-soft); border-radius: 999px; height: 10px; overflow: hidden; margin: 10px 0 6px; }
   #sfbarfill { background: var(--link); height: 100%; width: 0%; }
   .sfhit { background: var(--sfhit-bg); border: 1px solid var(--sfhit-line); border-radius: var(--radius); padding: 10px 12px; margin: 8px 0; font-size: 14px; }
@@ -495,7 +496,8 @@ SOFTWARE.
     }
     .skitem { padding: 10px 3px; }
     .skitem .lvb { min-width: 42px; }
-    #helpdlg p { font-size: 13px; }
+    #helpdlg p { font-size: 13px; margin: 12px 0 6px; }
+    #helpdlg p > b:first-child { font-size: 14.5px; }
     body > .panel.note:last-child {
       margin-top: 0;
       padding: 14px;
@@ -531,7 +533,7 @@ SOFTWARE.
 </style>
 </head>
 <body>
-<div class="topbar"><h1 data-i18n="h1"><span>マカ錬金</span><span>未来視</span><span class="h1-sub">（オフライン版 Ver.1.042対応）</span></h1><span style="display:flex;gap:8px"><button type="button" id="helpbtn" data-i18n="helpTitle">使い方</button><button type="button" id="langbtn">🌐 EN</button></span></div>
+<div class="topbar"><h1 data-i18n="h1"><span>マカ錬金</span><span>未来視</span><span class="h1-sub">-MHWs-（オフライン版 Ver.1.042対応）</span></h1><span style="display:flex;gap:8px"><button type="button" id="helpbtn" data-i18n="helpTitle">使い方</button><button type="button" id="langbtn">🌐 EN</button></span></div>
 
 <div class="panel predict-panel">
   <div class="row">
@@ -546,7 +548,7 @@ SOFTWARE.
     <button id="go" data-i18n="predict">予測する</button>
     <button type="button" id="backbtn" class="mini" style="display:none">↩ 元のカウンタに戻る</button>
   </div>
-  <div class="note"><span data-i18n="seedGogmaNote">基準seedは Gogma Seed Finder と同じ値です。</span><br><a href="#sfpanel" data-i18n="seedUnknownLink">seed/カウンタが分からない場合は「基準seed・カウンタ位置の特定」へ</a></div>
+  <div class="note"><a href="#sfpanel" data-i18n="seedUnknownLink">seed/カウンタが分からない場合は「基準seed・カウンタ位置の特定」へ</a><br><span data-i18n="seedGogmaNote">なお、Gogma Seed Finderのseedも同じ値です。</span></div>
 </div>
 
 <div class="panel">
@@ -709,11 +711,11 @@ const BAND_EN = { 0: "Rarity 5", 24: "Rarity 6", 52: "Rarity 7", 76: "Rarity 8" 
 const BAND_ZH = { 0: "稀有度5", 24: "稀有度6", 52: "稀有度7", 76: "稀有度8" };
 function bandName(b) { return lang === "en" ? (BAND_EN[b] || String(b)) : lang === "zh" ? (BAND_ZH[b] || String(b)) : (BAND_LABEL[b] ? BAND_LABEL[b][0] : String(b)); }
 const I18N = {
-  docTitle: ["マカ錬金未来視（オフライン版 Ver.1.042対応）", "Melding Pot Future Vision (Offline, Ver.1.042)", "马卡炼金未来视（离线版 Ver.1.042对应）"],
-  h1: ["<span>マカ錬金</span><span>未来視</span><span class=\"h1-sub\">（オフライン版 Ver.1.042対応）</span>", "<span>Melding Pot</span><span>Future Vision</span><span class=\"h1-sub\">(Offline, Ver.1.042)</span>", "<span>马卡炼金</span><span>未来视</span><span class=\"h1-sub\">（离线版 Ver.1.042对应）</span>"],
+  docTitle: ["マカ錬金未来視 -MHWs-（オフライン版 Ver.1.042対応）", "Melding Pot Future Vision -MHWs- (Offline, Ver.1.042)", "马卡炼金未来视 -MHWs-（离线版 Ver.1.042对应）"],
+  h1: ["<span>マカ錬金</span><span>未来視</span><span class=\"h1-sub\">-MHWs-（オフライン版 Ver.1.042対応）</span>", "<span>Melding Pot</span><span>Future Vision</span><span class=\"h1-sub\">-MHWs- (Offline, Ver.1.042)</span>", "<span>马卡炼金</span><span>未来视</span><span class=\"h1-sub\">-MHWs-（离线版 Ver.1.042对应）</span>"],
   baseSeed: ["基準seed", "Base seed", "基础种子"],
   seedUnknownLink: ["seed/カウンタが分からない場合は「基準seed・カウンタ位置の特定」へ", "Don't know your seed/counter? Go to \"Find Base Seed / Counter\"", "不知道种子/计数器？前往「确定基础种子・计数器位置」"],
-  seedGogmaNote: ["基準seedは Gogma Seed Finder と同じ値です。", "The base seed is the same value as Gogma Seed Finder's.", "基础种子与 Gogma Seed Finder 是同一个值。"],
+  seedGogmaNote: ["なお、Gogma Seed Finderのseedも同じ値です。", "Note: a seed from Gogma Seed Finder has the same value and can be used as-is.", "另外，Gogma Seed Finder 的种子也是同一个值，可直接使用。"],
   curCounter: ["現在のカウンタ", "Current counter", "当前计数器"],
   showCount: ["表示件数", "Show", "显示数量"],
   predict: ["予測する", "Predict", "预测"],
@@ -1663,18 +1665,17 @@ $("sllist").addEventListener("click", ev => {
 const HELP_HTML = {
 simple: {
 jp: `<p><b>1. 基準seedとカウンタを用意する</b><br>
-基準seedは Gogma Seed Finder と同じ値です。材料は、実際に錬金した護石の記録です（古い順）。<br>
+基準seedは、このツールで特定できます。用意するのは、実際に錬金した護石の記録です（古い順）。なお、Gogma Seed Finder で調べたseedも、そのまま使えます。<br>
 ・seedが分かる → seedを入力すると、ボタンが「カウンタを特定」になります。<br>
 ・両方分からない → seedが未入力だと、ボタンが「seedを特定」になります。</p>
 <p><b>2. 予測する</b><br>
-seedとカウンタを入れて「予測する」。次に錬金する1個目が、そのカウンタの結果です。</p>
+seedとカウンタを入れて「予測する」を押します。次に錬金する1個目が、そのカウンタの結果です。</p>
 <p><b>3. 探す・登録する</b><br>
-条件で絞り込み、先は「条件に一致する護石を検索」で探せます。気になる護石は ☆ で登録。</p>
+条件で絞り込み、先は「条件に一致する護石を検索」で探せます。気になる護石は ☆ で登録します。</p>
 <p><b>4. データの移行</b><br>
-seed・カウンタ・お気に入りは、ファイルで書き出し／読み込みできます。</p>
-<p>※ 通信はしません。作業状態は、再度開くとリセットされます（seed・カウンタ・お気に入り・言語は保持されます）。</p>`,
+seed・カウンタ・お気に入りは、ファイルで書き出し／読み込みできます。</p>`,
 en: `<p><b>1. Prepare your base seed and counter</b><br>
-The base seed is the same value as Gogma Seed Finder's. You will need a record of charms you actually melded (oldest first).<br>
+Your base seed can be found with this tool. You will need a record of charms you actually melded (oldest first). A seed found with Gogma Seed Finder can also be used as-is.<br>
 - Know the seed → enter it, and the button becomes "Find counter".<br>
 - Know neither → leave the seed empty, and the button becomes "Find seed".</p>
 <p><b>2. Predict</b><br>
@@ -1682,10 +1683,9 @@ Enter the seed and counter and press "Predict". Your next meld is the result for
 <p><b>3. Search and save</b><br>
 Filter by conditions, and use the "Find charms that match" search to look further ahead. Save charms with ☆.</p>
 <p><b>4. Data transfer</b><br>
-Export / import your seed, counter and favorites as a file.</p>
-<p>* No network is used. Working state resets when you reopen the file (your seed, counter, favorites and language are kept).</p>`,
+Export / import your seed, counter and favorites as a file.</p>`,
 zh: `<p><b>1. 准备基础种子和计数器</b><br>
-基础种子与 Gogma Seed Finder 是同一个值。材料是实际炼金得到的护石记录（从旧到新）。<br>
+基础种子可用本工具确定。需要准备的是实际炼金得到的护石记录（从旧到新）。另外，用 Gogma Seed Finder 查到的种子也可直接使用。<br>
 ・知道种子 → 输入种子后，按钮变为「确定计数器」。<br>
 ・两者都不知道 → 不输入种子时，按钮变为「确定种子」。</p>
 <p><b>2. 预测</b><br>
@@ -1693,45 +1693,38 @@ zh: `<p><b>1. 准备基础种子和计数器</b><br>
 <p><b>3. 搜索与收藏</b><br>
 按条件筛选，更靠后的结果用「搜索符合条件的护石」查找。在意的护石用 ☆ 收藏。</p>
 <p><b>4. 数据迁移</b><br>
-种子、计数器和收藏可导出／导入为文件。</p>
-<p>※ 不联网。重新打开时，作业状态会重置（种子、计数器、收藏和语言会保留）。</p>` },
+种子、计数器和收藏可导出／导入为文件。</p>` },
 detail: {
 jp: `<p><b>1. seedとカウンタの特定</b><br>
-ゲームで連続で錬金し、スキル・Lv・スロットを古い順にメモしてください。基準seedは Gogma Seed Finder と同じ値で、このツール単体でも特定できます。<br>
-・カウンタ特定：結果の「ここから予測」でそのまま予測へ。スロットは、ある分を入れるほど候補が絞れます（seedの特定では入力が必要）。<br>
-・seedの特定：範囲の上限は、今までの錬金回数の見当で指定。端末によっては時間がかかります。</p>
+ゲームで連続で錬金し、スキル・Lv・スロットを古い順にメモしてください。基準seedは、このツールで特定できます。なお、Gogma Seed Finder で調べたseedも、そのまま使えます。<br>
+・カウンタ特定：seedを入力すると、ボタンが「カウンタを特定」になります。結果の「ここから予測」を押すと、そのまま予測します。スロットは、ある分を入れるほど候補が絞れます。<br>
+・seedの特定：seedが未入力だと、ボタンが「seedを特定」になります。スロットの入力が必要です。範囲の上限は、今までに錬金した回数の見当で指定してください。端末によっては時間がかかります。</p>
 <p><b>2. 予測</b><br>
-一覧はカウンタ順に並びます。表示件数より先は検索で探してください。</p>
+seedとカウンタを入れて「予測する」を押します。次に錬金する1個目が、そのカウンタの結果です。一覧はカウンタ順に並びます。表示件数より先は「条件に一致する護石を検索」で探してください。</p>
 <p><b>3. 検索とお気に入り</b><br>
-スキル・スロット・レア度で絞り込めます。☆ を付けると、あと何回目に出るか分かります。</p>
+スキル・スロット・レア度で絞り込めます。気になる護石は ☆ で登録します。☆ を付けると、あと何回目に出るか分かります。</p>
 <p><b>4. データの移行</b><br>
-書き出したファイルは、別の端末で読み込めます。</p>
-<p><b>メモ</b><br>
-入力はブラウザ内にのみ保存されます。</p>`,
+seed・カウンタ・お気に入りは、ファイルで書き出し／読み込みできます。書き出したファイルは、別の端末で読み込めます。</p>`,
 en: `<p><b>1. Finding seed and counter</b><br>
-Meld several times in a row in-game and note skills, levels and slots, oldest first. The base seed is the same value as Gogma Seed Finder's, and can also be found with this tool alone.<br>
-- Counter: press "Predict from here" in the result to continue. Entering the slots narrows the candidates (finding the seed requires them).<br>
-- Finding the seed: set the range upper bound to roughly how many melds you have done. It may take a while on slower devices.</p>
+Meld several times in a row in-game and note skills, levels and slots, oldest first. Your base seed can be found with this tool. A seed found with Gogma Seed Finder can also be used as-is.<br>
+- Counter: enter the seed, and the button becomes "Find counter". Press "Predict from here" in the result to continue. Entering the slots as well narrows the candidates.<br>
+- Finding the seed: leave the seed empty, and the button becomes "Find seed". The slots must be entered. Set the range upper bound to roughly how many melds you have done. It may take a while on slower devices.</p>
 <p><b>2. Predict</b><br>
-Results are listed in counter order. Use search to look beyond the list size.</p>
+Enter the seed and counter and press "Predict". Your next meld is the result for that counter. Results are listed in counter order. Use "Find charms that match" to look beyond the list size.</p>
 <p><b>3. Search and favorites</b><br>
-Filter by skill, slots and rarity. Starred charms show how many melds away they are.</p>
+Filter by skill, slots and rarity. Save charms you like with ☆. Starred charms show how many melds away they are.</p>
 <p><b>4. Data transfer</b><br>
-An exported file can be imported on another device.</p>
-<p><b>Notes</b><br>
-Inputs are stored only in this browser.</p>`,
+Export / import your seed, counter and favorites as a file. An exported file can be imported on another device.</p>`,
 zh: `<p><b>1. 确定种子和计数器</b><br>
-请在游戏中连续炼金，并按从旧到新的顺序记录技能、等级和槽位。基础种子与 Gogma Seed Finder 是同一个值，也可以仅用本工具确定。<br>
-・确定计数器：点击结果中的「从这里开始预测」即可继续。填写槽位可缩小候选范围（确定种子时必填）。<br>
-・确定种子：范围上限按至今的炼金次数大致指定。设备较慢时可能需要较长时间。</p>
+请在游戏中连续炼金，并按从旧到新的顺序记录技能、等级和槽位。基础种子可用本工具确定。另外，用 Gogma Seed Finder 查到的种子也可直接使用。<br>
+・确定计数器：输入种子后，按钮变为「确定计数器」。点击结果中的「从这里开始预测」即可继续预测。填写槽位可进一步缩小候选范围。<br>
+・确定种子：不输入种子时，按钮变为「确定种子」。必须填写槽位。范围上限按至今炼金的次数大致指定。设备较慢时可能需要较长时间。</p>
 <p><b>2. 预测</b><br>
-列表按计数器顺序排列。超出显示数量的结果请用搜索查找。</p>
+输入种子和计数器后点击「预测」。下一次炼金的第1个，就是该计数器的结果。列表按计数器顺序排列。超出显示数量的结果，用「搜索符合条件的护石」查找。</p>
 <p><b>3. 搜索与收藏</b><br>
-可按技能、槽位和稀有度筛选。用 ☆ 收藏后可看到还差多少次出现。</p>
+可按技能、槽位和稀有度筛选。在意的护石用 ☆ 收藏。收藏后可看到还差多少次出现。</p>
 <p><b>4. 数据迁移</b><br>
-导出的文件可在其他设备上导入。</p>
-<p><b>备注</b><br>
-输入内容只保存在浏览器中。</p>` }
+种子、计数器和收藏可导出／导入为文件。导出的文件可在其他设备上导入。</p>` }
 };
 let helpDetail = false;
 function syncHelpView() {
