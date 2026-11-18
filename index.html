@@ -29,6 +29,7 @@ SOFTWARE.
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title data-i18n="docTitle">マカ錬金未来視 -MHWs-（オフライン版 Ver.1.042対応）</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101319'/%3E%3Cpath d='M22 13h20l9 11-19 27L13 24z' fill='%2383caff'/%3E%3Cpath d='M13 24h38M22 13l7 11 3 27M42 13l-7 11-3 27' stroke='%23101319' stroke-width='2' fill='none' opacity='0.3'/%3E%3C/svg%3E">
 <style>
   :root {
     --radius: 10px; --radius-s: 7px;
@@ -187,17 +188,24 @@ SOFTWARE.
     h1 {
       display: block;
       min-width: 0;
-      font-size: clamp(19px, 5.2vw, 23px);
+      font-size: clamp(18px, 5vw, 23px);
       line-height: 1.25;
       letter-spacing: .035em;
+      text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
     }
+    html[lang="ja"] h1, html[lang="zh-CN"] h1 { white-space: nowrap; }
     h1 > span:not(.h1-sub) { display: inline; }
     h1 > span + span:not(.h1-sub)::before { content: " "; }
     .h1-sub {
-      display: block;
-      margin-top: 5px;
+      display: inline;
+      margin-left: .4em;
       font-size: 10.5px;
       letter-spacing: .02em;
+    }
+    .h1-note {
+      display: block;
+      margin-top: 5px;
     }
     .topbar > span {
       flex: 0 0 auto;
@@ -533,11 +541,11 @@ SOFTWARE.
 </style>
 </head>
 <body>
-<div class="topbar"><h1 data-i18n="h1"><span>マカ錬金</span><span>未来視</span><span class="h1-sub">-MHWs-（オフライン版 Ver.1.042対応）</span></h1><span style="display:flex;gap:8px"><button type="button" id="helpbtn" data-i18n="helpTitle">使い方</button><button type="button" id="langbtn">🌐 EN</button></span></div>
+<div class="topbar"><h1 data-i18n="h1"><span>マカ錬金</span><span>未来視</span><span class="h1-sub">-MHWs-<span class="h1-note">（オフライン版 Ver.1.042対応）</span></span></h1><span style="display:flex;gap:8px"><button type="button" id="helpbtn" data-i18n="helpTitle">使い方</button><button type="button" id="langbtn">🌐 EN</button></span></div>
 
 <div class="panel predict-panel">
   <div class="row">
-    <label><span data-i18n="baseSeed">基準seed</span> <input type="number" id="seed" placeholder="例: 67000428"></label>
+    <label><span data-i18n="baseSeed">基準seed</span> <input type="number" id="seed" placeholder="例: 77777777"></label>
     <label><span data-i18n="curCounter">現在のカウンタ</span> <input type="number" id="counter" value="5370"></label>
     <label><span data-i18n="showCount">表示件数</span>
       <select id="count">
@@ -712,7 +720,7 @@ const BAND_ZH = { 0: "稀有度5", 24: "稀有度6", 52: "稀有度7", 76: "稀�
 function bandName(b) { return lang === "en" ? (BAND_EN[b] || String(b)) : lang === "zh" ? (BAND_ZH[b] || String(b)) : (BAND_LABEL[b] ? BAND_LABEL[b][0] : String(b)); }
 const I18N = {
   docTitle: ["マカ錬金未来視 -MHWs-（オフライン版 Ver.1.042対応）", "Melding Pot Future Vision -MHWs- (Offline, Ver.1.042)", "马卡炼金未来视 -MHWs-（离线版 Ver.1.042对应）"],
-  h1: ["<span>マカ錬金</span><span>未来視</span><span class=\"h1-sub\">-MHWs-（オフライン版 Ver.1.042対応）</span>", "<span>Melding Pot</span><span>Future Vision</span><span class=\"h1-sub\">-MHWs- (Offline, Ver.1.042)</span>", "<span>马卡炼金</span><span>未来视</span><span class=\"h1-sub\">-MHWs-（离线版 Ver.1.042对应）</span>"],
+  h1: ["<span>マカ錬金</span><span>未来視</span><span class=\"h1-sub\">-MHWs-<span class=\"h1-note\">（オフライン版 Ver.1.042対応）</span></span>", "<span>Melding Pot</span><span>Future Vision</span><span class=\"h1-sub\">-MHWs-<span class=\"h1-note\"> (Offline, Ver.1.042)</span></span>", "<span>马卡炼金</span><span>未来视</span><span class=\"h1-sub\">-MHWs-<span class=\"h1-note\">（离线版 Ver.1.042对应）</span></span>"],
   baseSeed: ["基準seed", "Base seed", "基础种子"],
   seedUnknownLink: ["seed/カウンタが分からない場合は「基準seed・カウンタ位置の特定」へ", "Don't know your seed/counter? Go to \"Find Base Seed / Counter\"", "不知道种子/计数器？前往「确定基础种子・计数器位置」"],
   seedGogmaNote: ["なお、Gogma Seed Finderのseedも同じ値です。", "Note: a seed from Gogma Seed Finder has the same value and can be used as-is.", "另外，Gogma Seed Finder 的种子也是同一个值，可直接使用。"],
@@ -956,7 +964,7 @@ function loadFavorites() {
       for (const v of Object.values(saved)) { const f = sanitizeFav(v); if (f) favorites[f.seed + ":" + f.counter] = f; }
   } catch (_) { favorites = {}; }
 }
-// お気に入りのキーは seed の数値表記で統一する（067000428 と 67000428 を同一視）
+// お気に入りのキーは seed の数値表記で統一する（077777777 と 77777777 を同一視）
 function seedKey() {
   const n = parseInt($("seed").value, 10);
   return isNaN(n) ? "" : String(n);
