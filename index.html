@@ -29,7 +29,7 @@ SOFTWARE.
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title data-i18n="docTitle">マカ錬金未来視 -MHWs-（オフライン版 Ver.1.042対応）</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101319'/%3E%3Cpath d='M22 13h20l9 11-19 27L13 24z' fill='%2383caff'/%3E%3Cpath d='M13 24h38M22 13l7 11 3 27M42 13l-7 11-3 27' stroke='%23101319' stroke-width='2' fill='none' opacity='0.3'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="16x16" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAC0ElEQVR42gXBS28bVRgA0O8+5t6ZsWcSO7bzsEPqvJwXDSI1ERQpvCSEkNo1G3YgJBZs+Ads2PMLkCokFkjsWqkpCIFEoSpEpIQEp5GLG9KQeOLJ+DUz936XcwghsLr2SsYrdzoXSZpqpKmmCplSqFViAIwxRg0pNTo5HUQtMr/wopudbjYP0mSoUSMCGmJAMLtAxUgySCHpEDY0aWTZPoWQM6vYONwDTNAYAIIagftuYckpLHrTG4XZmXD/h8Of7xLSSuNQODneCUOVDrk9inFfJf38wlvl+k2SmWGaujnKR0ZmNj+xp1949PVnRPe1Tpmwi8NhF5WiljNb/3hx/aN+oKKTk147BFooz487Tvxf21MK+8cPKaNUaY2IhvHl1z8lsLgGtNLR8G9bnTWPH27/+u2eYt7SvCG8ytycQc0su5T0o7k3369tffDX/QcutD+88Vrerpx3iOaEu1bQ9Ra2ytGT4Nmfdwn2GJdFpcGZuXb9nc3LuPBo56B19uTtreq11ZrrTcpCkfruyrLkw+7uvdsUOoyLok6iAc+TlL773svoXdn7+3L7fiM2cW2tuLKRr9fFGxvsu5+e7m9/RemQcVnUSnEggaxeBDhXZZX1mpwqt4x9kIh/EhJ4/PvfBne++DwNdgmTTNhTaAgoAb1LlSsdNbrHu/vcEt6YAnoadp4+O4KdW7eix7e5kwWdkoy/TtkUE2O9qIEGRmvXjTs9OD9FBdn85Pji89HZ+cnvXxIyABURTJiQE6jRdZ7LZGeZdOIwgLjrjc9VlrYWXnp1cHHU/OUbbmdkqQ6UUN0jWf9qHPc4G834V6Vf9Sbqy5uruani3k7Qaj4I238wnhJL6jhRl48tDIiwS4xPKNUH4IR7MruSHbtChQyDJmKEOECdGFSW7ftjk93WPQIAwi5zWUFEYwCNNkQA97idoZZkwuHCkW5mtJS7aNw5Pfzxf5lxYtDPU2QzAAAAAElFTkSuQmCC">
 <style>
   :root {
     --radius: 10px; --radius-s: 7px;
@@ -113,6 +113,10 @@ SOFTWARE.
   .row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 4px 0; }
   .chk { font-size: 13px; }
   .obsrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 6px 0; padding: 7px 9px; background: var(--panel-in); border: 1px solid var(--line-soft); border-radius: var(--radius-s); }
+  /* お気に入り一覧の行は「位置の行」と「中身の行」の2行に固定する */
+  .obsrow.favrow { display: block; }
+  .favline1 { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+  .favline2 { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; margin-top: 3px; }
   /* 検索結果は横に余裕がある画面では列をそろえる（狭い画面は従来の折り返し） */
   .seekhead { display: none; }
   @media (min-width: 1150px) {
@@ -681,7 +685,6 @@ SOFTWARE.
     <b class="panel-title" data-i18n="favListTitle">お気に入り一覧</b>
     <button type="button" class="mini" id="favdlgclose" data-i18n="close">閉じる</button>
   </div>
-  <div class="note" data-i18n="favDlgNote">「あと +N」は、今から N 回目に出るという意味です。</div>
   <div id="favdlglist"></div>
   <div id="favdlgothers"></div>
 </dialog>
@@ -767,7 +770,6 @@ const I18N = {
   dataNote: ["seed・カウンタ・お気に入りをファイルに書き出して、他の端末で読み込めます。", "Export your seed, counter and favorites to a file, and import it on another device.", "将种子、计数器和收藏导出到文件，可在其他设备上导入。"],
   dataInvalid: ["対応していないファイル形式です。", "Unsupported file format", "不支持的文件格式"],
   favListTitle: ["お気に入り一覧", "Favorites", "收藏列表"],
-  favDlgNote: ["「あと +N」は、今から N 回目に出るという意味です。", "“In +N” means the charm appears on your Nth meld from now.", "“还有 +N”表示从现在起第 N 次炼金时出现。"],
   thAhead: ["あと", "Ahead", "还有"],
   thCounter: ["カウンタ", "Counter", "计数器"],
   thBand: ["レア度", "Rarity", "稀有度"],
@@ -781,10 +783,10 @@ const I18N = {
   favOnlyOn: ["★ お気に入り表示中（解除）", "★ Showing favorites (click to undo)", "★ 正在显示收藏（点击取消）"],
   favOnlyOff: ["☆ お気に入りのみ表示", "☆ Show favorites only", "☆ 只显示收藏"],
   favEmpty: ["お気に入りはまだ登録されていません。予測表や検索結果の☆から登録できます。", "No favorites yet. Add some with the ☆ buttons in the prediction table or search results.", "还没有收藏。可以从预测表或搜索结果中的 ☆ 添加。"],
-  favNeedSeed: ["基準seedを入力すると、お気に入りの位置（あと何回・何回目）が表示されます。", "Enter a base seed to see each favorite's position (how many melds away it is).", "输入基础种子后，会显示每个收藏的位置（还有多少次、第几次）。"],
+  favNeedSeed: ["基準seedを入力すると、お気に入りの位置（あと何回）が表示されます。", "Enter a base seed to see each favorite's position (how many melds away it is).", "输入基础种子后，会显示每个收藏的位置（还有多少次）。"],
   favPassed: ["通過済み（{m} 回前）", "Already passed ({m} melds ago)", "已错过（{m} 次之前）"],
-  favNext1: ["<b>あと +1</b><span>1 回目（次の錬金）</span>", "<b>in +1</b><span>meld #1 (your next meld)</span>", "<b>还有 +1</b><span>第 1 次（下一次炼金）</span>"],
-  favPos: ["<b>あと +{d}</b><span>{d} 回目</span>", "<b>in +{d}</b><span>meld #{d}</span>", "<b>还有 +{d}</b><span>第 {d} 次</span>"],
+  favNext1: ["<b>あと +1</b><span>（次の錬金）</span>", "<b>in +1</b><span>(your next meld)</span>", "<b>还有 +1</b><span>（下一次炼金）</span>"],
+  favPos: ["<b>あと +{d}</b>", "<b>in +{d}</b>", "<b>还有 +{d}</b>"],
   favNextBadge: ["次", "NEXT", "下一个"],
   counterHtml: ["カウンタ <b>{c}</b>", "Counter <b>{c}</b>", "计数器 <b>{c}</b>"],
   counterWord: ["カウンタ {c}", "Counter {c}", "计数器 {c}"],
@@ -1037,14 +1039,14 @@ function renderFavList() {
     const bc = (BAND_LABEL[f.band] || ["?", ""])[1]; const bl = bandName(f.band);
     const isNext = !withSeed && nextPending && !isNaN(cur) && diff >= 0;
     if (isNext) nextPending = false;
-    return `<div class="obsrow${isNext ? " favnext" : ""}"><button type="button" class="favbtn active" data-favkey="${encodeURIComponent(key)}" title="${t("favToggleTitle")}" aria-label="${t("favToggleTitle")}">★</button>` +
+    return `<div class="obsrow favrow${isNext ? " favnext" : ""}"><div class="favline1"><button type="button" class="favbtn active" data-favkey="${encodeURIComponent(key)}" title="${t("favToggleTitle")}" aria-label="${t("favToggleTitle")}">★</button>` +
       (isNext ? `<span class="nextbadge">${t("favNextBadge")}</span>` : ``) +
       (withSeed ? `<span>seed <b>${f.seed}</b></span>` : ``) +
       `<span>${tf("counterHtml", { c: f.counter })}</span>${pos}` +
       (inRange ? `<span class="note">${t("favInRange")}</span>` : ``) +
-      `<span class="${bc}">${bl}</span>` +
+      `</div><div class="favline2"><span class="${bc}">${bl}</span>` +
       (f.skills || []).map(sk => `<span>${skillLabel(sk)}</span>`).join("") +
-      `<span class="slot">${(f.slots || []).join("-")}</span></div>`;
+      `<span class="slot">${(f.slots || []).join("-")}</span></div></div>`;
   };
   list.innerHTML = '<b style="font-size:13px">' + t("favCurrentSeed") + '</b>' +
     (mine.length ? mine.map(e => rowHtml(e, false)).join("") : '<div class="note">' + t("favNoneForSeed") + '</div>');
