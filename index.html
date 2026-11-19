@@ -126,11 +126,6 @@ SOFTWARE.
   }
   .obsrow .no { color: var(--muted); min-width: 22px; flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
   .obsgrp { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
-  /* PCでは観測行のスキルボタンを伸ばして行幅いっぱいに広げる（スロット群は右端に残る） */
-  @media (min-width: 761px) {
-    #obsrows .obsgrp:first-child { flex: 1 1 auto; min-width: 0; }
-    #obsrows .skbtn { flex: 1 1 0; }
-  }
   @media (max-width: 760px) {
     #obsrows .obsrow { flex-direction: column; align-items: stretch; gap: 8px; }
     #obsrows .obsgrp { width: 100%; }
