@@ -126,6 +126,11 @@ SOFTWARE.
   }
   .obsrow .no { color: var(--muted); min-width: 22px; flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
   .obsgrp { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+  /* PCでは観測行のスキルボタンを伸ばして行幅いっぱいに広げる（スロット群は右端に残る） */
+  @media (min-width: 761px) {
+    #obsrows .obsgrp:first-child { flex: 1 1 auto; min-width: 0; }
+    #obsrows .skbtn { flex: 1 1 0; }
+  }
   @media (max-width: 760px) {
     #obsrows .obsrow { flex-direction: column; align-items: stretch; gap: 8px; }
     #obsrows .obsgrp { width: 100%; }
@@ -158,12 +163,13 @@ SOFTWARE.
   .sfhit { background: var(--sfhit-bg); border: 1px solid var(--sfhit-line); border-radius: var(--radius); padding: 10px 12px; margin: 8px 0; font-size: 14px; }
   .sfwarn, .warnbox { display: block; background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: var(--radius); padding: 10px 12px; margin: 8px 0; font-size: 13px; line-height: 1.6; }
   .predict-panel { background: radial-gradient(ellipse at 92% 0%, rgba(80,157,207,.16), transparent 42%), #1a2430; border-color: #405366; box-shadow: 0 12px 32px rgba(0,0,0,.18); }
-  .recovery-section { margin: 0 0 12px; padding: 24px; border: 1px solid #35465a; border-radius: 18px; background: linear-gradient(145deg, rgba(66,104,137,.10), transparent 55%), #141b24; }
+  .recovery-section { margin: 0 0 12px; padding: 14px 16px; border: 1px solid #35465a; border-radius: var(--radius); background: linear-gradient(145deg, rgba(66,104,137,.10), transparent 55%), #141b24; }
   .recovery-input-panel { background: rgba(10,15,22,.36); }
-  #sfpanel { background: #1b2632; border-color: #3b536a; }
+  #sfpanel { background: transparent; border-color: transparent; }
+  .recovery-section > #sfpanel { padding: 0; }
   .recovery-section > .panel:last-child { margin-bottom: 0; }
   .sf-callout { padding: 11px 13px; border-radius: 10px; background: rgba(91,165,215,.09); border: 1px solid rgba(91,165,215,.18); margin: 12px 0; }
-  @media (max-width: 760px) { .recovery-section { padding: 16px 12px; margin-top: 25px; } }
+  @media (max-width: 760px) { .recovery-section { padding: 16px; } }
 
   /* ===== Mobile layout refinement: desktop styles remain unchanged ===== */
   @media (max-width: 760px) {
@@ -414,8 +420,8 @@ SOFTWARE.
     /* Counter recovery */
     .recovery-section {
       margin: 0 0 12px;
-      padding: 10px;
-      border-radius: 19px;
+      padding: 16px;
+      border-radius: var(--radius);
       border-color: rgba(105, 151, 188, .24);
       background: linear-gradient(155deg, rgba(56, 96, 128, .12), transparent 55%), #141c26;
     }
@@ -745,7 +751,7 @@ const I18N = {
   stop: ["中止", "Stop", "停止"],
   seekNote: ["一覧より先も探せます。結果は10件ずつ表示します。", "Searches beyond the list above, 10 results per page.", "可搜索列表之后的结果，每页显示10个。"],
   recTitle: ["基準seed・カウンタ位置の特定", "Find Base Seed / Counter", "确定基础种子・计数器位置"],
-  recNote: ["マカ錬金で引いた護石を、古い順に3つ入力してください。スキル・スロットは、ある分だけ入力すればOKです。<br>基準seedが入力されていればカウンタ位置を特定し、未入力なら基準seedを特定します（ボタンは自動で切り替わります）。", "Enter 3 charms from the Melding Pot, oldest first. For skills and slots, just enter the ones the charm has.<br>If the base seed is entered, the button finds your counter position; if it is empty, it finds the base seed instead (the button switches automatically). Finding the seed requires the slots to be entered.", "请输入马卡炼金炼出的护石，按从旧到新的顺序填 3 个。技能和槽位只需填写实际有的部分。<br>已填写基础种子时，按钮用于确定计数器位置；未填写时则用于确定基础种子（按钮会自动切换）。确定基础种子时必须填写槽位。"],
+  recNote: ["マカ錬金で引いた護石を、古い順に3つ入力してください。スキル・スロットは、ある分だけ入力すればOKです。<br>基準seedが入力されていればカウンタ位置を特定し、未入力なら基準seedを特定します（ボタンは自動で切り替わります）。", "Enter 3 charms from the Melding Pot, oldest first. For skills and slots, just enter the ones the charm has.<br>If the base seed is entered, the button finds your counter position; if it is empty, it finds the base seed instead (the button switches automatically).", "请输入马卡炼金炼出的护石，按从旧到新的顺序填 3 个。技能和槽位只需填写实际有的部分。<br>已填写基础种子时，按钮用于确定计数器位置；未填写时则用于确定基础种子（按钮会自动切换）。"],
   sfWaitNote: ["基準seedの特定は最初に一度だけ行えばOKです。総当たりで計算するため、端末の性能によっては時間がかかることがあります。", "You only need to find your base seed once. The brute-force search may take a while, depending on your device.", "基础种子只需在最初确定一次即可。由于采用穷举计算，根据设备性能可能需要较长时间。"],
   clearAll: ["すべてクリア", "Clear all", "全部清除"],
   locateBtn: ["カウンタを特定", "Find counter", "确定计数器"],
