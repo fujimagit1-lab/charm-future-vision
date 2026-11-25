@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>護石カメラ読み取りプロトタイプ4（型方式）</title>
+<style>
+  body { background:#101319; color:#e8eef4; font-family:system-ui,sans-serif; margin:0; padding:14px; }
+  h1 { font-size:17px; margin:0 0 8px; }
+  .note { color:#9db4c6; font-size:12.5px; line-height:1.6; }
+  .panel { background:#191f29; border:1px solid #2b3644; border-radius:12px; padding:12px; margin:10px 0; }
+  button, .filebtn { background:#d9f0ff; color:#0c1420; border:0; border-radius:9px; padding:11px 16px; font-size:15px; font-weight:700; cursor:pointer; display:inline-block; }
+  button:disabled { opacity:.45; }
+  #imgwrap { position:relative; display:none; margin-top:10px; touch-action:none; }
+  #imgwrap img { width:100%; display:block; border-radius:10px; }
+  #frame { position:absolute; border:2.5px solid #ffd94d; border-radius:10px; box-sizing:border-box; cursor:move; touch-action:none; }
+  .sub { position:absolute; border:1.5px dashed rgba(255,217,77,.75); border-radius:4px; box-sizing:border-box; pointer-events:none; }
+  .sub span { position:absolute; top:0; left:3px; font-size:9.5px; color:rgba(255,217,77,.95); font-weight:700; }
+  .hit { border-bottom:1px solid #2b3644; padding:9px 2px; }
+  .hit b { font-size:15.5px; }
+  .chip { background:#243144; color:#cfe6f7; border:1px solid #3a4c63; border-radius:20px; padding:5px 11px; font-size:13px; margin:3px 4px 0 0; cursor:pointer; display:inline-block; }
+  .chip.sel { background:#d9f0ff; color:#0c1420; font-weight:700; }
+  .sim { color:#9db4c6; font-size:12px; }
+  .warn { color:#ffb3b3; font-size:12.5px; }
+  #raw { white-space:pre-wrap; word-break:break-all; font-size:12px; color:#b9cbda; }
+  input[type=file] { display:none; }
+  input[type=range] { width:100%; }
+  .ctl { margin-top:8px; font-size:13px; color:#9db4c6; }
+</style>
+</head>
+<body>
+<h1>護石カメラ読み取りプロトタイプ4（型方式）</h1>
+<div class="note">写真を選んだら、<b>黄色い型（枠）を護石パネルにぴったり合わせ</b>てください（枠はドラッグで移動、大きさと縦横比はスライダーで調整）。各マスが読み取り範囲です。合わせたら「読み取る」を押してください。読み取りは端末内処理で、OCRデータ取得にだけ通信します（写真は送信されません）。</div>
+<div class="panel">
+  <div><label class="filebtn" for="file">写真を選ぶ／撮る</label><input type="file" id="file" accept="image/*"></div>
+  <div id="imgwrap"><img id="img" alt=""><div id="frame"></div></div>
+  <div class="ctl" id="ctls" style="display:none">
+    大きさ <input type="range" id="size" min="40" max="100" value="92">
+    縦横比 <input type="range" id="aspect" min="95" max="145" value="118">
+    <div style="margin-top:10px"><button id="go" disabled>読み取る</button></div>
+  </div>
+  <div class="note" id="prog"></div>
+</div>
+<div class="panel" id="result" style="display:none">
+  <div id="rare"></div>
+  <div id="slotres" style="margin-top:6px"></div>
+  <div id="hits"></div>
+</div>
+<div class="panel" id="rawpanel" style="display:none">
+  <b>範囲ごとのOCR生テキスト</b>
+  <div id="raw"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+"use strict";
+const SKILLS = [{"id":1,"name":"攻撃","levels":[1,2,3]},{"id":2,"name":"見切り","levels":[1,2,3]},{"id":3,"name":"超会心","levels":[1]},{"id":4,"name":"会心撃【属性】","levels":[1,2,3]},{"id":5,"name":"達人芸","levels":[1]},{"id":6,"name":"火属性攻撃強化","levels":[1,2,3]},{"id":7,"name":"水属性攻撃強化","levels":[1,2,3]},{"id":8,"name":"氷属性攻撃強化","levels":[1,2,3]},{"id":9,"name":"雷属性攻撃強化","levels":[1,2,3]},{"id":10,"name":"龍属性攻撃強化","levels":[1,2,3]},{"id":11,"name":"毒属性強化","levels":[1,2,3]},{"id":12,"name":"麻痺属性強化","levels":[1,2,3]},{"id":13,"name":"睡眠属性強化","levels":[1,2,3]},{"id":14,"name":"爆破属性強化","levels":[1,2,3]},{"id":15,"name":"匠","levels":[1,2,3]},{"id":16,"name":"業物","levels":[1,2,3]},{"id":18,"name":"剛刃研磨","levels":[1,2,3]},{"id":19,"name":"心眼","levels":[1,2,3]},{"id":20,"name":"弾導強化","levels":[1,2,3]},{"id":21,"name":"鈍器使い","levels":[1,2,3]},{"id":23,"name":"集中","levels":[1,2,3]},{"id":24,"name":"強化持続","levels":[1,2,3]},{"id":25,"name":"ランナー","levels":[1,2,3]},{"id":26,"name":"体術","levels":[2,3,4]},{"id":27,"name":"ガード性能","levels":[1,2,3]},{"id":28,"name":"ガード強化","levels":[1,2,3]},{"id":29,"name":"攻めの守勢","levels":[1,2,3]},{"id":30,"name":"抜刀術【技】","levels":[1,2,3]},{"id":31,"name":"抜刀術【力】","levels":[1,2,3]},{"id":32,"name":"納刀術","levels":[1,2,3]},{"id":33,"name":"KO術","levels":[1,2,3]},{"id":34,"name":"スタミナ奪取","levels":[1,2,3]},{"id":35,"name":"笛吹き名人","levels":[1,2]},{"id":36,"name":"砲術","levels":[1,2,3]},{"id":37,"name":"砲弾装填","levels":[1,2]},{"id":38,"name":"特殊射撃強化","levels":[1,2]},{"id":39,"name":"通常弾・通常矢強化","levels":[1]},{"id":40,"name":"貫通弾・竜の矢強化","levels":[1]},{"id":41,"name":"散弾・剛射強化","levels":[1]},{"id":46,"name":"速射強化","levels":[1]},{"id":47,"name":"砥石使用高速化","levels":[1,2]},{"id":48,"name":"高速変形","levels":[1,2,3]},{"id":49,"name":"チャージマスター","levels":[1,2,3]},{"id":52,"name":"毒ビン追加","levels":[1]},{"id":53,"name":"麻痺ビン追加","levels":[1]},{"id":54,"name":"睡眠ビン追加","levels":[1]},{"id":55,"name":"爆破ビン追加","levels":[1]},{"id":56,"name":"飛燕","levels":[1]},{"id":57,"name":"会心撃【特殊】","levels":[1,2,3]},{"id":58,"name":"溜打強化","levels":[1]},{"id":59,"name":"挑戦者","levels":[1]},{"id":60,"name":"フルチャージ","levels":[1,2]},{"id":61,"name":"逆恨み","levels":[1,2]},{"id":63,"name":"弱点特効","levels":[1]},{"id":64,"name":"力の解放","levels":[1]},{"id":65,"name":"渾身","levels":[1,2]},{"id":66,"name":"スタミナ急速回復","levels":[1,2]},{"id":68,"name":"防御","levels":[2,3,4]},{"id":69,"name":"精霊の加護","levels":[1,2,3]},{"id":70,"name":"体力回復量UP","levels":[1,2,3]},{"id":71,"name":"回復速度","levels":[1,2,3]},{"id":72,"name":"早食い","levels":[1,2,3]},{"id":73,"name":"耳栓","levels":[1,2]},{"id":74,"name":"風圧耐性","levels":[1,2,3]},{"id":75,"name":"耐震","levels":[1,2,3]},{"id":76,"name":"回避性能","levels":[2,3]},{"id":77,"name":"回避距離UP","levels":[1,2]},{"id":78,"name":"火耐性","levels":[1,2,3]},{"id":79,"name":"水耐性","levels":[1,2,3]},{"id":80,"name":"氷耐性","levels":[1,2,3]},{"id":81,"name":"雷耐性","levels":[1,2,3]},{"id":82,"name":"龍耐性","levels":[1,2,3]},{"id":83,"name":"属性やられ耐性","levels":[1,2]},{"id":84,"name":"毒耐性","levels":[1,2,3]},{"id":85,"name":"麻痺耐性","levels":[1,2,3]},{"id":86,"name":"睡眠耐性","levels":[1,2,3]},{"id":87,"name":"気絶耐性","levels":[1,2,3]},{"id":88,"name":"爆破やられ耐性","levels":[1,2,3]},{"id":89,"name":"水場・油泥適応","levels":[1,2]},{"id":90,"name":"植生学","levels":[2,3,4]},{"id":91,"name":"地質学","levels":[1,2,3]},{"id":92,"name":"破壊王","levels":[1,2]},{"id":96,"name":"ボマー","levels":[1,2,3]},{"id":97,"name":"キノコ大好き","levels":[1,2]},{"id":98,"name":"アイテム使用強化","levels":[1,2,3]},{"id":99,"name":"広域化","levels":[2,3,4]},{"id":100,"name":"満足感","levels":[1,2,3]},{"id":101,"name":"火事場力","levels":[2,3]},{"id":103,"name":"ひるみ軽減","levels":[1,2,3]},{"id":106,"name":"腹減り耐性","levels":[1,2,3]},{"id":111,"name":"逆襲","levels":[1,2]},{"id":112,"name":"攻勢","levels":[1]},{"id":114,"name":"災禍転福","levels":[1,2]},{"id":115,"name":"連撃","levels":[1]},{"id":116,"name":"巧撃","levels":[1]},{"id":117,"name":"急襲","levels":[1,2]},{"id":120,"name":"裂傷耐性","levels":[1,2,3]},{"id":121,"name":"防御力DOWN耐性","levels":[1,2,3]},{"id":123,"name":"悪臭耐性","levels":[1,2]},{"id":135,"name":"環境利用の知識","levels":[1,2,3]},{"id":139,"name":"整備","levels":[2,3]},{"id":140,"name":"威嚇","levels":[1,2,3]},{"id":142,"name":"毒ダメージ強化","levels":[1]},{"id":145,"name":"環境適応","levels":[1,2]},{"id":147,"name":"鎖刃刺撃","levels":[1]},{"id":163,"name":"拘束耐性","levels":[1,2,3]},{"id":164,"name":"属性吸収","levels":[1]},{"id":165,"name":"属性変換","levels":[1]},{"id":169,"name":"無我の境地","levels":[1,2,3]},{"id":171,"name":"フォースショット","levels":[1,2,3]},{"id":172,"name":"ファーストショット","levels":[1,2,3]},{"id":200,"name":"減気ビン追加","levels":[1]}];
+const PATTERNS_BY_RARE = { 5: [[1,1,0],[2,0,0],[2,1,0],[3,0,0]], 6: [[1,0,0],[1,1,0],[2,0,0],[2,1,0]], 7: [[1,0,0],[1,1,0],[2,0,0],[3,0,0]], 8: [[1,0,0],[1,1,0],[1,1,1]] };
+const REG = {
+  rare: { x: 0.66, y: 0.155, w: 0.335, h: 0.115, label: "RARE" },
+  slot: { x: 0.50, y: 0.232, w: 0.495, h: 0.100, label: "スロット" },
+  rowsY: [0.432, 0.572, 0.712], rowH: 0.128,
+  nameIn: { x: 0.125, y: 0.04, w: 0.50, h: 0.60 },
+  pipIn: { x: 0.150, y: 0.52, w: 0.36, h: 0.44 },
+  lvIn: { x: 0.735, y: 0.30, w: 0.26, h: 0.68 }
+};
+const $ = id => document.getElementById(id);
+function norm(s) {
+  return (s || "").normalize("NFKC").replace(/[・\s　]/g, "").replace(/[|｜]/g, "").toLowerCase();
+}
+function dice(a, b) {
+  if (!a || !b) return 0;
+  if (a === b) return 1;
+  const bg = s => { const m = new Map(); for (let i = 0; i < s.length - 1; i++) { const g = s.slice(i, i + 2); m.set(g, (m.get(g) || 0) + 1); } return m; };
+  const A = bg(a), B = bg(b); let inter = 0;
+  for (const [g, n] of A) inter += Math.min(n, B.get(g) || 0);
+  return 2 * inter / Math.max(1, (a.length - 1) + (b.length - 1));
+}
+function skillCandidates(text) {
+  const t = norm(text).replace(/lv\d.*$/, "");
+  if (t.length < 2) return [];
+  return SKILLS.map(sk => {
+    const n = norm(sk.name);
+    let s = dice(t, n);
+    if (t.includes(n) || n.includes(t)) s = Math.max(s, 0.92);
+    return { sk, s };
+  }).filter(x => x.s >= 0.45).sort((a, b) => b.s - a.s).slice(0, 3);
+}
+function narrowSlots(rare, iconLvList) {
+  const pats = rare && PATTERNS_BY_RARE[rare] ? PATTERNS_BY_RARE[rare]
+    : [...new Set(Object.values(PATTERNS_BY_RARE).flat().map(p => p.join(",")))].map(s => s.split(",").map(Number));
+  return pats.filter(p => {
+    const nz = p.filter(v => v > 0);
+    if (nz.length !== iconLvList.length) return false;
+    return iconLvList.every((t, i) => t == null || t === nz[i]);
+  });
+}
+// ---- frame UI ----
+const frame = $("frame"), imgEl = $("img");
+function buildSubs() {
+  frame.innerHTML = "";
+  const add = (r, label) => {
+    const d = document.createElement("div");
+    d.className = "sub";
+    d.style.left = (r.x * 100) + "%"; d.style.top = (r.y * 100) + "%";
+    d.style.width = (r.w * 100) + "%"; d.style.height = (r.h * 100) + "%";
+    if (label) { const s = document.createElement("span"); s.textContent = label; d.appendChild(s); }
+    frame.appendChild(d);
+  };
+  add(REG.rare, "RARE");
+  add(REG.slot, "スロット");
+  REG.rowsY.forEach((y, i) => {
+    add({ x: 0.03, y, w: 0.945, h: REG.rowH }, "スキル" + (i + 1));
+    add({ x: REG.lvIn.x, y: y + REG.rowH * REG.lvIn.y, w: REG.lvIn.w, h: REG.rowH * REG.lvIn.h }, "Lv");
+  });
+}
+function placeFrame() {
+  const w = +$("size").value, asp = +$("aspect").value / 100;
+  frame.style.width = w + "%";
+  frame.style.aspectRatio = String(asp);
+  if (!frame.style.left) { frame.style.left = "4%"; frame.style.top = "5%"; }
+  buildSubs();
+}
+$("size").addEventListener("input", placeFrame);
+$("aspect").addEventListener("input", placeFrame);
+let drag = null;
+frame.addEventListener("pointerdown", ev => {
+  const fr = frame.getBoundingClientRect(), wr = $("imgwrap").getBoundingClientRect();
+  drag = { dx: ev.clientX - fr.left, dy: ev.clientY - fr.top, wr };
+  frame.setPointerCapture(ev.pointerId);
+});
+frame.addEventListener("pointermove", ev => {
+  if (!drag) return;
+  let nx = (ev.clientX - drag.dx - drag.wr.left) / drag.wr.width * 100;
+  let ny = (ev.clientY - drag.dy - drag.wr.top) / drag.wr.height * 100;
+  nx = Math.max(-10, Math.min(95, nx)); ny = Math.max(-5, Math.min(95, ny));
+  frame.style.left = nx + "%"; frame.style.top = ny + "%";
+});
+frame.addEventListener("pointerup", () => drag = null);
+let curUrl = null;
+function loadFile(f) {
+  if (!f) return;
+  if (curUrl) URL.revokeObjectURL(curUrl);
+  curUrl = URL.createObjectURL(f);
+  imgEl.onload = () => { $("ctls").style.display = "block"; $("go").disabled = false; placeFrame(); };
+  imgEl.src = curUrl;
+  $("imgwrap").style.display = "block";
+}
+$("file").addEventListener("change", ev => loadFile(ev.target.files[0]));
+document.addEventListener("dragover", ev => ev.preventDefault());
+document.addEventListener("drop", ev => { ev.preventDefault(); const f = ev.dataTransfer.files && ev.dataTransfer.files[0]; if (f) loadFile(f); });
+document.addEventListener("paste", ev => { const f = ev.clipboardData && ev.clipboardData.files && ev.clipboardData.files[0]; if (f) loadFile(f); });
+$("go").addEventListener("click", () => runDetect());
+// ---- recognition ----
+let workerPromise = null;
+function getWorker() {
+  if (!workerPromise) {
+    workerPromise = Tesseract.createWorker("jpn", 1, {
+      logger: m => { if (m.status === "recognizing text") $("prog").textContent = "読み取り中… " + Math.round(m.progress * 100) + "%"; }
+    });
+  }
+  return workerPromise;
+}
+function frameCanvas() {
+  const ir = imgEl.getBoundingClientRect(), fr = frame.getBoundingClientRect();
+  const sx = (fr.left - ir.left) / ir.width * imgEl.naturalWidth;
+  const sy = (fr.top - ir.top) / ir.height * imgEl.naturalHeight;
+  const sw = fr.width / ir.width * imgEl.naturalWidth;
+  const sh = fr.height / ir.height * imgEl.naturalHeight;
+  const scale = 1400 / sw;
+  const W = Math.max(50, Math.round(sw * scale)), H = Math.max(50, Math.round(sh * scale));
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const ctx = cv.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(imgEl, sx, sy, sw, sh, 0, 0, W, H);
+  return { cv, ctx, W, H };
+}
+function cropGray(src, r, minH) {
+  const sx = Math.max(0, Math.floor(r.x * src.width)), sy = Math.max(0, Math.floor(r.y * src.height));
+  const sw = Math.max(4, Math.min(src.width - sx, Math.round(r.w * src.width)));
+  const sh = Math.max(4, Math.min(src.height - sy, Math.round(r.h * src.height)));
+  const up = Math.max(1, Math.ceil((minH || 90) / sh));
+  const cv = document.createElement("canvas"); cv.width = sw * up; cv.height = sh * up;
+  const ctx = cv.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(src, sx, sy, sw, sh, 0, 0, cv.width, cv.height);
+  const id = ctx.getImageData(0, 0, cv.width, cv.height), d = id.data;
+  for (let i = 0; i < d.length; i += 4) {
+    let v = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+    v = Math.max(0, Math.min(255, (v - 128) * 1.35 + 128));
+    d[i] = d[i + 1] = d[i + 2] = v;
+  }
+  ctx.putImageData(id, 0, 0);
+  return cv;
+}
+async function ocrRegion(worker, src, r, opts) {
+  opts = opts || {};
+  const cv = cropGray(src, r, opts.minH);
+  await worker.setParameters({ tessedit_pageseg_mode: opts.psm || "7", tessedit_char_whitelist: opts.whitelist || "" });
+  const res = await worker.recognize(cv);
+  return res.data.text || "";
+}
+function countPipsIn(data, W, H, r) {
+  const x0 = Math.max(0, Math.floor(r.x * W)), x1 = Math.min(W, Math.ceil((r.x + r.w) * W));
+  const y0 = Math.max(0, Math.floor(r.y * H)), y1 = Math.min(H, Math.ceil((r.y + r.h) * H));
+  if (x1 - x0 < 10 || y1 - y0 < 6) return null;
+  const colHas = new Array(x1 - x0).fill(0);
+  for (let y = y0; y < y1; y++) {
+    for (let x = x0; x < x1; x++) {
+      const i = (y * W + x) * 4, rr = data[i], gg = data[i + 1], bb = data[i + 2];
+      if (rr > 150 && gg > 85 && gg < 200 && bb < 115 && rr - bb > 70) colHas[x - x0]++;
+    }
+  }
+  const thr = Math.max(2, (y1 - y0) * 0.22);
+  let runs = 0, inRun = false, runW = 0, gap = 0;
+  for (let x = 0; x < colHas.length; x++) {
+    if (colHas[x] >= thr) { if (!inRun) { inRun = true; runW = 0; } runW++; gap = 0; }
+    else if (inRun) { gap++; if (gap > 3) { if (runW >= 3) runs++; inRun = false; } }
+  }
+  if (inRun && runW >= 3) runs++;
+  return runs >= 1 && runs <= 7 ? runs : null;
+}
+function analyzeSlotBox(data, W, H, r) {
+  const bx0 = Math.floor(r.x * W), by0 = Math.floor(r.y * H);
+  const bw = Math.round(r.w * W), bh = Math.round(r.h * H);
+  if (bw < 30 || bh < 10) return null;
+  const lum = (x, y) => { const i = (y * W + x) * 4; return 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]; };
+  const cols = [];
+  for (let x = bx0; x < bx0 + bw; x++) {
+    let c = 0, ymin = 1e9, ymax = -1;
+    for (let y = by0; y < by0 + bh; y++) {
+      if (lum(x, y) > 118) { c++; if (y < ymin) ymin = y; if (y > ymax) ymax = y; }
+    }
+    cols.push({ c, ymin, ymax });
+  }
+  const thr = bh * 0.30;
+  const objs = [];
+  let s = -1;
+  for (let i = 0; i <= cols.length; i++) {
+    const on = i < cols.length && cols[i].c >= thr;
+    if (on && s < 0) s = i;
+    if (!on && s >= 0) { objs.push([s, i - 1]); s = -1; }
+  }
+  const icons = [];
+  for (const [a, b] of objs) {
+    const wpx = b - a + 1;
+    if (wpx < bw * 0.05 || wpx > bw * 0.45) continue;
+    let ymin = 1e9, ymax = -1;
+    for (let i = a; i <= b; i++) { if (cols[i].ymax >= 0) { ymin = Math.min(ymin, cols[i].ymin); ymax = Math.max(ymax, cols[i].ymax); } }
+    const hgt = ymax - ymin + 1;
+    if (hgt < bh * 0.55) continue;
+    const ix0 = bx0 + a, wI = wpx;
+    const mx0 = Math.floor(ix0 + wI * 0.13), mx1 = Math.ceil(ix0 + wI * 0.87);
+    const mergeGap = Math.max(3, Math.round(W * 0.0025));
+    const ests = [];
+    for (const f of [0.74, 0.80, 0.86]) {
+      const yy = Math.min(by0 + bh - 1, Math.floor(ymin + hgt * f));
+      let runs = 0, on = false, gap = 99;
+      for (let x = mx0; x <= mx1; x++) {
+        const bright = lum(x, yy) > 118;
+        if (bright) { if (!on && gap > mergeGap) runs++; on = true; gap = 0; }
+        else { on = false; gap++; }
+      }
+      ests.push(Math.round(runs / 2));
+    }
+    ests.sort((p, q) => p - q);
+    const tri = ests[1] >= 1 && ests[1] <= 3 ? ests[1] : null;
+    icons.push({ tri });
+  }
+  return icons;
+}
+async function runDetect() {
+  const t0 = performance.now();
+  $("go").disabled = true;
+  $("result").style.display = "none"; $("rawpanel").style.display = "none";
+  $("prog").textContent = "準備中…";
+  const { cv, ctx, W, H } = frameCanvas();
+  const colData = ctx.getImageData(0, 0, W, H).data;
+  let worker;
+  try { worker = await getWorker(); }
+  catch (e) { $("prog").textContent = "OCRの初期化に失敗しました: " + e.message; $("go").disabled = false; return; }
+  const raws = [];
+  const rareText = await ocrRegion(worker, cv, REG.rare, { whitelist: "RARE0123456789 ", minH: 80 });
+  raws.push("RARE範囲: " + rareText.trim());
+  const rareM = rareText.match(/(\d)/);
+  const rare = rareM ? +rareM[1] : null;
+  const icons = analyzeSlotBox(colData, W, H, REG.slot);
+  const slotCands = icons && icons.length ? narrowSlots(rare, icons.map(ic => ic.tri)) : null;
+  const slotInfo = icons ? "アイコン" + icons.length + "個／三角形: " + icons.map(ic => ic.tri == null ? "?" : ic.tri).join(", ") : "";
+  const hits = [];
+  for (let i = 0; i < 3; i++) {
+    $("prog").textContent = "スキル" + (i + 1) + "行を読み取り中…";
+    const ry = REG.rowsY[i];
+    const nameR = { x: REG.nameIn.x, y: ry + REG.rowH * REG.nameIn.y, w: REG.nameIn.w, h: REG.rowH * REG.nameIn.h };
+    const lvR = { x: REG.lvIn.x, y: ry + REG.rowH * REG.lvIn.y, w: REG.lvIn.w, h: REG.rowH * REG.lvIn.h };
+    const pipR = { x: REG.pipIn.x, y: ry + REG.rowH * REG.pipIn.y, w: REG.pipIn.w, h: REG.rowH * REG.pipIn.h };
+    const nameText = await ocrRegion(worker, cv, nameR, { minH: 100 });
+    const lvText = await ocrRegion(worker, cv, lvR, { whitelist: "Lv0123456789", minH: 80 });
+    raws.push("行" + (i + 1) + " 名前: " + nameText.trim() + " ／ Lv: " + lvText.trim());
+    const cands = skillCandidates(nameText);
+    const lvM = lvText.replace(/\s/g, "").match(/(\d)/);
+    const lvT = lvM ? +lvM[1] : null;
+    const pips = countPipsIn(colData, W, H, pipR);
+    let lv = lvT, lvSrc = lvT != null ? "テキスト" : null;
+    if (lv == null && pips != null) { lv = pips; lvSrc = "■"; }
+    let filtered = false;
+    if (cands.length && lv != null) {
+      const valid = cands.filter(c => c.sk.levels.includes(lv));
+      if (valid.length && valid.length < cands.length) { cands.splice(0, cands.length, ...valid); filtered = true; }
+    }
+    hits.push({ cands, lv, lvT, pips, lvSrc, filtered, row: i });
+  }
+  $("prog").textContent = "読み取り完了（" + Math.round(performance.now() - t0) + "ms）";
+  $("raw").textContent = raws.join("\n");
+  $("rawpanel").style.display = "block";
+  window.__last = { rare, icons, slotCands, slotInfo };
+  renderResults(hits);
+  $("go").disabled = false;
+}
+function renderResults(hits) {
+  window.__hits = hits;
+  const L = window.__last || {};
+  $("rare").innerHTML = L.rare ? "<b>レア度: RARE " + L.rare + "</b>" : "<span class='warn'>レア度は読めませんでした</span>";
+  let sh = "<b>スロット: </b>";
+  if (!L.icons || !L.icons.length) sh += "<span class='warn'>未検出（アイコンが見つかりませんでした）</span>";
+  else if (L.slotCands && L.slotCands.length === 1) sh += "<b>" + L.slotCands[0].join("-") + "</b> <span class='sim'>（" + L.slotInfo + "）</span>";
+  else if (L.slotCands && L.slotCands.length > 1) sh += "候補 " + L.slotCands.map(p => "<span class='chip'>" + p.join("-") + "</span>").join("") + " <span class='sim'>（" + L.slotInfo + "）</span>";
+  else sh += "<span class='warn'>パターンと一致しませんでした</span> <span class='sim'>（" + L.slotInfo + "）</span>";
+  $("slotres").innerHTML = sh;
+  let hh = "<div style='margin-top:10px'><b>スキル</b></div>";
+  hits.forEach((h, gi) => {
+    if (!h.cands.length) { hh += "<div class='hit'><span class='sim'>行" + (h.row + 1) + ": スキルなし／読めませんでした</span></div>"; return; }
+    hh += "<div class='hit'><b>" + h.cands[0].sk.name + "</b>";
+    if (h.lv != null) hh += " <b>Lv" + h.lv + "</b> <span class='sim'>（" + h.lvSrc + "）</span>";
+    else hh += " <span class='warn'>Lv不明</span>";
+    if (h.lvT != null && h.pips != null && h.lvT !== h.pips) hh += " <span class='warn'>■は" + h.pips + "で不一致</span>";
+    else if (h.pips != null && h.lvT != null) hh += " <span class='sim'>■" + h.pips + "と一致</span>";
+    if (h.filtered) hh += " <span class='sim'>Lvで出ない候補を除外済み</span>";
+    hh += "<div>" + h.cands.map((c, ci) => "<span class='chip" + (ci === 0 ? " sel" : "") + "' onclick='pick(" + gi + "," + ci + ")'>" + c.sk.name + " <span class='sim'>" + Math.round(c.s * 100) + "%</span></span>").join("") + "</div></div>";
+  });
+  $("hits").innerHTML = hh;
+  $("result").style.display = "block";
+}
+function pick(gi, ci) {
+  const h = window.__hits[gi];
+  const c = h.cands[ci]; h.cands.splice(ci, 1); h.cands.unshift(c);
+  renderResults(window.__hits);
+}
+</script>
+</body>
+</html>
