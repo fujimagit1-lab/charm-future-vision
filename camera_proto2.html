@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>護石カメラ読み取りプロトタイプ2（OCRライブラリ方式）</title>
+<style>
+  body { background:#101319; color:#e8eef4; font-family:system-ui,sans-serif; margin:0; padding:14px; }
+  h1 { font-size:17px; margin:0 0 8px; }
+  .note { color:#9db4c6; font-size:12.5px; line-height:1.6; }
+  .panel { background:#191f29; border:1px solid #2b3644; border-radius:12px; padding:12px; margin:10px 0; }
+  #status { font-weight:700; }
+  .ok { color:#8be08b; } .ng { color:#ff9c9c; }
+  button, .filebtn { background:#d9f0ff; color:#0c1420; border:0; border-radius:9px; padding:11px 16px; font-size:15px; font-weight:700; cursor:pointer; display:inline-block; }
+  #imgwrap { position:relative; display:none; margin-top:10px; }
+  #imgwrap img { width:100%; display:block; border-radius:10px; }
+  .box { position:absolute; border:2px solid #ffd94d; border-radius:4px; pointer-events:none; }
+  .box span { position:absolute; top:-1.35em; left:-2px; background:#ffd94d; color:#111; font-size:11px; font-weight:700; padding:1px 5px; border-radius:4px; white-space:nowrap; }
+  .hit { border-bottom:1px solid #2b3644; padding:9px 2px; }
+  .hit b { font-size:15.5px; }
+  .chip { background:#243144; color:#cfe6f7; border:1px solid #3a4c63; border-radius:20px; padding:5px 11px; font-size:13px; margin:3px 4px 0 0; cursor:pointer; display:inline-block; }
+  .chip.sel { background:#d9f0ff; color:#0c1420; font-weight:700; }
+  .sim { color:#9db4c6; font-size:12px; }
+  #raw { white-space:pre-wrap; word-break:break-all; font-size:12px; color:#b9cbda; }
+  input[type=file] { display:none; }
+</style>
+</head>
+<body>
+<h1>護石カメラ読み取りプロトタイプ2（OCRライブラリ方式）</h1>
+<div class="note">TVに映した護石の詳細画面を撮影すると、スキル名とLvを読み取って候補を出します（スロットは未対応＝手動）。読み取り処理は端末内ですが、OCRライブラリと日本語データの取得にだけ通信します（写真は送信されません）。</div>
+<div class="panel">
+  <div id="status">TextDetector: 確認中…</div>
+  <div style="margin-top:10px"><label class="filebtn" for="file">写真を選ぶ／撮る</label><input type="file" id="file" accept="image/*"></div>
+  <div class="note" style="margin-top:8px">PCでは画像ファイルをこのページへドラッグ＆ドロップ、または貼り付け（Ctrl+V）でも読み込めます。</div>
+  <div id="imgwrap"><img id="img" alt=""></div>
+  <div class="note" id="prog"></div>
+</div>
+<div class="panel" id="result" style="display:none">
+  <div id="rare"></div>
+  <div id="hits"></div>
+</div>
+<div class="panel" id="rawpanel" style="display:none">
+  <b>OCRが生で読んだテキスト</b>
+  <div id="raw"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+"use strict";
+const SKILLS = [{"id":1,"name":"攻撃","levels":[1,2,3]},{"id":2,"name":"見切り","levels":[1,2,3]},{"id":3,"name":"超会心","levels":[1]},{"id":4,"name":"会心撃【属性】","levels":[1,2,3]},{"id":5,"name":"達人芸","levels":[1]},{"id":6,"name":"火属性攻撃強化","levels":[1,2,3]},{"id":7,"name":"水属性攻撃強化","levels":[1,2,3]},{"id":8,"name":"氷属性攻撃強化","levels":[1,2,3]},{"id":9,"name":"雷属性攻撃強化","levels":[1,2,3]},{"id":10,"name":"龍属性攻撃強化","levels":[1,2,3]},{"id":11,"name":"毒属性強化","levels":[1,2,3]},{"id":12,"name":"麻痺属性強化","levels":[1,2,3]},{"id":13,"name":"睡眠属性強化","levels":[1,2,3]},{"id":14,"name":"爆破属性強化","levels":[1,2,3]},{"id":15,"name":"匠","levels":[1,2,3]},{"id":16,"name":"業物","levels":[1,2,3]},{"id":18,"name":"剛刃研磨","levels":[1,2,3]},{"id":19,"name":"心眼","levels":[1,2,3]},{"id":20,"name":"弾導強化","levels":[1,2,3]},{"id":21,"name":"鈍器使い","levels":[1,2,3]},{"id":23,"name":"集中","levels":[1,2,3]},{"id":24,"name":"強化持続","levels":[1,2,3]},{"id":25,"name":"ランナー","levels":[1,2,3]},{"id":26,"name":"体術","levels":[2,3,4]},{"id":27,"name":"ガード性能","levels":[1,2,3]},{"id":28,"name":"ガード強化","levels":[1,2,3]},{"id":29,"name":"攻めの守勢","levels":[1,2,3]},{"id":30,"name":"抜刀術【技】","levels":[1,2,3]},{"id":31,"name":"抜刀術【力】","levels":[1,2,3]},{"id":32,"name":"納刀術","levels":[1,2,3]},{"id":33,"name":"KO術","levels":[1,2,3]},{"id":34,"name":"スタミナ奪取","levels":[1,2,3]},{"id":35,"name":"笛吹き名人","levels":[1,2]},{"id":36,"name":"砲術","levels":[1,2,3]},{"id":37,"name":"砲弾装填","levels":[1,2]},{"id":38,"name":"特殊射撃強化","levels":[1,2]},{"id":39,"name":"通常弾・通常矢強化","levels":[1]},{"id":40,"name":"貫通弾・竜の矢強化","levels":[1]},{"id":41,"name":"散弾・剛射強化","levels":[1]},{"id":46,"name":"速射強化","levels":[1]},{"id":47,"name":"砥石使用高速化","levels":[1,2]},{"id":48,"name":"高速変形","levels":[1,2,3]},{"id":49,"name":"チャージマスター","levels":[1,2,3]},{"id":51,"name":"緩衝","levels":[]},{"id":52,"name":"毒ビン追加","levels":[1]},{"id":53,"name":"麻痺ビン追加","levels":[1]},{"id":54,"name":"睡眠ビン追加","levels":[1]},{"id":55,"name":"爆破ビン追加","levels":[1]},{"id":56,"name":"飛燕","levels":[1]},{"id":57,"name":"会心撃【特殊】","levels":[1,2,3]},{"id":58,"name":"溜打強化","levels":[1]},{"id":59,"name":"挑戦者","levels":[1]},{"id":60,"name":"フルチャージ","levels":[1,2]},{"id":61,"name":"逆恨み","levels":[1,2]},{"id":63,"name":"弱点特効","levels":[1]},{"id":64,"name":"力の解放","levels":[1]},{"id":65,"name":"渾身","levels":[1,2]},{"id":66,"name":"スタミナ急速回復","levels":[1,2]},{"id":68,"name":"防御","levels":[2,3,4]},{"id":69,"name":"精霊の加護","levels":[1,2,3]},{"id":70,"name":"体力回復量UP","levels":[1,2,3]},{"id":71,"name":"回復速度","levels":[1,2,3]},{"id":72,"name":"早食い","levels":[1,2,3]},{"id":73,"name":"耳栓","levels":[1,2]},{"id":74,"name":"風圧耐性","levels":[1,2,3]},{"id":75,"name":"耐震","levels":[1,2,3]},{"id":76,"name":"回避性能","levels":[2,3]},{"id":77,"name":"回避距離UP","levels":[1,2]},{"id":78,"name":"火耐性","levels":[1,2,3]},{"id":79,"name":"水耐性","levels":[1,2,3]},{"id":80,"name":"氷耐性","levels":[1,2,3]},{"id":81,"name":"雷耐性","levels":[1,2,3]},{"id":82,"name":"龍耐性","levels":[1,2,3]},{"id":83,"name":"属性やられ耐性","levels":[1,2]},{"id":84,"name":"毒耐性","levels":[1,2,3]},{"id":85,"name":"麻痺耐性","levels":[1,2,3]},{"id":86,"name":"睡眠耐性","levels":[1,2,3]},{"id":87,"name":"気絶耐性","levels":[1,2,3]},{"id":88,"name":"爆破やられ耐性","levels":[1,2,3]},{"id":89,"name":"水場・油泥適応","levels":[1,2]},{"id":90,"name":"植生学","levels":[2,3,4]},{"id":91,"name":"地質学","levels":[1,2,3]},{"id":92,"name":"破壊王","levels":[1,2]},{"id":96,"name":"ボマー","levels":[1,2,3]},{"id":97,"name":"キノコ大好き","levels":[1,2]},{"id":98,"name":"アイテム使用強化","levels":[1,2,3]},{"id":99,"name":"広域化","levels":[2,3,4]},{"id":100,"name":"満足感","levels":[1,2,3]},{"id":101,"name":"火事場力","levels":[2,3]},{"id":103,"name":"ひるみ軽減","levels":[1,2,3]},{"id":104,"name":"ジャンプ鉄人","levels":[]},{"id":106,"name":"腹減り耐性","levels":[1,2,3]},{"id":107,"name":"飛び込み","levels":[]},{"id":110,"name":"クライマー","levels":[]},{"id":111,"name":"逆襲","levels":[1,2]},{"id":112,"name":"攻勢","levels":[1]},{"id":114,"name":"災禍転福","levels":[1,2]},{"id":115,"name":"連撃","levels":[1]},{"id":116,"name":"巧撃","levels":[1]},{"id":117,"name":"急襲","levels":[1,2]},{"id":120,"name":"裂傷耐性","levels":[1,2,3]},{"id":121,"name":"防御力DOWN耐性","levels":[1,2,3]},{"id":123,"name":"悪臭耐性","levels":[1,2]},{"id":127,"name":"ハンター生活","levels":[]},{"id":131,"name":"オトモへの采配","levels":[]},{"id":135,"name":"環境利用の知識","levels":[1,2,3]},{"id":137,"name":"閃光強化","levels":[]},{"id":138,"name":"昆虫標本の達人","levels":[]},{"id":139,"name":"整備","levels":[2,3]},{"id":140,"name":"威嚇","levels":[1,2,3]},{"id":142,"name":"毒ダメージ強化","levels":[1]},{"id":145,"name":"環境適応","levels":[1,2]},{"id":146,"name":"研鑽","levels":[]},{"id":147,"name":"鎖刃刺撃","levels":[1]},{"id":163,"name":"拘束耐性","levels":[1,2,3]},{"id":164,"name":"属性吸収","levels":[1]},{"id":165,"name":"属性変換","levels":[1]},{"id":169,"name":"無我の境地","levels":[1,2,3]},{"id":171,"name":"フォースショット","levels":[1,2,3]},{"id":172,"name":"ファーストショット","levels":[1,2,3]},{"id":173,"name":"甲虫の知らせ","levels":[]},{"id":174,"name":"甲虫の擬態","levels":[]},{"id":175,"name":"革細工の柔性","levels":[]},{"id":176,"name":"革細工の滑性","levels":[]},{"id":177,"name":"鱗張りの技法","levels":[]},{"id":178,"name":"鱗重ねの工夫","levels":[]},{"id":179,"name":"毛皮の昂揚","levels":[]},{"id":180,"name":"毛皮の誘惑","levels":[]},{"id":181,"name":"ヌシの誇り","levels":[]},{"id":182,"name":"ヌシの憤激","levels":[]},{"id":183,"name":"護竜の脈動","levels":[]},{"id":184,"name":"護竜の守り","levels":[]},{"id":185,"name":"先達の導き","levels":[]},{"id":186,"name":"闢獣の力","levels":[]},{"id":187,"name":"煌雷竜の力","levels":[]},{"id":188,"name":"波衣竜の守護","levels":[]},{"id":189,"name":"獄焔蛸の反逆","levels":[]},{"id":190,"name":"凍峰竜の反逆","levels":[]},{"id":191,"name":"火竜の力","levels":[]},{"id":192,"name":"鎧竜の守護","levels":[]},{"id":193,"name":"雪獅子の闘志","levels":[]},{"id":194,"name":"黒蝕竜の力","levels":[]},{"id":195,"name":"護鎖刃竜の命脈","levels":[]},{"id":196,"name":"鎖刃竜の飢餓","levels":[]},{"id":197,"name":"兇爪竜の力","levels":[]},{"id":198,"name":"雷顎竜の闘志","levels":[]},{"id":199,"name":"暗器蛸の力","levels":[]},{"id":200,"name":"減気ビン追加","levels":[1]},{"id":201,"name":"泡狐竜の力","levels":[]},{"id":203,"name":"濡れ刃紋","levels":[]},{"id":204,"name":"白熾龍の脈動","levels":[]},{"id":205,"name":"白熾の奔流","levels":[]},{"id":206,"name":"ヌシの魂","levels":[]},{"id":208,"name":"花舞の祈り","levels":[]},{"id":210,"name":"拳を極めし者","levels":[]},{"id":212,"name":"にぎりめし","levels":[]},{"id":213,"name":"海竜の渦雷","levels":[]},{"id":215,"name":"耐性変換【雷】","levels":[]},{"id":216,"name":"千刃竜の闘志","levels":[]},{"id":218,"name":"刃鱗研装","levels":[]},{"id":219,"name":"刃鱗増装","levels":[]},{"id":220,"name":"祝祭の巡り","levels":[]},{"id":222,"name":"踊火の祈り","levels":[]},{"id":224,"name":"夢灯の祈り","levels":[]},{"id":226,"name":"祝謡の祈り","levels":[]},{"id":228,"name":"栄光の誉れ","levels":[]},{"id":230,"name":"パワーストーン","levels":[]},{"id":231,"name":"焼き砲モロコシ","levels":[]},{"id":232,"name":"炎の料理人","levels":[]},{"id":233,"name":"回避装填","levels":[]},{"id":234,"name":"暗黒","levels":[]},{"id":235,"name":"シールドオプション","levels":[]},{"id":236,"name":"連携プログラム","levels":[]},{"id":237,"name":"暗黒騎士の証","levels":[]},{"id":238,"name":"オメガレゾナンス","levels":[]},{"id":239,"name":"にゃんにゃんぼう","levels":[]},{"id":240,"name":"巨戟龍の黙示録","levels":[]},{"id":244,"name":"耐性変換【水】","levels":[]},{"id":245,"name":"解キ放ツ鏡刃ノ破片","levels":[]}];
+const $ = id => document.getElementById(id);
+$("status").innerHTML = '方式: <b>Tesseract.js（日本語OCRライブラリ）</b><br><span class="note">TextDetector方式はこの端末で使えなかったため、ライブラリ方式に切り替えた検証版です。</span>';
+
+function norm(s) {
+  return (s || "").normalize("NFKC").replace(/[・\s　]/g, "").replace(/[|｜]/g, "").toLowerCase();
+}
+function dice(a, b) {
+  if (!a || !b) return 0;
+  if (a === b) return 1;
+  const bg = s => { const m = new Map(); for (let i = 0; i < s.length - 1; i++) { const g = s.slice(i, i + 2); m.set(g, (m.get(g) || 0) + 1); } return m; };
+  const A = bg(a), B = bg(b); let inter = 0;
+  for (const [g, n] of A) inter += Math.min(n, B.get(g) || 0);
+  return 2 * inter / Math.max(1, (a.length - 1) + (b.length - 1));
+}
+function skillCandidates(text) {
+  const t = norm(text).replace(/lv\d.*$/, "");
+  if (t.length < 2) return [];
+  const scored = SKILLS.map(sk => {
+    const n = norm(sk.name);
+    let s = dice(t, n);
+    if (t.includes(n) || n.includes(t)) s = Math.max(s, 0.92);
+    return { sk, s };
+  }).filter(x => x.s >= 0.45).sort((a, b) => b.s - a.s);
+  return scored.slice(0, 3);
+}
+
+let curUrl = null;
+function loadFile(f) {
+  if (!f) return;
+  if (curUrl) URL.revokeObjectURL(curUrl);
+  curUrl = URL.createObjectURL(f);
+  const img = $("img");
+  img.onload = () => runDetect(img);
+  img.src = curUrl;
+  $("imgwrap").style.display = "block";
+}
+$("file").addEventListener("change", ev => loadFile(ev.target.files[0]));
+document.addEventListener("dragover", ev => ev.preventDefault());
+document.addEventListener("drop", ev => { ev.preventDefault(); const f = ev.dataTransfer.files && ev.dataTransfer.files[0]; if (f) loadFile(f); });
+document.addEventListener("paste", ev => { const f = ev.clipboardData && ev.clipboardData.files && ev.clipboardData.files[0]; if (f) loadFile(f); });
+
+async function runDetect(img) {
+  document.querySelectorAll(".box").forEach(e => e.remove());
+  $("result").style.display = "none"; $("rawpanel").style.display = "none";
+  const scale = Math.min(1, 1600 / img.naturalWidth);
+  const cv = document.createElement("canvas");
+  cv.width = Math.round(img.naturalWidth * scale); cv.height = Math.round(img.naturalHeight * scale);
+  const ctx = cv.getContext("2d");
+  ctx.drawImage(img, 0, 0, cv.width, cv.height);
+  const id = ctx.getImageData(0, 0, cv.width, cv.height), px = id.data;
+  for (let i = 0; i < px.length; i += 4) {
+    let v = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+    v = Math.max(0, Math.min(255, (v - 128) * 1.35 + 128));
+    px[i] = px[i + 1] = px[i + 2] = v;
+  }
+  ctx.putImageData(id, 0, 0);
+  $("prog").textContent = "OCR準備中…（初回は日本語データ約15MBを読み込みます）";
+  let data;
+  try {
+    const worker = await Tesseract.createWorker("jpn", 1, { logger: m => { if (m.status) $("prog").textContent = "読み取り中… " + m.status + (m.progress ? " " + Math.round(m.progress * 100) + "%" : ""); } });
+    await worker.setParameters({ tessedit_pageseg_mode: "11" });
+    const t0 = performance.now();
+    const res = await worker.recognize(cv);
+    data = res.data;
+    await worker.terminate();
+    $("prog").textContent = "読み取り完了（" + Math.round(performance.now() - t0) + "ms）";
+  } catch (e) {
+    $("prog").textContent = "読み取りエラー: " + (e && e.message || e);
+    return;
+  }
+  const W = cv.width, H = cv.height;
+  const nb = b => ({ x: b.x0 / W, y: b.y0 / H, w: (b.x1 - b.x0) / W, h: (b.y1 - b.y0) / H, cx: (b.x0 + b.x1) / 2 / W, cy: (b.y0 + b.y1) / 2 / H });
+  const lines = (data.lines || []).map(l => ({ text: (l.text || "").trim(), ...nb(l.bbox) })).filter(l => l.text);
+  $("raw").textContent = data.text || "";
+  $("rawpanel").style.display = "";
+  let rare = null;
+  const allText = (data.text || "").replace(/\s/g, "");
+  const rm = allText.match(/RARE(\d{1,2})/i); if (rm) rare = +rm[1];
+  $("rare").innerHTML = rare ? "<b>レア度: RARE " + rare + "</b>" : '<span class="note">レア度は読み取れませんでした</span>';
+  const lvBlocks = [];
+  const words = data.words || [];
+  for (let i = 0; i < words.length; i++) {
+    const wtxt = (words[i].text || "").replace(/\s/g, "");
+    const wb = nb(words[i].bbox);
+    const mm = wtxt.match(/^Lv(\d)$/i);
+    if (mm) lvBlocks.push({ lv: +mm[1], cy: wb.cy, cx: wb.cx });
+    else if (/^Lv$/i.test(wtxt) && i + 1 < words.length && /^\d$/.test((words[i + 1].text || "").trim())) {
+      const nb2 = nb(words[i + 1].bbox);
+      if (Math.abs(nb2.cy - wb.cy) < 0.03) lvBlocks.push({ lv: +(words[i + 1].text || "").trim(), cy: wb.cy, cx: wb.cx });
+    }
+  }
+  const hits = [];
+  for (const b of lines) {
+    const cands = skillCandidates(b.text);
+    if (!cands.length) continue;
+    if (hits.some(h => Math.abs(h.b.cy - b.cy) < 0.02 && h.cands[0].sk.id === cands[0].sk.id)) continue;
+    let lv = null, best = 1e9;
+    for (const L of lvBlocks) { const d = Math.abs(L.cy - b.cy); if (d < 0.045 && d < best) { best = d; lv = L.lv; } }
+    hits.push({ b, cands, lv });
+  }
+  hits.sort((a, b) => a.b.cy - b.b.cy);
+  const wrap = $("imgwrap");
+  for (const h of hits) {
+    const d = document.createElement("div");
+    d.className = "box";
+    d.style.left = (h.b.x * 100) + "%"; d.style.top = (h.b.y * 100) + "%";
+    d.style.width = (h.b.w * 100) + "%"; d.style.height = (h.b.h * 100) + "%";
+    d.innerHTML = "<span>" + h.cands[0].sk.name + (h.lv ? " Lv" + h.lv : "") + "</span>";
+    wrap.appendChild(d);
+  }
+  $("hits").innerHTML = hits.length ? "" : '<div class="note" style="margin-top:8px">スキル候補が見つかりませんでした。下の「OCRが生で読んだテキスト」にスキル名らしき文字列が含まれているか確認してください。</div>';
+  for (const h of hits) {
+    const div = document.createElement("div");
+    div.className = "hit";
+    const lvTxt = h.lv ? " Lv" + h.lv : " Lv?";
+    div.innerHTML = "<b>" + h.cands[0].sk.name + lvTxt + "</b> <span class='sim'>類似度 " + Math.round(h.cands[0].s * 100) + "% / OCR: " + h.b.text.replace(/</g, "&lt;") + "</span>";
+    const chipRow = document.createElement("div");
+    h.cands.forEach((c, i) => {
+      const ch = document.createElement("button");
+      ch.className = "chip" + (i === 0 ? " sel" : "");
+      ch.textContent = c.sk.name + " (" + Math.round(c.s * 100) + "%)";
+      ch.addEventListener("click", () => {
+        chipRow.querySelectorAll(".chip").forEach(x => x.classList.remove("sel"));
+        ch.classList.add("sel");
+        div.querySelector("b").textContent = c.sk.name + lvTxt;
+      });
+      chipRow.appendChild(ch);
+    });
+    div.appendChild(chipRow);
+    $("hits").appendChild(div);
+  }
+  $("result").style.display = "";
+}
+
+</script>
+</body>
+</html>
